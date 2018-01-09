@@ -1,0 +1,2 @@
+add_executable(raw_posix_socket raw_posix_socket.cpp)
+target_link_libraries(raw_posix_socket libwire)
