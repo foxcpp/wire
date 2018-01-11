@@ -46,8 +46,44 @@ namespace libwire::impl_ {
         int status = ::connect(fd, reinterpret_cast<struct sockaddr*>(&address), sizeof(address));
         if (status < 0) {
             ec = std::error_code(errno, std::system_category());
-            return;
         }
+    }
+
+    void posix_socket::bind(uint16_t port, ipv4::address interface_address, std::error_code& ec) {
+        assert(fd != not_initialized);
+
+        struct sockaddr_in address;
+        address.sin_family = AF_INET;
+        address.sin_port = host_to_network(port);
+        address.sin_addr = *reinterpret_cast<struct in_addr*>(&interface_address);
+
+        int status = ::bind(fd, reinterpret_cast<struct sockaddr*>(&address), sizeof(address));
+        if (status < 0) {
+            ec = std::error_code(errno, std::system_category());
+        }
+    }
+
+    void posix_socket::listen(int backlog, std::error_code& ec) {
+        assert(fd != not_initialized);
+
+        int status = ::listen(fd, backlog);
+        if (status < 0) {
+            ec = std::error_code(errno, std::system_category());
+        }
+    }
+
+    posix_socket posix_socket::accept(std::error_code& ec) {
+        assert(fd != not_initialized);
+
+        int fd = ::accept(fd, nullptr, nullptr);
+        // TODO: Allow to get client address.
+
+        if (fd < 0) {
+            ec = std::error_code(errno, std::system_category());
+            return posix_socket();
+        }
+
+        return posix_socket(fd);
     }
 
     size_t posix_socket::write(const void* input, size_t length_bytes, std::error_code& ec) {

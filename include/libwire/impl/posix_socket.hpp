@@ -36,6 +36,9 @@ namespace libwire::impl_ {
      * * socket(3P) for posix_socket::posix_socket
      * * write(3P) for posix_socket::write
      * * read(3P) for posix_socket::read
+     * * listen(3P) for posix_socket::listen
+     * * bind(3P) for posix_socket::bind
+     * * accept(3P) for posix_socket::accept
      */
     struct posix_socket {
         enum net_protocol {
@@ -48,10 +51,14 @@ namespace libwire::impl_ {
             udp,
         };
 
+        static int max_pending_connections;
+
         /**
          * Construct handle without allocating socket.
          */
         posix_socket() = default;
+
+        posix_socket(int fd) : fd(fd) {}
 
         /**
          * Allocate new socket with specified family (network protocol)
@@ -78,6 +85,26 @@ namespace libwire::impl_ {
         void connect(ipv4::address target, uint16_t port, std::error_code& ec);
 
         /**
+         * Bind socket to local port using interface specified in interface_address,
+         * set ec if any error occured.
+         */
+        void bind(uint16_t port, ipv4::address interface_address, std::error_code& ec);
+
+        /**
+         * Start accepting connections on this listener socket.
+         *
+         * backlog is a hint for underlying implementation it can use
+         * to limit number of pending connections in socket's queue.
+         */
+        void listen(int backlog, std::error_code& ec);
+
+        /**
+         * Extract and accept first connection from queue and create socket for it,
+         * set ec if any error occured.
+         */
+        posix_socket accept(std::error_code& ec);
+
+        /**
          * Write length_bytes from input to socket, set ec if any error
          * occured and return real count of data written.
          */
@@ -92,5 +119,4 @@ namespace libwire::impl_ {
         static constexpr int not_initialized = -1;
         int fd = not_initialized;
     };
-
 }
