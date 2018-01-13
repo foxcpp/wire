@@ -25,58 +25,49 @@
 #include <cstdint>
 #include <system_error>
 #include <libwire/ipv4/address.hpp>
+#include <libwire/protocols.hpp>
 
-namespace libwire::impl_ {
+namespace libwire::internal_ {
     /**
      * Thin C++ wrapper for POSIX sockets.
      *
      * Consult related POSIX Programmer's Manual pages for exact
      * behavior of each function.
-     * * connect(3P) for posix_socket::connect
-     * * socket(3P) for posix_socket::posix_socket
-     * * write(3P) for posix_socket::write
-     * * read(3P) for posix_socket::read
-     * * listen(3P) for posix_socket::listen
-     * * bind(3P) for posix_socket::bind
-     * * accept(3P) for posix_socket::accept
+     * * connect(3P) for socket::connect
+     * * socket(3P) for socket::socket
+     * * write(3P) for socket::write
+     * * read(3P) for socket::read
+     * * listen(3P) for socket::listen
+     * * bind(3P) for socket::bind
+     * * accept(3P) for socket::accept
      */
-    struct posix_socket {
-        enum net_protocol {
-            v4,
-            v6
-        };
-
-        enum transport {
-            tcp,
-            udp,
-        };
-
+    struct socket {
         static int max_pending_connections;
 
         /**
          * Construct handle without allocating socket.
          */
-        posix_socket() = default;
+        socket() = default;
 
-        posix_socket(int fd) : fd(fd) {}
+        explicit socket(int fd) : fd(fd) {}
 
         /**
          * Allocate new socket with specified family (network protocol)
          * and socket type (transport protocol).
          */
-        posix_socket(net_protocol ipver, transport transport, std::error_code& ec);
+        socket(net_protocol ipver, transport transport, std::error_code& ec);
 
-        posix_socket(const posix_socket&) = delete;
-        posix_socket(posix_socket&&) = default;
-        posix_socket& operator=(const posix_socket&) = delete;
-        posix_socket& operator=(posix_socket&&) = default;
+        socket(const socket&) = delete;
+        socket(socket&&) = default;
+        socket& operator=(const socket&) = delete;
+        socket& operator=(socket&&) = default;
 
         /**
          * Close underlying file descriptor if any.
          *
          * May block if there are unsent data left.
          */
-        ~posix_socket();
+        ~socket();
 
         /**
          * Connect socket to remote endpoint, set ec if any error
@@ -102,7 +93,7 @@ namespace libwire::impl_ {
          * Extract and accept first connection from queue and create socket for it,
          * set ec if any error occured.
          */
-        posix_socket accept(std::error_code& ec);
+        socket accept(std::error_code& ec);
 
         /**
          * Write length_bytes from input to socket, set ec if any error

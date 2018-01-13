@@ -22,31 +22,17 @@
 
 #pragma once
 
-#include <cstdint>
+namespace libwire {
+    // We had to use scoped enums to avoid
+    // collisions with namespaces.
 
-/**
- * This file defines portable utilities for byte order conversion
- * to be used in libwire internals.
- *
- * Despite not being part of public API interface of these functions
- * probably will not be changed, so you can use them if you really
- * want.
- */
+    enum class net_protocol {
+        ipv4,
+        ipv6,
+    };
 
-namespace libwire::impl_ {
-    // Big endian to little endian and little endian to big endian.
-    uint16_t flip_endianess(uint16_t);
-    uint32_t flip_endianess(uint32_t);
-
-    bool host_is_network();
-
-    template<typename T>
-    inline T host_to_network(T input) {
-        return host_is_network() ? input : flip_endianess(input);
-    }
-
-    template<typename T>
-    inline T network_to_host(T input) {
-        return host_is_network() ? input : flip_endianess(input);
-    }
-} // namespace libwire::impl_
+    enum class transport {
+        tcp,
+        udp
+    };
+} // namespace libwire

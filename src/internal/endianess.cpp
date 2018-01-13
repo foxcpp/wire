@@ -1,6 +1,6 @@
-#include <libwire/impl/endianess.hpp>
+#include "libwire/internal/endianess.hpp"
 
-namespace libwire::impl_ {
+namespace libwire::internal_ {
     uint16_t flip_endianess(uint16_t input) {
         return (input >> 8) |
                (input << 8);
@@ -17,4 +17,4 @@ namespace libwire::impl_ {
         // false if first byte is 1 (little endian).
         return *reinterpret_cast<const uint8_t*>(&probe) != 1;
     }
-} // namespace libwire::impl_
+} // namespace libwire::internal_
