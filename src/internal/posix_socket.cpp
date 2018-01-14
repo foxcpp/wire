@@ -16,8 +16,8 @@ namespace libwire::internal_ {
 
         int type, protocol;
         switch (transport) {
-        case tcp: type = SOCK_STREAM; protocol = IPPROTO_TCP; break;
-        case udp: type = SOCK_DGRAM; protocol = IPPROTO_UDP; break;
+        case transport::tcp: type = SOCK_STREAM; protocol = IPPROTO_TCP; break;
+        case transport::udp: type = SOCK_DGRAM; protocol = IPPROTO_UDP; break;
         }
 
         fd = ::socket(domain, type, protocol);
