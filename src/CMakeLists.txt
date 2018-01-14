@@ -1,5 +1,6 @@
 set(LIBWIRE_SOURCES
     internal/endianess.cpp
+    tcp/socket.cpp
     )
 
 set(LIBWIRE_POSIX_SOURCES
