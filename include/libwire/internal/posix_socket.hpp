@@ -38,8 +38,7 @@ namespace libwire::internal_ {
      * * write(3P) for socket::write
      * * read(3P) for socket::read
      * * listen(3P) for socket::listen
-     * * bind(3P) for socket::bind
-     * * accept(3P) for socket::accept
+     * etc...
      */
     struct socket {
         static int max_pending_connections;
@@ -74,6 +73,11 @@ namespace libwire::internal_ {
          * occured.
          */
         void connect(ipv4::address target, uint16_t port, std::error_code& ec);
+
+        /**
+         * Shutdown read/write parts of full-duplex connection.
+         */
+        void shutdown(bool read = true, bool write = true);
 
         /**
          * Bind socket to local port using interface specified in interface_address,

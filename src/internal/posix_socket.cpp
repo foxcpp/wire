@@ -30,6 +30,22 @@ namespace libwire::internal_ {
         if (fd != not_initialized) close(fd);
     }
 
+    void socket::shutdown(bool read, bool write) {
+        assert(fd != not_initialized);
+
+        int how = 0;
+        if (read && !write) how = SHUT_RD;
+        if (!read && write) how = SHUT_WR;
+        if (read && write)  how = SHUT_RDWR;
+        assert(how != 0);
+
+        int status = ::shutdown(fd, how);
+        if (status < 0) {
+            // Other errors mean that something broken in library.
+            assert(errno ==  ENOTCONN);
+        }
+    }
+
     void socket::connect(ipv4::address target, uint16_t port, std::error_code& ec) {
         static_assert(sizeof(ipv4::address) == sizeof(in_addr_t),
                       "Your platform uses some untrivial way to represent"
