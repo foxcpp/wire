@@ -23,7 +23,12 @@
 #include <cstdint>
 #include <system_error>
 #include <vector>
-#include <libwire/internal/posix_socket.hpp>
+
+#ifdef __unix__
+    #include <libwire/internal/posix_socket.hpp>
+#else
+    #error "libwire doesn't supports socket interface on your platform. :("
+#endif
 
 namespace libwire::tcp {
     class socket {
