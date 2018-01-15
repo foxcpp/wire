@@ -22,17 +22,41 @@
 
 #include <cstdint>
 #include <string>
+#include <string_view>
 
 namespace libwire::ipv4 {
     struct address {
-        uint8_t parts[4];
+        address(uint8_t p1, uint8_t p2, uint8_t p3, uint8_t p4);
 
-        inline std::string to_string() const {
-            return std::to_string(parts[0]) + '.' +
-                   std::to_string(parts[1]) + '.' +
-                   std::to_string(parts[2]) + '.' +
-                   std::to_string(parts[3]);
-        }
+        /**
+         * Convert IPv4 address string to binary representation.
+         *
+         * Throws std::invalid_argument if ip_string is not a valid IPv4
+         * address.
+         *
+         * \warning If libwire compiled with exceptions disabled parsing
+         * errors will be ignored and result is undefined.
+         */
+        explicit address(const std::string_view& ip_string);
+
+        /**
+         * Convert IPv4 address string to binary representation.
+         *
+         * success set to true if ip_string parsed sucessfully,
+         * or false otherwise.
+         */
+        address(const std::string_view& ip_string, bool& success);
+
+        std::string to_string() const;
+
+        bool operator==(const address&) const;
+        bool operator!=(const address&) const;
+
+        uint8_t parts[4] = { 0, 0, 0, 0 };
     };
+
+    const inline address any  = { 0, 0, 0, 0 },
+      broadcast  = { 255, 255, 255, 255 },
+      loopback   = { 127, 0, 0, 1 };
 } // namespace libwire::ipv4
 
