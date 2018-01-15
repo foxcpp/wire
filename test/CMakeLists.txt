@@ -1,7 +1,10 @@
 enable_testing()
 
-add_executable(util_tests
-               internal/endianess.cpp)
-target_link_libraries(util_tests libwire gtest)
-add_test(NAME util_tests
-         COMMAND util_tests)
+macro(libwire_test name)
+    add_executable(${name} ${ARGN})
+    target_link_libraries(${name} libwire gtest)
+    add_test(NAME ${name} COMMAND ${name})
+endmacro()
+
+libwire_test(endianess      internal/endianess.cpp)
+libwire_test(ipv4_address   ipv4/address.cpp)
