@@ -7,6 +7,11 @@ namespace libwire::tcp {
     template size_t socket::write(const std::vector<uint8_t>&, std::error_code&);
     template size_t socket::write(const std::string&, std::error_code&);
 
+    socket::~socket() {
+        shutdown();
+        close();
+    }
+
     void socket::connect(ipv4::address target, uint16_t port, std::error_code& ec) {
         implementation = internal_::socket(net_protocol::ipv4, transport::tcp, ec);
         implementation.connect(target, port, ec);
