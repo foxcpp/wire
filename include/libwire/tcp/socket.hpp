@@ -43,6 +43,14 @@ namespace libwire::tcp {
          */
         socket() = default;
 
+        /**
+         * Initialize socket from underlying raw handle.
+         *
+         * Used by tcp::listener for accept() function.
+         * **Not part of the public API.**
+         */
+        socket(internal_::socket&& i) : implementation(std::move(i)) {}
+
         socket(const socket&) = delete;
         socket(socket&&) = default;
 

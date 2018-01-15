@@ -2,6 +2,7 @@ set(LIBWIRE_SOURCES
     internal/endianess.cpp
     ipv4/address.cpp
     tcp/socket.cpp
+    tcp/listener.cpp
     )
 
 set(LIBWIRE_POSIX_SOURCES
