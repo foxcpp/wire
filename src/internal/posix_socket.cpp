@@ -27,7 +27,7 @@ namespace libwire::internal_ {
             return;
         }
 
-#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
+#if SO_NOSIGPIPE
         int one = 1;
         setsockopt(fd, SOL_SOCKET, SO_NOSIGPIPE, &one, sizeof(one));
 #endif
@@ -119,7 +119,7 @@ namespace libwire::internal_ {
         return socket(accepted_fd);
     }
 
-#ifdef __linux__
+#ifdef MSG_NOSIGNAL
     #define IO_FLAGS MSG_NOSIGNAL
 #else
     #define IO_FLAGS 0
