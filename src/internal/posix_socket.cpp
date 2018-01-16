@@ -24,7 +24,13 @@ namespace libwire::internal_ {
         fd = ::socket(domain, type, protocol);
         if (fd < 0) {
             ec = std::error_code(errno, std::system_category());
+            return;
         }
+
+#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
+        int one = 1;
+        setsockopt(fd, SOL_SOCKET, SO_NOSIGPIPE, &one, sizeof(one));
+#endif
     }
 
     socket::socket(socket&& o) noexcept {
@@ -113,10 +119,16 @@ namespace libwire::internal_ {
         return socket(accepted_fd);
     }
 
+#ifdef __linux__
+    #define IO_FLAGS MSG_NOSIGNAL
+#else
+    #define IO_FLAGS 0
+#endif
+
     size_t socket::write(const void* input, size_t length_bytes, std::error_code& ec) {
         assert(fd != not_initialized);
 
-        ssize_t actually_written = ::write(fd, input, length_bytes);
+        ssize_t actually_written = ::send(fd, input, length_bytes, IO_FLAGS);
         if (actually_written < 0) {
             ec = std::error_code(errno, std::system_category());
             return 0;
@@ -127,7 +139,7 @@ namespace libwire::internal_ {
     size_t socket::read(void* output, size_t length_bytes, std::error_code& ec) {
         assert(fd != not_initialized);
 
-        ssize_t actually_readen = ::read(fd, output, length_bytes);
+        ssize_t actually_readen = ::recv(fd, output, length_bytes, IO_FLAGS);
         if (actually_readen < 0) {
             ec = std::error_code(errno, std::system_category());
             return 0;
