@@ -41,7 +41,7 @@ namespace libwire::internal_ {
      * etc...
      */
     struct socket {
-        static int max_pending_connections;
+        static unsigned max_pending_connections;
 
         /**
          * Construct handle without allocating socket.

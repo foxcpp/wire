@@ -6,6 +6,8 @@
 #include "libwire/internal/endianess.hpp"
 
 namespace libwire::internal_ {
+    unsigned socket::max_pending_connections = SOMAXCONN;
+
     socket::socket(net_protocol net_proto, transport transport, std::error_code& ec) {
         int domain;
         switch (net_proto) {
