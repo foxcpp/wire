@@ -14,6 +14,7 @@ namespace libwire::tcp {
 
     void socket::connect(ipv4::address target, uint16_t port, std::error_code& ec) {
         implementation = internal_::socket(net_protocol::ipv4, transport::tcp, ec);
+        if (ec) return;
         implementation.connect(target, port, ec);
     }
 
