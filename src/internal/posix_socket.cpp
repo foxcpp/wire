@@ -7,7 +7,6 @@
 
 namespace libwire::internal_ {
     socket::socket(net_protocol net_proto, transport transport, std::error_code& ec) {
-
         int domain;
         switch (net_proto) {
         case net_protocol::ipv4: domain = AF_INET; break;
@@ -24,6 +23,17 @@ namespace libwire::internal_ {
         if (fd < 0) {
             ec = std::error_code(errno, std::system_category());
         }
+    }
+
+    socket::socket(socket&& o) noexcept {
+        this->fd = o.fd;
+        o.fd = not_initialized;
+    }
+
+    socket& socket::operator=(socket&& o) noexcept {
+        this->fd = o.fd;
+        o.fd = not_initialized;
+        return *this;
     }
 
     socket::~socket() {
@@ -121,5 +131,9 @@ namespace libwire::internal_ {
             return 0;
         }
         return actually_readen;
+    }
+
+    socket::operator bool() const {
+        return fd != not_initialized;
     }
 }

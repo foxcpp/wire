@@ -57,9 +57,9 @@ namespace libwire::internal_ {
         socket(net_protocol ipver, transport transport, std::error_code& ec);
 
         socket(const socket&) = delete;
-        socket(socket&&) = default;
+        socket(socket&&) noexcept;
         socket& operator=(const socket&) = delete;
-        socket& operator=(socket&&) = default;
+        socket& operator=(socket&&) noexcept;
 
         /**
          * Close underlying file descriptor if any.
@@ -110,6 +110,11 @@ namespace libwire::internal_ {
          * occured and return real count of data readen.
          */
         size_t read(void* output, size_t length_bytes, std::error_code& ec);
+
+        /**
+         * Allows to check whether socket is intialized and can be operated on.
+         */
+        operator bool() const;
 
         static constexpr int not_initialized = -1;
         int fd = not_initialized;
