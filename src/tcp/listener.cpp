@@ -5,6 +5,8 @@ namespace libwire::tcp {
 
     void listener::listen(ipv4::address local_address, uint16_t port,
                           std::error_code& ec, unsigned max_backlog) {
+        implementation = internal_::socket(net_protocol::ipv4, transport::tcp, ec);
+        if (ec) return;
         implementation.bind(port, local_address, ec);
         if (ec) return;
         implementation.listen(max_backlog, ec);
