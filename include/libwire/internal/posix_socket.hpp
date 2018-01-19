@@ -54,7 +54,7 @@ namespace libwire::internal_ {
          * Allocate new socket with specified family (network protocol)
          * and socket type (transport protocol).
          */
-        socket(net_protocol ipver, transport transport, std::error_code& ec);
+        socket(ip ipver, transport transport, std::error_code& ec);
 
         socket(const socket&) = delete;
         socket(socket&&) noexcept;

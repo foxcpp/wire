@@ -5,7 +5,7 @@ TEST(IPv4Address, VersionInitialization) {
     using namespace libwire;
 
     address adr1({127, 0, 0, 1});
-    ASSERT_EQ(adr1.version, net_protocol::ipv4);
+    ASSERT_EQ(adr1.version, ip::v4);
 }
 
 TEST(IPv4Address, FromString) {
@@ -35,7 +35,7 @@ TEST(IPv6Address, VersionInitialization) {
 
     address adr1({0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
                   0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x1});
-    ASSERT_EQ(adr1.version, net_protocol::ipv6);
+    ASSERT_EQ(adr1.version, ip::v6);
 }
 
 TEST(IPv6Address, FromString) {

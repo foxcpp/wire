@@ -8,11 +8,11 @@
 namespace libwire::internal_ {
     unsigned socket::max_pending_connections = SOMAXCONN;
 
-    socket::socket(net_protocol net_proto, transport transport, std::error_code& ec) {
+    socket::socket(ip net_proto, transport transport, std::error_code& ec) {
         int domain;
         switch (net_proto) {
-        case net_protocol::ipv4: domain = AF_INET; break;
-        case net_protocol::ipv6: domain = AF_INET6; break;
+        case ip::v4: domain = AF_INET; break;
+        case ip::v6: domain = AF_INET6; break;
         }
 
         int type, protocol;

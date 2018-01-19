@@ -84,7 +84,7 @@ namespace libwire {
         bool operator==(const address&) const;
         bool operator!=(const address&) const;
 
-        net_protocol version;
+        ip version;
         std::array<uint8_t, 16> parts;
     };
 

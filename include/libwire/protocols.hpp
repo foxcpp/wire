@@ -23,12 +23,9 @@
 #pragma once
 
 namespace libwire {
-    // We had to use scoped enums to avoid
-    // collisions with namespaces.
-
-    enum class net_protocol {
-        ipv4,
-        ipv6,
+    enum class ip {
+        v4,
+        v6,
     };
 
     enum class transport {

@@ -13,7 +13,7 @@
 
 namespace libwire {
     address::address(uint8_t o1, uint8_t o2, uint8_t o3, uint8_t o4)
-        : version(net_protocol::ipv4)
+        : version(ip::v4)
         , parts{o1,  o2,  o3,  o4,  0x0, 0x0, 0x0, 0x0,
                 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0} {}
 
@@ -21,7 +21,7 @@ namespace libwire {
                      uint8_t o5,  uint8_t o6,  uint8_t o7,  uint8_t o8,
                      uint8_t o9,  uint8_t o10, uint8_t o11, uint8_t o12,
                      uint8_t o13, uint8_t o14, uint8_t o15, uint8_t o16)
-        : version(net_protocol::ipv6)
+        : version(ip::v6)
         , parts{o1, o2,  o3,  o4,  o5,  o6,  o7,  o8,
                 o9, o10, o11, o12, o13, o14, o15, o16} {
     }
@@ -35,11 +35,11 @@ namespace libwire {
     address::address(const std::string_view& sv, bool& success) {
 #ifdef _POSIX_VERSION
         int family = AF_INET;
-        version = net_protocol::ipv4;
+        version = ip::v4;
         for (const char& ch : sv) {
             if (ch == ':') {
                 family = AF_INET6;
-                version = net_protocol::ipv6;
+                version = ip::v6;
             }
         }
 
@@ -58,7 +58,7 @@ namespace libwire {
 
     std::string address::to_string() const {
 #ifdef _POSIX_VERSION
-        int family = (version == net_protocol::ipv4) ? AF_INET : AF_INET6;
+        int family = (version == ip::v4) ? AF_INET : AF_INET6;
 
         std::array<char, 45> buffer;
 
