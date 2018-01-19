@@ -32,7 +32,7 @@ int main(int argc, char** argv) {
     std::error_code ec;
 
     tcp::socket socket;
-    socket.connect(ipv4::address(argv[1]), port, ec);
+    socket.connect(address(argv[1]), port, ec);
     if (ec) report_error ("connect", ec);
 
     std::string buffer;

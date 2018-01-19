@@ -7,4 +7,4 @@ macro(libwire_test name)
 endmacro()
 
 libwire_test(endianess      internal/endianess.cpp)
-libwire_test(ipv4_address   ipv4/address.cpp)
+libwire_test(address        address.cpp)

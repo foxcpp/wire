@@ -48,7 +48,7 @@ namespace libwire::tcp {
          * Construct listener and start accepting connections.
          * See listen() documentation for arguments description.
          */
-        inline listener(ipv4::address local_endpoint, uint16_t port,
+        inline listener(address local_endpoint, uint16_t port,
                         std::error_code& ec, unsigned backlog = max_backlog)
             : listener() {
 
@@ -68,7 +68,7 @@ namespace libwire::tcp {
          * This function combines bind() and listen() of underlying
          * socket API.
          */
-        void listen(ipv4::address local_address, uint16_t port,
+        void listen(address local_address, uint16_t port,
                     std::error_code& ec, unsigned backlog = max_backlog);
 
         /**

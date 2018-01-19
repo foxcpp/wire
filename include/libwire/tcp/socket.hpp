@@ -68,7 +68,7 @@ namespace libwire::tcp {
          * \note If connect() called for already connected socket if
          * active connection will be closed by close() call.
          */
-        void connect(ipv4::address, uint16_t port, std::error_code& ec);
+        void connect(address, uint16_t port, std::error_code& ec);
 
         /**
          * Shutdown reading/writing part of full-duplex connection

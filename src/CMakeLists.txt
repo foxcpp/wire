@@ -1,6 +1,6 @@
 set(LIBWIRE_SOURCES
+    address.cpp
     internal/endianess.cpp
-    ipv4/address.cpp
     tcp/socket.cpp
     tcp/listener.cpp
     )

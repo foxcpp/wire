@@ -24,7 +24,7 @@
 
 #include <cstdint>
 #include <system_error>
-#include <libwire/ipv4/address.hpp>
+#include <libwire/address.hpp>
 #include <libwire/protocols.hpp>
 
 namespace libwire::internal_ {
@@ -72,7 +72,7 @@ namespace libwire::internal_ {
          * Connect socket to remote endpoint, set ec if any error
          * occured.
          */
-        void connect(ipv4::address target, uint16_t port, std::error_code& ec);
+        void connect(address target, uint16_t port, std::error_code& ec);
 
         /**
          * Shutdown read/write parts of full-duplex connection.
@@ -83,7 +83,7 @@ namespace libwire::internal_ {
          * Bind socket to local port using interface specified in interface_address,
          * set ec if any error occured.
          */
-        void bind(uint16_t port, ipv4::address interface_address, std::error_code& ec);
+        void bind(uint16_t port, address interface_address, std::error_code& ec);
 
         /**
          * Start accepting connections on this listener socket.

@@ -64,17 +64,13 @@ namespace libwire::internal_ {
         }
     }
 
-    void socket::connect(ipv4::address target, uint16_t port, std::error_code& ec) {
-        static_assert(sizeof(ipv4::address) == sizeof(in_addr_t),
-                      "Your platform uses some untrivial way to represent"
-                      "IPv4 address, report this error.");
-
+    void socket::connect(address target, uint16_t port, std::error_code& ec) {
         assert(fd != not_initialized);
 
         struct sockaddr_in address;
         address.sin_family = AF_INET;
         address.sin_port = host_to_network(port);
-        address.sin_addr = *(in_addr*)(&target);
+        address.sin_addr = *(in_addr*)target.parts.data();
 
         int status = ::connect(fd, (sockaddr*)(&address), sizeof(address));
         if (status < 0) {
@@ -82,13 +78,13 @@ namespace libwire::internal_ {
         }
     }
 
-    void socket::bind(uint16_t port, ipv4::address interface_address, std::error_code& ec) {
+    void socket::bind(uint16_t port, address interface_address, std::error_code& ec) {
         assert(fd != not_initialized);
 
         sockaddr_in address;
         address.sin_family = AF_INET;
         address.sin_port = host_to_network(port);
-        address.sin_addr = *(in_addr*)(&interface_address);
+        address.sin_addr = *(in_addr*)interface_address.parts.data();
 
         int status = ::bind(fd, (sockaddr*)(&address), sizeof(address));
         if (status < 0) {
