@@ -56,6 +56,18 @@ namespace libwire {
 #endif
     }
 
+    address::address(ip version, void* memory) {
+        switch (version) {
+        case ip::v4:
+            std::copy((uint8_t*)memory, (uint8_t*)memory + 4, parts.begin());
+            break;
+        case ip::v6:
+            std::copy((uint8_t*)memory, (uint8_t*)memory + 16, parts.begin());
+            break;
+        }
+        this->version = version;
+    }
+
     std::string address::to_string() const {
 #ifdef _POSIX_VERSION
         int family = (version == ip::v4) ? AF_INET : AF_INET6;

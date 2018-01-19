@@ -3,6 +3,7 @@ set(CMAKE_STATIC_LIBRARY_PREFIX "")
 
 set(LIBWIRE_SOURCES
     address.cpp
+    dns.cpp
     internal/endianess.cpp
     tcp/socket.cpp
     tcp/listener.cpp

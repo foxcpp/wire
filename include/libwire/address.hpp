@@ -75,6 +75,14 @@ namespace libwire {
         address(const std::string_view& text_ip, bool& success);
 
         /**
+         * Construct from raw memory pointing to binary
+         * representation of address in network byte order.
+         *
+         * **Not part of the public API**
+         */
+        address(ip version, void* memory);
+
+        /**
          * Convert address object to string representation.
          *
          * For IPv6 it gives correctly compacted version.

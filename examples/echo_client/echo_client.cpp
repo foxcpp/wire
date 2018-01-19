@@ -1,5 +1,6 @@
 #include <iostream>
 #include <libwire/tcp/socket.hpp>
+#include <libwire/dns.hpp>
 
 /**
  * This example shows how to implement simple echo server
@@ -32,7 +33,7 @@ int main(int argc, char** argv) {
     std::error_code ec;
 
     tcp::socket socket;
-    socket.connect(address(argv[1]), port, ec);
+    socket.connect(dns::resolve(ip::v4, argv[1], ec).at(0), port, ec);
     if (ec) report_error ("connect", ec);
 
     std::string buffer;
