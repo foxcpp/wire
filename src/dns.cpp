@@ -21,6 +21,7 @@
  */
 
 #include "libwire/dns.hpp"
+#include "libwire/error.hpp"
 
 #if __has_include(<unistd.h>)
     #include <unistd.h>
@@ -32,7 +33,7 @@
 namespace libwire::dns {
     std::vector<address> resolve(ip protocol, const std::string_view& domain, std::error_code& ec) {
 #ifdef _POSIX_VERSION
-        addrinfo hints;
+        addrinfo hints {};
         memset(&hints, 0x00, sizeof(hints));
         hints.ai_family = (protocol == ip::v4) ? AF_INET : AF_INET6;
 
@@ -40,21 +41,24 @@ namespace libwire::dns {
 
         int status = getaddrinfo(domain.data(), nullptr, nullptr, &result_raw);
         if (status != 0) {
-            ec = std::error_code(status, std::generic_category());
+            if (status == EAI_SYSTEM) {
+                ec = std::error_code(errno, error::system_category());
+            }
+            ec = std::error_code(status, error::dns_category());
             return {};
         }
 
         std::vector<address> result;
 
-        for (addrinfo* entry = result_raw; entry->ai_next != 0;
+        for (addrinfo* entry = result_raw; entry->ai_next != nullptr;
              entry = entry->ai_next) {
 
             assert(entry->ai_family == AF_INET || entry->ai_family == AF_INET6);
 
             if (entry->ai_family == AF_INET) {
-                result.emplace_back(ip::v4, &((sockaddr_in*)entry->ai_addr)->sin_addr);
+                result.emplace_back(ip::v4, &(reinterpret_cast<sockaddr_in*>(entry->ai_addr))->sin_addr);
             } else if (entry->ai_family == AF_INET6) {
-                result.emplace_back(ip::v6, &((sockaddr_in6*)entry->ai_addr)->sin6_addr);
+                result.emplace_back(ip::v6, &(reinterpret_cast<sockaddr_in6*>(entry->ai_addr))->sin6_addr);
             }
         }
 

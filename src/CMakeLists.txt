@@ -7,10 +7,12 @@ set(LIBWIRE_SOURCES
     internal/endianess.cpp
     tcp/socket.cpp
     tcp/listener.cpp
-    )
+    error.cpp)
 
 set(LIBWIRE_POSIX_SOURCES
     internal/posix_socket.cpp
+    internal/error/posix_dns_category.cpp
+    internal/error/posix_system_category.cpp
     )
 
 if(UNIX)

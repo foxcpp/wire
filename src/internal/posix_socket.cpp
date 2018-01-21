@@ -4,6 +4,7 @@
 #include <sys/socket.h>
 #include <netinet/ip.h>
 #include "libwire/internal/endianess.hpp"
+#include "libwire/error.hpp"
 
 namespace libwire::internal_ {
     unsigned socket::max_pending_connections = SOMAXCONN;
@@ -23,7 +24,7 @@ namespace libwire::internal_ {
 
         fd = ::socket(domain, type, protocol);
         if (fd < 0) {
-            ec = std::error_code(errno, std::system_category());
+            ec = std::error_code(errno, error::system_category());
             return;
         }
 
@@ -70,25 +71,25 @@ namespace libwire::internal_ {
         struct sockaddr_in address;
         address.sin_family = AF_INET;
         address.sin_port = host_to_network(port);
-        address.sin_addr = *(in_addr*)target.parts.data();
+        address.sin_addr = *reinterpret_cast<in_addr*>(target.parts.data());
 
-        int status = ::connect(fd, (sockaddr*)(&address), sizeof(address));
+        int status = ::connect(fd, reinterpret_cast<sockaddr*>(&address), sizeof(address));
         if (status < 0) {
-            ec = std::error_code(errno, std::system_category());
+            ec = std::error_code(errno, error::system_category());
         }
     }
 
     void socket::bind(uint16_t port, address interface_address, std::error_code& ec) {
         assert(fd != not_initialized);
 
-        sockaddr_in address;
+        sockaddr_in address {};
         address.sin_family = AF_INET;
         address.sin_port = host_to_network(port);
-        address.sin_addr = *(in_addr*)interface_address.parts.data();
+        address.sin_addr = *reinterpret_cast<in_addr*>(interface_address.parts.data());
 
-        int status = ::bind(fd, (sockaddr*)(&address), sizeof(address));
+        int status = ::bind(fd, reinterpret_cast<sockaddr*>(&address), sizeof(address));
         if (status < 0) {
-            ec = std::error_code(errno, std::system_category());
+            ec = std::error_code(errno, error::system_category());
         }
     }
 
@@ -97,7 +98,7 @@ namespace libwire::internal_ {
 
         int status = ::listen(fd, backlog);
         if (status < 0) {
-            ec = std::error_code(errno, std::system_category());
+            ec = std::error_code(errno, error::system_category());
         }
     }
 
@@ -108,7 +109,7 @@ namespace libwire::internal_ {
         // TODO: Allow to get client address.
 
         if (accepted_fd < 0) {
-            ec = std::error_code(errno, std::system_category());
+            ec = std::error_code(errno, error::system_category());
             return socket();
         }
 
@@ -126,7 +127,7 @@ namespace libwire::internal_ {
 
         ssize_t actually_written = ::send(fd, input, length_bytes, IO_FLAGS);
         if (actually_written < 0) {
-            ec = std::error_code(errno, std::system_category());
+            ec = std::error_code(errno, error::system_category());
             return 0;
         }
         return actually_written;
@@ -137,7 +138,7 @@ namespace libwire::internal_ {
 
         ssize_t actually_readen = ::recv(fd, output, length_bytes, IO_FLAGS);
         if (actually_readen < 0) {
-            ec = std::error_code(errno, std::system_category());
+            ec = std::error_code(errno, error::system_category());
             return 0;
         }
         return actually_readen;
@@ -146,4 +147,4 @@ namespace libwire::internal_ {
     socket::operator bool() const {
         return fd != not_initialized;
     }
-}
+} // namespace libwire::internal_
