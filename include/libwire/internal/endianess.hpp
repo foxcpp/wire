@@ -35,18 +35,18 @@
 
 namespace libwire::internal_ {
     // Big endian to little endian and little endian to big endian.
-    uint16_t flip_endianess(uint16_t);
-    uint32_t flip_endianess(uint32_t);
+    uint16_t flip_endianess(uint16_t) noexcept;
+    uint32_t flip_endianess(uint32_t) noexcept;
 
-    bool host_is_network();
+    bool host_is_network() noexcept;
 
     template<typename T>
-    inline T host_to_network(T input) {
+    inline T host_to_network(T input) noexcept {
         return host_is_network() ? input : flip_endianess(input);
     }
 
     template<typename T>
-    inline T network_to_host(T input) {
+    inline T network_to_host(T input) noexcept {
         return host_is_network() ? input : flip_endianess(input);
     }
 } // namespace libwire::internal_

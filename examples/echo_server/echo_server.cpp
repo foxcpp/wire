@@ -5,11 +5,6 @@
  * Example of tcp::listener class usage for echo server.
  */
 
-void report_error(const std::string_view& source, std::error_code ec) {
-    std::cerr << source << ": " << ec.message() << " (" << ec.value() << ")\n";
-    std::exit(2);
-}
-
 int main(int argc, char** argv) {
     using namespace libwire;
 
@@ -20,30 +15,22 @@ int main(int argc, char** argv) {
 
     uint16_t port = std::stoi(argv[1]);
 
-    std::error_code ec;
-
     tcp::listener listener;
-    listener.listen(ipv4::any, port, ec);
-    if (ec) report_error("listen", ec);
+    listener.listen(ipv4::any, port);
 
     std::cout << "Listening on port " << port << ".\n";
 
     std::string buf;
     while (true) {
-        auto sock = listener.accept(ec);
-        if (ec) {
-            std::cerr << "accept" << ": " << ec.message() << " (" << ec.value() << ")\n";
-            continue;
-        }
+        auto sock = listener.accept();
 
         std::cout << "Accepted connection.\n";
 
-        while (!ec) {
-            sock.read(1, buf, ec);
-            if (ec) continue;
-            sock.write(buf, ec);
+        while (true) {
+            sock.read(1, buf);
+            sock.write(buf);
         }
+
         std::cout << "Disconnected.\n";
-        ec = std::error_code();
     }
 }

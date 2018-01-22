@@ -27,20 +27,18 @@
 namespace libwire::tcp {
     class listener {
     public:
-        static unsigned max_backlog;
-
         /**
          * Construct listener object.
          *
          * \note Due to some details socket is not allocated when listener() is called.
          */
-        listener() = default;
+        listener() noexcept = default;
 
         listener(const listener&) = delete;
-        listener(listener&&) = default;
+        listener(listener&&) noexcept = default;
 
         listener& operator=(const listener&) = delete;
-        listener& operator=(listener&&) = default;
+        listener& operator=(listener&&) noexcept = default;
 
         ~listener() = default;
 
@@ -49,10 +47,16 @@ namespace libwire::tcp {
          * See listen() documentation for arguments description.
          */
         inline listener(address local_endpoint, uint16_t port,
-                        std::error_code& ec, unsigned backlog = max_backlog)
-            : listener() {
+                        std::error_code& ec,
+                        unsigned backlog = internal_::socket::max_pending_connections) noexcept {
 
             listen(local_endpoint, port, ec, backlog);
+        }
+
+        inline listener(address local_endpoint, uint16_t port,
+                        unsigned backlog = internal_::socket::max_pending_connections) {
+
+            listen(local_endpoint, port, backlog);
         }
 
         /**
@@ -60,7 +64,7 @@ namespace libwire::tcp {
          * endpoint. backlog argument sets maximum size of
          * pending connections queue.
          *
-         * Any errors occured (invalid address or already used port, for example)
+         * Any errors occurred (invalid address or already used port, for example)
          * will be reported through ec argument.
          *
          * **Implementation Note**
@@ -69,16 +73,32 @@ namespace libwire::tcp {
          * socket API.
          */
         void listen(address local_address, uint16_t port,
-                    std::error_code& ec, unsigned backlog = max_backlog);
+                    std::error_code& ec,
+                    unsigned backlog = internal_::socket::max_pending_connections) noexcept;
 
         /**
          * Accept first connection from listener queue and create
          * socket for it.
          *
-         * Any errors occured (open sockets limit hit, for example)
+         * Any errors occurred (open sockets limit hit, for example)
          * will be reported through ec argument.
          */
-        socket accept(std::error_code& ec);
+        socket accept(std::error_code& ec) noexcept;
+
+#ifdef __cpp_exceptions
+        /**
+         * Same as overload with error code but throws std::system_error
+         * instead of setting error code argument.
+         */
+        socket accept();
+
+        /**
+         * Same as overload with error code but throws std::system_error
+         * instead of setting error code argument.
+         */
+        void listen(address local_address, uint16_t port,
+                    unsigned backlog = internal_::socket::max_pending_connections);
+#endif // ifdef __cpp_exceptions
 
     private:
         internal_::socket implementation;

@@ -34,9 +34,12 @@ namespace libwire::dns {
      *
      * \note Numeric IP addresses is accepted too and will be just copied
      * to output.
-     *
-     * \warning Currently error handling is broken, use ec only for success
-     * check, no precise error code reported.
      */
-    std::vector<address> resolve(ip protocol, const std::string_view& domain, std::error_code& ec);
+    std::vector<address> resolve(ip protocol, const std::string_view& domain, std::error_code& ec) noexcept;
+
+    /**
+     * Same as overload with error code but throws std::system_error instead of
+     * setting error code.
+     */
+    std::vector<address> resolve(ip protocol, const std::string_view& domain);
 } // namespace libwire::dns

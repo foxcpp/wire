@@ -9,7 +9,7 @@
 namespace libwire::internal_ {
     unsigned socket::max_pending_connections = SOMAXCONN;
 
-    socket::socket(ip net_proto, transport transport, std::error_code& ec) {
+    socket::socket(ip net_proto, transport transport, std::error_code& ec) noexcept {
         int domain;
         switch (net_proto) {
         case ip::v4: domain = AF_INET; break;
@@ -49,7 +49,7 @@ namespace libwire::internal_ {
         if (fd != not_initialized) close(fd);
     }
 
-    void socket::shutdown(bool read, bool write) {
+    void socket::shutdown(bool read, bool write) noexcept {
         assert(fd != not_initialized);
 
         int how = 0;
@@ -65,7 +65,7 @@ namespace libwire::internal_ {
         }
     }
 
-    void socket::connect(address target, uint16_t port, std::error_code& ec) {
+    void socket::connect(address target, uint16_t port, std::error_code& ec) noexcept {
         assert(fd != not_initialized);
 
         struct sockaddr_in address;
@@ -79,7 +79,7 @@ namespace libwire::internal_ {
         }
     }
 
-    void socket::bind(uint16_t port, address interface_address, std::error_code& ec) {
+    void socket::bind(uint16_t port, address interface_address, std::error_code& ec) noexcept {
         assert(fd != not_initialized);
 
         sockaddr_in address {};
@@ -93,7 +93,7 @@ namespace libwire::internal_ {
         }
     }
 
-    void socket::listen(int backlog, std::error_code& ec) {
+    void socket::listen(int backlog, std::error_code& ec) noexcept {
         assert(fd != not_initialized);
 
         int status = ::listen(fd, backlog);
@@ -102,7 +102,7 @@ namespace libwire::internal_ {
         }
     }
 
-    socket socket::accept(std::error_code& ec) {
+    socket socket::accept(std::error_code& ec) noexcept {
         assert(fd != not_initialized);
 
         int accepted_fd = ::accept(fd, nullptr, nullptr);
@@ -122,7 +122,7 @@ namespace libwire::internal_ {
     #define IO_FLAGS 0
 #endif
 
-    size_t socket::write(const void* input, size_t length_bytes, std::error_code& ec) {
+    size_t socket::write(const void* input, size_t length_bytes, std::error_code& ec) noexcept {
         assert(fd != not_initialized);
 
         ssize_t actually_written = ::send(fd, input, length_bytes, IO_FLAGS);
@@ -133,7 +133,7 @@ namespace libwire::internal_ {
         return actually_written;
     }
 
-    size_t socket::read(void* output, size_t length_bytes, std::error_code& ec) {
+    size_t socket::read(void* output, size_t length_bytes, std::error_code& ec) noexcept {
         assert(fd != not_initialized);
 
         ssize_t actually_readen = ::recv(fd, output, length_bytes, IO_FLAGS);
@@ -144,7 +144,7 @@ namespace libwire::internal_ {
         return actually_readen;
     }
 
-    socket::operator bool() const {
+    socket::operator bool() const noexcept {
         return fd != not_initialized;
     }
 } // namespace libwire::internal_

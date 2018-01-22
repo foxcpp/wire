@@ -41,7 +41,7 @@ namespace libwire::tcp {
          * This is done to allow socket to be constructed without
          * knowing remote endpoint IP version ahead-of-time.
          */
-        socket() = default;
+        socket() noexcept = default;
 
         /**
          * Initialize socket from underlying raw handle.
@@ -49,13 +49,13 @@ namespace libwire::tcp {
          * Used by tcp::listener for accept() function.
          * **Not part of the public API.**
          */
-        socket(internal_::socket&& i) : implementation(std::move(i)) {}
+        socket(internal_::socket&& i) noexcept : implementation(std::move(i)) {}
 
         socket(const socket&) = delete;
-        socket(socket&&) = default;
+        socket(socket&&) noexcept = default;
 
         socket& operator=(const socket&) = delete;
-        socket& operator=(socket&&) = default;
+        socket& operator=(socket&&) noexcept = default;
 
         /**
          * Shutdown and then close socket.
@@ -68,7 +68,7 @@ namespace libwire::tcp {
          * \note If connect() called for already connected socket if
          * active connection will be closed by close() call.
          */
-        void connect(address, uint16_t port, std::error_code& ec);
+        void connect(address, uint16_t port, std::error_code& ec) noexcept;
 
         /**
          * Shutdown reading/writing part of full-duplex connection
@@ -83,7 +83,7 @@ namespace libwire::tcp {
          * \note Socket can't be reused after shutdown, i.e.
          * you can't do connect() after shutdown().
          */
-        void shutdown(bool read = true, bool write = true);
+        void shutdown(bool read = true, bool write = true) noexcept;
 
         /**
          * Close and destroy underlying socket.
@@ -97,43 +97,80 @@ namespace libwire::tcp {
          * function will **forcibly** close the connection (RST will
          * be sent).
          */
-        void close();
+        void close() noexcept;
 
         /**
-         * Reads up to bytes_count bytes from socket into buffer passed by
+         * Read up to bytes_count bytes from socket into buffer passed by
          * reference. Buffer will be resized to actual count of bytes
          * received.
          *
-         * ec will be set to error code if anything went wrong, buffer
+         * Error code will be set to error code if anything went wrong, buffer
          * will be resized to 0 elements.
          *
          * **Buffer type requirements:**
          *
          * Buffer must be container that encapsulates dynamic array,
-         * so it must have data() and size() member functions with
-         * same behavior as std::vector::data() and std::vector::size()
+         * so it must have data, size and resize member functions with
+         * behavior as in std::vector.
          */
         template<typename Buffer = std::vector<uint8_t>>
-        Buffer& read(size_t bytes_count, Buffer&, std::error_code& ec);
+        Buffer& read(size_t bytes_count, Buffer&, std::error_code&) noexcept;
+
+        /**
+         * Same as overload with Buffer argument but return newly allocated
+         * buffer every time.
+         */
+        template<typename Buffer = std::vector<uint8_t>>
+        Buffer read(size_t bytes_count, std::error_code&) noexcept;
 
         /**
          * Write contents of buffer to socket.
          *
+         * Error code will be set if anything went wrong.
+         *
+         * Returns actual amount of bytes written, usually same as
+         * buffer size unless socket is in non-blocking mode.
+         *
          * **Buffer type requirements**
          *
          * Buffer must be container that encapsulates dynamic array,
-         * so it must have data() and size() member functions with
-         * same behavior as std::vector::data() and std::vector::size()
+         * so it must have data and size member functions with
+         * behavior as in std::vector.
          */
-        template<typename Buffer>
-        size_t write(const Buffer&, std::error_code&);
+        template<typename Buffer = std::vector<uint8_t>>
+        size_t write(const Buffer&, std::error_code&) noexcept;
+
+#ifdef __cpp_exceptions
+        /**
+         * Same as overload with error code but throws std::system_error
+         * instead of setting error code argument.
+         */
+        void connect(address, uint16_t port);
+
+        /**
+         * Same as overload with error code but throws std::system_error
+         * instead of setting error code argument.
+         */
+        template<typename Buffer = std::vector<uint8_t>>
+        Buffer& read(size_t bytes_count, Buffer&);
+
+        template<typename Buffer = std::vector<uint8_t>>
+        Buffer read(size_t bytes_count);
+
+        /**
+         * Same as overload with error code but throws std::system_error
+         * instead of setting error code argument.
+         */
+        template<typename Buffer = std::vector<uint8_t>>
+        size_t write(const Buffer&);
+#endif // ifdef __cpp_exceptions
 
     private:
         internal_::socket implementation;
     };
 
     template<typename Buffer>
-    Buffer& socket::read(size_t bytes_count, Buffer& output, std::error_code& ec) {
+    Buffer& socket::read(size_t bytes_count, Buffer& output, std::error_code& ec) noexcept {
         static_assert(sizeof(std::remove_pointer_t<decltype(output.data())>) == sizeof(uint8_t),
                       "socket::read can't be used with container with non-byte elements");
 
@@ -148,11 +185,20 @@ namespace libwire::tcp {
         return output;
     }
 
+    template<typename Buffer>
+    Buffer socket::read(size_t bytes_count, std::error_code& ec) noexcept {
+        Buffer buffer{};
+        return read(bytes_count, buffer, ec);
+    }
+
+    extern template std::vector<uint8_t> socket::read(size_t, std::error_code&);
+    extern template std::string socket::read(size_t, std::error_code&);
+
     extern template std::vector<uint8_t>& socket::read(size_t, std::vector<uint8_t>&, std::error_code&);
     extern template std::string& socket::read(size_t, std::string&, std::error_code&);
 
     template<typename Buffer>
-    size_t socket::write(const Buffer& input, std::error_code& ec) {
+    size_t socket::write(const Buffer& input, std::error_code& ec) noexcept {
         static_assert(sizeof(std::remove_pointer_t<decltype(input.data())>) == sizeof(uint8_t),
                       "socket::write can't be used with container with non-byte elements");
 
@@ -161,4 +207,37 @@ namespace libwire::tcp {
 
     extern template size_t socket::write(const std::vector<uint8_t>&, std::error_code&);
     extern template size_t socket::write(const std::string&, std::error_code&);
+
+#ifdef __cpp_exceptions
+    template<typename Buffer>
+    Buffer& socket::read(size_t bytes_count, Buffer& output) {
+        std::error_code ec;
+        auto res = read(bytes_count, output, ec);
+        if (ec) throw std::system_error(ec);
+        return output;
+    }
+
+    template<typename Buffer>
+    Buffer socket::read(size_t bytes_count) {
+        Buffer buffer{};
+        return read(bytes_count, buffer);
+    }
+
+    extern template std::vector<uint8_t>& socket::read(size_t, std::vector<uint8_t>&);
+    extern template std::string& socket::read(size_t, std::string&);
+
+    extern template std::vector<uint8_t> socket::read(size_t);
+    extern template std::string socket::read(size_t);
+
+    template<typename Buffer>
+    size_t socket::write(const Buffer& input) {
+        std::error_code ec;
+        size_t res = write(input, ec);
+        if (ec) throw std::system_error(ec);
+        return res;
+    }
+
+    extern template size_t socket::write(const std::vector<uint8_t>&);
+    extern template size_t socket::write(const std::string&);
+#endif // ifdef __cpp_exceptions
 } // namespace libwire::tcp

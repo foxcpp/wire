@@ -46,7 +46,7 @@ namespace libwire::internal_ {
         /**
          * Construct handle without allocating socket.
          */
-        socket() = default;
+        socket() noexcept = default;
 
         explicit socket(int fd) : fd(fd) {}
 
@@ -54,7 +54,7 @@ namespace libwire::internal_ {
          * Allocate new socket with specified family (network protocol)
          * and socket type (transport protocol).
          */
-        socket(ip ipver, transport transport, std::error_code& ec);
+        socket(ip ipver, transport transport, std::error_code& ec) noexcept;
 
         socket(const socket&) = delete;
         socket(socket&&) noexcept;
@@ -72,18 +72,18 @@ namespace libwire::internal_ {
          * Connect socket to remote endpoint, set ec if any error
          * occured.
          */
-        void connect(address target, uint16_t port, std::error_code& ec);
+        void connect(address target, uint16_t port, std::error_code& ec) noexcept;
 
         /**
          * Shutdown read/write parts of full-duplex connection.
          */
-        void shutdown(bool read = true, bool write = true);
+        void shutdown(bool read = true, bool write = true) noexcept;
 
         /**
          * Bind socket to local port using interface specified in interface_address,
          * set ec if any error occured.
          */
-        void bind(uint16_t port, address interface_address, std::error_code& ec);
+        void bind(uint16_t port, address interface_address, std::error_code& ec) noexcept;
 
         /**
          * Start accepting connections on this listener socket.
@@ -91,30 +91,30 @@ namespace libwire::internal_ {
          * backlog is a hint for underlying implementation it can use
          * to limit number of pending connections in socket's queue.
          */
-        void listen(int backlog, std::error_code& ec);
+        void listen(int backlog, std::error_code& ec) noexcept;
 
         /**
          * Extract and accept first connection from queue and create socket for it,
          * set ec if any error occured.
          */
-        socket accept(std::error_code& ec);
+        socket accept(std::error_code& ec) noexcept;
 
         /**
          * Write length_bytes from input to socket, set ec if any error
          * occured and return real count of data written.
          */
-        size_t write(const void* input, size_t length_bytes, std::error_code& ec);
+        size_t write(const void* input, size_t length_bytes, std::error_code& ec) noexcept;
 
         /**
          * Read up to length_bytes from input to socket, set ec if any error
          * occured and return real count of data readen.
          */
-        size_t read(void* output, size_t length_bytes, std::error_code& ec);
+        size_t read(void* output, size_t length_bytes, std::error_code& ec) noexcept;
 
         /**
          * Allows to check whether socket is intialized and can be operated on.
          */
-        operator bool() const;
+        operator bool() const noexcept;
 
         static constexpr int not_initialized = -1;
         int fd = not_initialized;

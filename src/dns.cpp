@@ -31,7 +31,7 @@
 #endif
 
 namespace libwire::dns {
-    std::vector<address> resolve(ip protocol, const std::string_view& domain, std::error_code& ec) {
+    std::vector<address> resolve(ip protocol, const std::string_view& domain, std::error_code& ec) noexcept {
 #ifdef _POSIX_VERSION
         addrinfo hints {};
         memset(&hints, 0x00, sizeof(hints));
@@ -67,5 +67,12 @@ namespace libwire::dns {
 #else
     #error "libwire doesn't supports your platform. :("
 #endif
+    }
+
+    std::vector<address> resolve(ip protocol, const std::string_view& domain) {
+        std::error_code ec;
+        auto res = resolve(protocol, domain, ec);
+        if (ec) throw std::system_error(ec);
+        return res;
     }
 } // namespace libwire::dns
