@@ -7,7 +7,9 @@ set(LIBWIRE_SOURCES
     internal/endianess.cpp
     tcp/socket.cpp
     tcp/listener.cpp
-    error.cpp)
+    error.cpp
+    memory_view.cpp
+    )
 
 set(LIBWIRE_POSIX_SOURCES
     internal/posix_socket.cpp
