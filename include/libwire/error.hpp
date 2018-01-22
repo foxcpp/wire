@@ -85,7 +85,7 @@ namespace libwire::error {
          * \note std::error_code::message may still return
          * readable description.
          */
-        unknown,
+        unknown = 255,
 
         /**
          * Error code that should not occur on normal library
@@ -94,7 +94,7 @@ namespace libwire::error {
          * Report it as a bug with std::error_code:message
          * output.
          */
-        unexpected,
+        unexpected = 254,
 
         /**
          * Invalid argument passed to function.
@@ -103,7 +103,7 @@ namespace libwire::error {
          * platform error codes so you can use it to detect
          * any invalid argument.
          */
-        invalid_argument,
+        invalid_argument = 1,
 
         /**
          * Access to **resource** disallowed.
@@ -254,6 +254,12 @@ namespace libwire::error {
          * Requested host doesn't exists.
          */
         host_not_found,
+
+        /**
+         * Requested host doesn't exists, but DNS server answer is
+         * non-authoritative.
+         */
+        host_not_found_try_again,
 
         /**
          * Requested host exists, but does not have any addresses

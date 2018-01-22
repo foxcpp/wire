@@ -33,7 +33,32 @@ std::string libwire::internal_::posix_dns_category::message(int code) const noex
 }
 
 std::error_condition libwire::internal_::posix_dns_category::default_error_condition(int code) const noexcept {
-    return std::error_condition(libwire::error::unknown, *this);
+    if (code == 0) {
+        return std::error_condition(error::success, error::system_category());
+    }
+
+    if (code == EAI_AGAIN) {
+        return std::error_condition(error::host_not_found_try_again, error::dns_category());
+    }
+
+    // We can safetly define then to 0 because first branch cuts away
+    // real success value.
+#ifndef EAI_NODATA
+    #define EAI_NODATA 0
+#endif
+#ifndef EAI_ADDRFAMILY
+    #define EAI_ADDRFAMILY 0
+#endif
+
+    if (code == EAI_NODATA || code == EAI_ADDRFAMILY) {
+        return std::error_condition(error::no_address, error::dns_category());
+    }
+
+    if (code == EAI_BADFLAGS || code == EAI_SERVICE || code == EAI_SOCKTYPE) {
+        return std::error_condition(error::unexpected, error::system_category());
+    }
+
+    return std::error_condition(error::unknown, error::system_category());
 }
 
 bool libwire::internal_::posix_dns_category::equivalent(int code, const std::error_condition& condition) const noexcept {
@@ -42,7 +67,7 @@ bool libwire::internal_::posix_dns_category::equivalent(int code, const std::err
     }
 
     if (code == EAI_AGAIN) {
-        return condition.value() == error::try_again;
+        return condition.value() == error::host_not_found_try_again;
     }
 
     // We can safetly define then to 0 because first branch cuts away
