@@ -8,3 +8,6 @@ endmacro()
 
 libwire_test(endianess      internal/endianess.cpp)
 libwire_test(address        address.cpp)
+
+add_custom_target(tests)
+add_dependencies(tests endianess address)

@@ -31,23 +31,39 @@ add_subdirectory(src/)
 
 option(LIBWIRE_TESTS "Enable tests" OFF)
 
+add_subdirectory(external/gtest/googletest EXCLUDE_FROM_ALL)
+
 if(LIBWIRE_TESTS)
-    add_subdirectory(external/gtest/googletest EXCLUDE_FROM_ALL)
-    enable_testing()
     add_subdirectory(test)
+else()
+    add_subdirectory(test EXCLUDE_FROM_ALL)
 endif()
 
 #------------------------------------------------------------------------------
 # Examples
 
-add_subdirectory(examples/ EXCLUDE_FROM_ALL)
+option(LIBWIRE_EXAMPLES "Build examples" OFF)
+
+if(LIBWIRE_EXAMPLES)
+    add_subdirectory(examples/)
+else()
+    add_subdirectory(examples/ EXCLUDE_FROM_ALL)
+endif()
 
 #------------------------------------------------------------------------------
 # Documentation (Doxygen)
 
 find_package(Doxygen)
 
-if(DOXYGEN_FOUND)
-    add_subdirectory(docs/ EXCLUDE_FROM_ALL)
-endif()
+option(LIBWIRE_DOCS "Build documentation (requires Doxygen)" OFF)
 
+if(LIBWIRE_DOCS)
+    if(NOT DOXYGEN_FOUND)
+        message(FATAL "Doxygen is required to build documentation.")
+    endif()
+    add_subdirectory(docs/)
+else()
+    if(DOXYGEN_FOUND)
+        add_subdirectory(docs/ EXCLUDE_FROM_ALL)
+    endif()
+endif()
