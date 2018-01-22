@@ -26,6 +26,13 @@ find_package(Threads REQUIRED)
 
 add_subdirectory(src/)
 
+option(LIBWIRE_WSTRICT "Extra warnings (Clang-only)" OFF)
+
+if(LIBWIRE_WSTRICT)
+    target_compile_options(libwire PUBLIC -Wall -Wextra -pedantic -Wdocumentation
+        -Wconversion -Wdeprecated -Wformat -Weffc++)
+endif()
+
 #------------------------------------------------------------------------------
 # Tests
 
@@ -34,9 +41,9 @@ option(LIBWIRE_TESTS "Enable tests" OFF)
 add_subdirectory(external/gtest/googletest EXCLUDE_FROM_ALL)
 
 if(LIBWIRE_TESTS)
-    add_subdirectory(test)
+    add_subdirectory(test/)
 else()
-    add_subdirectory(test EXCLUDE_FROM_ALL)
+    add_subdirectory(test/ EXCLUDE_FROM_ALL)
 endif()
 
 #------------------------------------------------------------------------------

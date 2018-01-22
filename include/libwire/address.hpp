@@ -25,6 +25,7 @@
 #include <cstdint>
 #include <array>
 #include <string_view>
+#include <string>
 #include <libwire/protocols.hpp>
 
 namespace libwire {

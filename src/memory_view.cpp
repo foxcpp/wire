@@ -21,6 +21,7 @@
  */
 
 #include "libwire/memory_view.hpp"
+#include <stdexcept>
 
 namespace libwire {
     memory_view::memory_view() noexcept

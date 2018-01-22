@@ -23,6 +23,7 @@
 #pragma once
 
 #include <system_error>
+#include <string>
 #include <libwire/error.hpp>
 
 /**

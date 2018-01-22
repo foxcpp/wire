@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+#include "gtest.hpp"
 #include <libwire/address.hpp>
 
 TEST(IPv4Address, VersionInitialization) {

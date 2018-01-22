@@ -1,6 +1,7 @@
 libwire
 =========
 
+[![Travis CI](https://img.shields.io/travis/foxcpp/wire.svg?style=flat-square)](https://travis-ci.org/foxcpp/wire)
 [![Latest Release](https://img.shields.io/github/release/foxcpp/wire.svg?style=flat-square)](https://github.com/foxcpp/wire/releases/latest)
 [![Issues](https://img.shields.io/github/issues-raw/foxcpp/wire.svg?style=flat-square)](https://github.com/foxcpp/wire/issues)
 [![License](https://img.shields.io/github/license/foxcpp/wire.svg?style=flat-square)](https://github.com/foxcpp/wire/blob/master/LICENSE)

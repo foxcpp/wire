@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+#include "../gtest.hpp"
 #include "libwire/internal/endianess.hpp"
 
 TEST(ImplEndianess, Uint16Flip) {

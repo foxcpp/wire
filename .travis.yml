@@ -1,0 +1,31 @@
+language: cpp
+dist: trusty
+sudo: false
+
+branches:
+  only:
+  - master
+  - dev
+
+addons:
+  apt:
+    packages:
+    - doxygen
+
+script:
+- export CXX=clang++
+- export CXXFLAGS="-stdlib=libc++ -O1 -g -fsanitize=address,undefined -fno-omit-frame-pointer -fno-optimize-sibling-calls"
+- mkdir build
+- cd build
+- cmake .. -G 'Unix Makefiles' -DLIBWIRE_TESTS=ON -DLIBWIRE_EXAMPLES=ON -DLIBWIRE_DOCS=ON -DLIBWIRE_WSTRICT=ON
+- cmake --build . --target all
+- cmake --build . --target test
+
+deploy:
+  provider: pages
+  skip-cleanup: true
+  github-token: $GITHUB_TOKEN
+  local-dir: doxygen_output/
+  on:
+    branch: dev
+
