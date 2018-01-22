@@ -25,7 +25,7 @@ namespace libwire::internal_ {
         fd = ::socket(domain, type, protocol);
         if (fd < 0) {
             ec = std::error_code(errno, error::system_category());
-            return;
+            assert(ec != error::unexpected);
         }
 
 #if SO_NOSIGPIPE
@@ -76,6 +76,7 @@ namespace libwire::internal_ {
         int status = ::connect(fd, reinterpret_cast<sockaddr*>(&address), sizeof(address));
         if (status < 0) {
             ec = std::error_code(errno, error::system_category());
+            assert(ec != error::unexpected);
         }
     }
 
@@ -90,6 +91,7 @@ namespace libwire::internal_ {
         int status = ::bind(fd, reinterpret_cast<sockaddr*>(&address), sizeof(address));
         if (status < 0) {
             ec = std::error_code(errno, error::system_category());
+            assert(ec != error::unexpected);
         }
     }
 
@@ -99,6 +101,7 @@ namespace libwire::internal_ {
         int status = ::listen(fd, backlog);
         if (status < 0) {
             ec = std::error_code(errno, error::system_category());
+            assert(ec != error::unexpected);
         }
     }
 
@@ -110,6 +113,7 @@ namespace libwire::internal_ {
 
         if (accepted_fd < 0) {
             ec = std::error_code(errno, error::system_category());
+            assert(ec != error::unexpected);
             return socket();
         }
 
@@ -128,6 +132,7 @@ namespace libwire::internal_ {
         ssize_t actually_written = ::send(fd, input, length_bytes, IO_FLAGS);
         if (actually_written < 0) {
             ec = std::error_code(errno, error::system_category());
+            assert(ec != error::unexpected);
             return 0;
         }
         return actually_written;
@@ -139,6 +144,7 @@ namespace libwire::internal_ {
         ssize_t actually_readen = ::recv(fd, output, length_bytes, IO_FLAGS);
         if (actually_readen < 0) {
             ec = std::error_code(errno, error::system_category());
+            assert(ec != error::unexpected);
             return 0;
         }
         return actually_readen;

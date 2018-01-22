@@ -262,6 +262,10 @@ namespace libwire::error {
         no_address,
     };
 
+    std::error_condition make_error_condition(generic);
+    std::error_condition make_error_condition(system_condition);
+    std::error_condition make_error_condition(dns_condition);
+
     /**
      * Obtain reference to static instance of category for
      * DNS errors. name() will be "dns".

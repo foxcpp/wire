@@ -45,6 +45,7 @@ namespace libwire::dns {
                 ec = std::error_code(errno, error::system_category());
             }
             ec = std::error_code(status, error::dns_category());
+            assert(ec != error::unexpected);
             return {};
         }
 

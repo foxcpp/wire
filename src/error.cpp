@@ -41,5 +41,17 @@ namespace libwire::error {
         return cat;
 #endif
     }
+
+    std::error_condition make_error_condition(generic val) {
+        return std::error_condition(int(val), system_category());
+    }
+
+    std::error_condition make_error_condition(system_condition val) {
+        return std::error_condition(int(val), system_category());
+    }
+
+    std::error_condition make_error_condition(dns_condition val) {
+        return std::error_condition(int(val), dns_category());
+    }
 } // namespace libwire
 
