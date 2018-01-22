@@ -28,7 +28,7 @@ namespace libwire::internal_ {
             assert(ec != error::unexpected);
         }
 
-#if SO_NOSIGPIPE
+#ifdef SO_NOSIGPIPE
         int one = 1;
         setsockopt(fd, SOL_SOCKET, SO_NOSIGPIPE, &one, sizeof(one));
 #endif
@@ -135,7 +135,7 @@ namespace libwire::internal_ {
             assert(ec != error::unexpected);
             return 0;
         }
-        return actually_written;
+        return size_t(actually_written);
     }
 
     size_t socket::read(void* output, size_t length_bytes, std::error_code& ec) noexcept {
@@ -147,7 +147,7 @@ namespace libwire::internal_ {
             assert(ec != error::unexpected);
             return 0;
         }
-        return actually_readen;
+        return size_t(actually_readen);
     }
 
     socket::operator bool() const noexcept {

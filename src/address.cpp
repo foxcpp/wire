@@ -43,7 +43,7 @@ namespace libwire {
             }
         }
 
-        success = inet_pton(family, sv.data(), parts.data());
+        success = bool(inet_pton(family, sv.data(), parts.data()));
         // ^ returns 1 on success, 0 otherwise.
 
         // For IPv4 we need to zero-rewrite parts not
@@ -59,10 +59,12 @@ namespace libwire {
     address::address(ip version, void* memory) {
         switch (version) {
         case ip::v4:
-            std::copy((uint8_t*)memory, (uint8_t*)memory + 4, parts.begin());
+            std::copy(static_cast<uint8_t*>(memory),
+                      static_cast<uint8_t*>(memory) + 4, parts.begin());
             break;
         case ip::v6:
-            std::copy((uint8_t*)memory, (uint8_t*)memory + 16, parts.begin());
+            std::copy(static_cast<uint8_t*>(memory),
+                      static_cast<uint8_t*>(memory) + 16, parts.begin());
             break;
         }
         this->version = version;
@@ -76,7 +78,7 @@ namespace libwire {
 
         const char* buf_ptr = inet_ntop(family, parts.data(),
                                         buffer.data(), buffer.size());
-        assert(buf_ptr != 0); // This function generally should not fail.
+        assert(buf_ptr != nullptr); // This function generally should not fail.
 
         return std::string(buffer.data());
 #else

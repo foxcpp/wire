@@ -17,7 +17,7 @@ int main(int argc, char** argv) {
 
     uint16_t port = 7;
     if (argc == 3) {
-        port = std::stoi(argv[2]);
+        port = uint16_t(std::stoi(argv[2]));
     }
 
     tcp::socket socket;

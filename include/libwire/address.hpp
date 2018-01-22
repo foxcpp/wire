@@ -56,7 +56,7 @@ namespace libwire {
          *
          * Defined as explicit because this is costly conversion.
          *
-         * \warnings Multiple consecutive zeros is NOT allowed
+         * \warning Multiple consecutive zeros is NOT allowed
          *  "000.0.11.11" will throw.
          */
         explicit address(const std::string_view& text_ip);
@@ -69,7 +69,7 @@ namespace libwire {
          * otherwise. Value of address is undefined if success is
          * false.
          *
-         * \warnings Multiple consecutive zeros is NOT allowed
+         * \warning Multiple consecutive zeros is NOT allowed
          *  "000.0.11.11" will set success to false.
          */
         address(const std::string_view& text_ip, bool& success);

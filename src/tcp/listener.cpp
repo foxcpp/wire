@@ -7,7 +7,7 @@ namespace libwire::tcp {
         if (ec) return;
         implementation.bind(port, local_address, ec);
         if (ec) return;
-        implementation.listen(max_backlog, ec);
+        implementation.listen(int(max_backlog), ec);
     }
 
     socket listener::accept(std::error_code& ec) noexcept {
