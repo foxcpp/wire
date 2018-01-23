@@ -6,8 +6,12 @@ macro(libwire_test name)
     add_test(NAME ${name} COMMAND ${name})
 endmacro()
 
-libwire_test(endianess      internal/endianess.cpp)
-libwire_test(address        address.cpp)
+libwire_test(util-tests
+    internal/endianess.cpp
+    address.cpp
+    main.cpp)
 
-add_custom_target(tests)
-add_dependencies(tests endianess address)
+add_custom_target(
+    check-utils
+    COMMAND util-tests
+    COMMENT "Running libwire utils tests")

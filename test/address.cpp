@@ -53,7 +53,3 @@ TEST(IPv6Address, FromString) {
     ASSERT_THROW(address(":00::000:1"), std::invalid_argument);
 }
 
-int main(int argc, char** argv) {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}

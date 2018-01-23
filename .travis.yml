@@ -17,9 +17,9 @@ script:
 - export CXXFLAGS="-stdlib=libc++ -O1 -g -fsanitize=address,undefined -fno-omit-frame-pointer -fno-optimize-sibling-calls"
 - mkdir build
 - cd build
-- cmake .. -G 'Unix Makefiles' -DLIBWIRE_TESTS=ON -DLIBWIRE_EXAMPLES=ON -DLIBWIRE_DOCS=ON -DLIBWIRE_WSTRICT=ON
+- cmake .. -DLIBWIRE_TESTS=ON -DLIBWIRE_EXAMPLES=ON -DLIBWIRE_DOCS=ON -DLIBWIRE_WSTRICT=ON
 - cmake --build . --target all
-- cmake --build . --target test
+- cmake --build . --target check-utils
 
 deploy:
   provider: pages
