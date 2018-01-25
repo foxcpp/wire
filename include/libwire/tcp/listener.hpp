@@ -24,7 +24,30 @@
 
 #include <libwire/tcp/socket.hpp>
 
+/*
+ * If you had to open this file to find answer for your question - we are so
+ * sorry. Please open issue with your question so we can update documentation
+ * to answer it.
+ */
+
 namespace libwire::tcp {
+    /**
+     * Restricted wrapper for TCP listening socket.
+     *
+     * "Restricted" because it exposes only API required for server.
+     * You can start listening on port using listen() method and accept
+     * connection from queue using accept() method.
+     *
+     * Quick usage example:
+     * ```cpp
+     * tcp::listener l{ipv4::any, 7777};
+     * auto sock = l.accept();
+     * ```
+     *
+     * #### Thread-safety
+     * * Distinct: safe
+     * * Same: unsafe
+     */
     class listener {
     public:
         /**
@@ -67,7 +90,7 @@ namespace libwire::tcp {
          * Any errors occurred (invalid address or already used port, for example)
          * will be reported through ec argument.
          *
-         * **Implementation Note**
+         * #### Implementation Note
          *
          * This function combines bind() and listen() of underlying
          * socket API.

@@ -86,7 +86,7 @@ namespace libwire::internal_ {
 
         /**
          * Connect socket to remote endpoint, set ec if any error
-         * occured.
+         * occurred.
          */
         void connect(address target, uint16_t port, std::error_code& ec) noexcept;
 
@@ -97,7 +97,7 @@ namespace libwire::internal_ {
 
         /**
          * Bind socket to local port using interface specified in interface_address,
-         * set ec if any error occured.
+         * set ec if any error occurred.
          */
         void bind(uint16_t port, address interface_address, std::error_code& ec) noexcept;
 
@@ -111,24 +111,24 @@ namespace libwire::internal_ {
 
         /**
          * Extract and accept first connection from queue and create socket for it,
-         * set ec if any error occured.
+         * set ec if any error occurred.
          */
         socket accept(std::error_code& ec) noexcept;
 
         /**
          * Write length_bytes from input to socket, set ec if any error
-         * occured and return real count of data written.
+         * occurred and return real count of data written.
          */
         size_t write(const void* input, size_t length_bytes, std::error_code& ec) noexcept;
 
         /**
          * Read up to length_bytes from input to socket, set ec if any error
-         * occured and return real count of data readen.
+         * occurred and return real count of data read.
          */
         size_t read(void* output, size_t length_bytes, std::error_code& ec) noexcept;
 
         /**
-         * Allows to check whether socket is intialized and can be operated on.
+         * Allows to check whether socket is initialized and can be operated on.
          */
         operator bool() const noexcept;
 

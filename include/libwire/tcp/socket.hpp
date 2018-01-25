@@ -31,7 +31,33 @@
     #error "libwire doesn't supports socket interface on your platform. :("
 #endif
 
+/*
+ * If you had to open this file to find answer for your question - we are so
+ * sorry. Please open issue with your question so we can update documentation
+ * to answer it.
+ */
+
+/**
+ * \file tcp/socket.hpp
+ *
+ * This file defines tcp::socket type, base class for outgoing TCP connections.
+ */
+
 namespace libwire::tcp {
+    /**
+     * Descriptor wrapper for TCP socket.
+     *
+     * TCP (Transmission Control Protocol) is a reliable, stream-oriented,
+     * connection-oriented transport protocol. It is especially well
+     * suited for continuous transmission of data.
+     *
+     * There is simplified graph of TCP socket states:
+     * \image html libwire-tcp-flow.png
+     *
+     * ##### Thread-safety
+     * * Distinct: safe
+     * * Same: unsafe
+     */
     class socket {
     public:
         /**

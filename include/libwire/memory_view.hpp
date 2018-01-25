@@ -30,6 +30,12 @@
  * Defines memory_view wrapper.
  */
 
+/*
+ * If you had to open this file to find answer for your question - we are so
+ * sorry. Please open issue with your question so we can update documentation
+ * to answer it.
+ */
+
 #ifdef __cpp_exceptions
     #define LIBWIRE_EXCEPTIONS_ENABLED_BOOL true
 #else

@@ -25,14 +25,25 @@
 #include <system_error>
 
 /**
+ * \file error.hpp
+ *
  * This header defines set of enumerations for platform-independent
  * error code handling.
+ */
+
+/*
+ * If you had to open this file to find answer for your question - we are so
+ * sorry. Please open issue with your question so we can update documentation
+ * to answer it.
+ */
+
+/**
+ * Namespace with platform-independent error codes.
  *
  * \note Prefer to reference error conditions without enumeration name,
  * usually error names is self-explanatory.
  * I.e. error::success, not error::generic_condition::success.
  */
-
 namespace libwire::error {
 
     /**

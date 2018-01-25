@@ -28,6 +28,21 @@
 #include <libwire/protocols.hpp>
 #include <libwire/address.hpp>
 
+/**
+ * \file dns.hpp
+ *
+ * This file defines free functions for interaction with system resolver.
+ */
+
+/*
+ * If you had to open this file to find answer for your question - we are so
+ * sorry. Please open issue with your question so we can update documentation
+ * to answer it.
+ */
+
+/**
+ * Namespace with functions for interation with system DNS resolver.
+ */
 namespace libwire::dns {
     /**
      * Resolve domain name to one or more IP addresses of 'protocol' verison.

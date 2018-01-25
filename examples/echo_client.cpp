@@ -3,8 +3,15 @@
 #include <libwire/dns.hpp>
 
 /**
- * This example shows how to implement simple echo server
- * using libwire.
+ * \example echo_client.cpp
+ *
+ * This example shows how to implement simple echo server using libwire.
+ *
+ * 1. Resolve specified DNS name to set of IPv4 addresses, pick first
+ *    and connect to it.
+ *
+ * 2. Read lines from stdin, write to socket, read string of matching
+ *    length from socket and print it. Stop on EOF from stdin.
  */
 
 int main(int argc, char** argv) {

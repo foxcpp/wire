@@ -72,7 +72,7 @@ namespace libwire::internal_ {
     void socket::connect(address target, uint16_t port, std::error_code& ec) noexcept {
         assert(fd != not_initialized);
 
-        struct sockaddr_in address;
+        struct sockaddr_in address{};
         address.sin_family = AF_INET;
         address.sin_port = host_to_network(port);
         address.sin_addr = *reinterpret_cast<in_addr*>(target.parts.data());
@@ -113,7 +113,7 @@ namespace libwire::internal_ {
         assert(fd != not_initialized);
 
         int accepted_fd = ::accept(fd, nullptr, nullptr);
-        // TODO: Allow to get client address.
+        // TODO (PR's welcomed): Allow to get client address.
 
         if (accepted_fd < 0) {
             ec = std::error_code(errno, error::system_category());
