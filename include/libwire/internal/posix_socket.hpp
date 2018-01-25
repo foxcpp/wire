@@ -41,7 +41,21 @@ namespace libwire::internal_ {
      * etc...
      */
     struct socket {
+#ifdef __unix__
+        using native_handle_t = int;
+#else
+        using native_handle_t = void*;
+#endif
+
         static unsigned max_pending_connections;
+
+        /**
+         * Constant native_handle() can be compared against to
+         * check whether socket handle refers to alive socket.
+         *
+         * \note Prefer to use operator bool() for this check.
+         */
+        static constexpr native_handle_t not_initialized = -1;
 
         /**
          * Construct handle without allocating socket.
@@ -67,6 +81,8 @@ namespace libwire::internal_ {
          * May block if there are unsent data left.
          */
         ~socket();
+
+        native_handle_t native_handle() const noexcept;
 
         /**
          * Connect socket to remote endpoint, set ec if any error
@@ -116,7 +132,7 @@ namespace libwire::internal_ {
          */
         operator bool() const noexcept;
 
-        static constexpr int not_initialized = -1;
+    private:
         int fd = not_initialized;
     };
 }

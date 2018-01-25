@@ -23,6 +23,7 @@
 #include <cstdint>
 #include <system_error>
 #include <vector>
+#include <libwire/error.hpp>
 
 #ifdef __unix__
     #include <libwire/internal/posix_socket.hpp>
@@ -61,6 +62,62 @@ namespace libwire::tcp {
          * Shutdown and then close socket.
          */
         ~socket();
+
+        /**
+         * Get native handle/descriptor for socket.
+         *
+         * Returned value is undefined if is_open() = false.
+         */
+        internal_::socket::native_handle_t native_handle() const noexcept;
+
+        /**
+         * Check whether underlying socket is open.
+         *
+         * \warning Even if is_open() returns true connection may be in
+         * "half-open" state. Remote side possibly already called close()
+         * and destroyed socket. In this case your next attempt to perform
+         * I/O will result in broken_pipe/connection_reset/etc error (generic
+         * for these errors is error::generic::disconnected).
+         */
+        bool is_open() const;
+
+        /**
+         * Query socket option value specified by type tag Option.
+         *
+         * Example:
+         * ```cpp
+         * socket.option(tcp::no_delay); // => false by default.
+         *
+         * // Some options May have multiple values returned in tuple.
+         * auto [ enabled, timeout ] = socket.option(tcp::linger);
+         * ```
+         */
+        template<typename Option>
+        auto option(const Option& /* tag */) const noexcept {
+            return Option::get(*this);
+        }
+
+        /**
+         * Set socket option value specified by type tag Option to
+         * value value.
+         *
+         * Setting option not supported on current platform or specifying
+         * invalid value results in undefined behavior. But usually new value
+         * just ignored and corresponding option(tag) will return old value.
+         *
+         * Example:
+         * ```cpp
+         * socket.set_option(tcp::no_delay, true);
+         *
+         * // Some options may have multiple values:
+         * socket.set_option(tcp::linger, true, 20s);
+         * // ^ enable linger with 20 seconds timeout.
+         * ```
+         */
+        template<typename Option, typename... Args>
+        void set_option(const Option& /* tag */, Args&&... args) noexcept {
+            Option::set(*this, {std::forward<Args>(args)...});
+        }
 
         /**
          * Initialize underlying socket and connect to remote endpoint.
@@ -167,6 +224,9 @@ namespace libwire::tcp {
 
     private:
         internal_::socket implementation;
+
+        // Used as internal socket state tracker.
+        bool open = false;
     };
 
     template<typename Buffer>
@@ -178,6 +238,7 @@ namespace libwire::tcp {
         output.resize(bytes_count);
 
         size_t bytes_received = implementation.read(output.data(), bytes_count, ec);
+        open = (ec != error::generic::disconnected);
 
         // Resize buffer to actual received size (implementtion returns 0 if error occured).
         output.resize(bytes_received);
@@ -202,7 +263,9 @@ namespace libwire::tcp {
         static_assert(sizeof(std::remove_pointer_t<decltype(input.data())>) == sizeof(uint8_t),
                       "socket::write can't be used with container with non-byte elements");
 
-        return implementation.write(input.data(), input.size(), ec);
+        auto res = implementation.write(input.data(), input.size(), ec);
+        open = (ec != error::generic::disconnected);
+        return res;
     }
 
     extern template size_t socket::write(const std::vector<uint8_t>&, std::error_code&);

@@ -90,8 +90,8 @@ namespace libwire {
          */
         std::string to_string() const;
 
-        bool operator==(const address&) const;
-        bool operator!=(const address&) const;
+        bool operator==(const address&) const noexcept;
+        bool operator!=(const address&) const noexcept;
 
         ip version;
         std::array<uint8_t, 16> parts;

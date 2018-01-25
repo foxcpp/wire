@@ -49,6 +49,10 @@ namespace libwire::internal_ {
         if (fd != not_initialized) close(fd);
     }
 
+    socket::native_handle_t socket::native_handle() const noexcept {
+        return fd;
+    }
+
     void socket::shutdown(bool read, bool write) noexcept {
         assert(fd != not_initialized);
 

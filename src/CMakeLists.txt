@@ -15,6 +15,7 @@ set(LIBWIRE_POSIX_SOURCES
     internal/posix_socket.cpp
     internal/error/posix_dns_category.cpp
     internal/error/posix_system_category.cpp
+    tcp/posix_options.cpp
     )
 
 if(UNIX)

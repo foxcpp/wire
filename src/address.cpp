@@ -86,11 +86,11 @@ namespace libwire {
 #endif
     }
 
-    bool address::operator==(const address& o) const {
+    bool address::operator==(const address& o) const noexcept {
         return version == o.version && parts == o.parts;
     }
 
-    bool address::operator!=(const address& o) const {
+    bool address::operator!=(const address& o) const noexcept {
         return version == o.version && parts != o.parts;
     }
 } // namespace libwire
