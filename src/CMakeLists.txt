@@ -3,7 +3,6 @@ set(CMAKE_STATIC_LIBRARY_PREFIX "")
 
 set(LIBWIRE_SOURCES
     address.cpp
-    dns.cpp
     internal/endianess.cpp
     tcp/socket.cpp
     tcp/listener.cpp
@@ -15,6 +14,7 @@ set(LIBWIRE_POSIX_SOURCES
     internal/posix_socket.cpp
     internal/error/posix_dns_category.cpp
     internal/error/posix_system_category.cpp
+    posix_dns.cpp
     tcp/posix_options.cpp
     )
 

@@ -20,23 +20,14 @@
  * SOFTWARE.
  */
 
-#include "libwire/dns.hpp"
+#include "libwire/posix_dns.hpp"
 #include "libwire/error.hpp"
-
-#if __has_include(<unistd.h>)
-    #include <unistd.h>
-    #include <netdb.h>
-    #include <cstring>
-    #include <cassert>
-#endif
+#include <cstring>
+#include <cassert>
+#include <netdb.h>
 
 namespace libwire::dns {
     std::vector<address> resolve(ip protocol, const std::string_view& domain, std::error_code& ec) noexcept {
-#ifdef _POSIX_VERSION
-        addrinfo hints {};
-        memset(&hints, 0x00, sizeof(hints));
-        hints.ai_family = (protocol == ip::v4) ? AF_INET : AF_INET6;
-
         addrinfo* result_raw = nullptr;
 
         int status = getaddrinfo(domain.data(), nullptr, nullptr, &result_raw);
@@ -56,18 +47,18 @@ namespace libwire::dns {
 
             assert(entry->ai_family == AF_INET || entry->ai_family == AF_INET6);
 
-            if (entry->ai_family == AF_INET) {
+            if (entry->ai_socktype != SOCK_STREAM) continue;
+            if (entry->ai_protocol != IPPROTO_TCP) continue;
+
+            if (entry->ai_family == AF_INET && protocol == ip::v4) {
                 result.emplace_back(ip::v4, &(reinterpret_cast<sockaddr_in*>(entry->ai_addr))->sin_addr);
-            } else if (entry->ai_family == AF_INET6) {
+            } else if (entry->ai_family == AF_INET6 && protocol == ip::v6) {
                 result.emplace_back(ip::v6, &(reinterpret_cast<sockaddr_in6*>(entry->ai_addr))->sin6_addr);
             }
         }
 
         freeaddrinfo(result_raw);
         return result;
-#else
-    #error "libwire doesn't supports your platform. :("
-#endif
     }
 
     std::vector<address> resolve(ip protocol, const std::string_view& domain) {

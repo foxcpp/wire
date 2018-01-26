@@ -1,6 +1,6 @@
 #include <iostream>
 #include <libwire/tcp/socket.hpp>
-#include <libwire/dns.hpp>
+#include <libwire/posix_dns.hpp>
 
 /**
  * \example echo_client.cpp

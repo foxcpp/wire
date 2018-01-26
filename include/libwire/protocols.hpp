@@ -24,12 +24,12 @@
 
 namespace libwire {
     enum class ip {
-        v4,
-        v6,
+        v4 = 1<<1,
+        v6 = 1<<2,
     };
 
     enum class transport {
-        tcp,
-        udp
+        tcp = 1<<3,
+        udp = 1<<4
     };
 } // namespace libwire
