@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-#include "libwire/posix_dns.hpp"
+#include "libwire/dns.hpp"
 #include "libwire/error.hpp"
 #include <cstring>
 #include <cassert>

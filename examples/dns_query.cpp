@@ -1,5 +1,5 @@
 #include <iostream>
-#include <libwire/posix_dns.hpp>
+#include <libwire/dns.hpp>
 
 /**
  * \example dns_query.cpp
