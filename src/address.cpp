@@ -94,3 +94,15 @@ namespace libwire {
         return version == o.version && parts != o.parts;
     }
 } // namespace libwire
+
+namespace std { // NOLINT(cert-dcl58-cpp)
+    std::size_t hash<libwire::address>::operator()(const libwire::address& addr) const {
+        std::hash<uint8_t> hash;
+        auto result = std::size_t(addr.version);
+        for (const uint8_t& i : addr.parts) {
+            // See https://stackoverflow.com/questions/4948780/magic-number-in-boosthash-combine
+            result ^= hash(i) + 0x9e3779b9 + (result << 6) + (result >> 2);
+        }
+        return result;
+    }
+} // namespace std

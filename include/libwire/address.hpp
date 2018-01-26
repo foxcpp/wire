@@ -148,3 +148,13 @@ namespace libwire {
                                    0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x1};
     } // namespace ipv6
 } // namespace libwire
+
+namespace std {
+    /**
+     * Hash implementation for address.
+     */
+    template<>
+    struct hash<libwire::address> {
+        std::size_t operator()(const libwire::address&) const;
+    };
+} // namespace std
