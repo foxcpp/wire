@@ -10,6 +10,7 @@ libwire_test(util-tests
     internal/endianess.cpp
     address.cpp
     memory_view.cpp
+    dns.cpp
     main.cpp)
 
 add_custom_target(
