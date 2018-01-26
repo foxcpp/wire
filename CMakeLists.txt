@@ -74,3 +74,34 @@ else()
         add_subdirectory(docs/ EXCLUDE_FROM_ALL)
     endif()
 endif()
+
+#------------------------------------------------------------------------------
+# Library installation
+
+include(GNUInstallDirs)
+
+install(FILES include/libwire.hpp
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        )
+
+install(DIRECTORY include/libwire
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        )
+
+export(TARGETS libwire
+        FILE "${PROJECT_BINARY_DIR}/libwire-targets.cmake"
+        )
+
+export(PACKAGE libwire)
+
+install(EXPORT libwire-targets
+        DESTINATION lib/cmake/libwire
+        )
+
+configure_file(${PROJECT_SOURCE_DIR}/cmake/libwire-config-version.cmake.in
+        "${PROJECT_BINARY_DIR}/libwire-config-version.cmake" @ONLY)
+
+install(FILES
+        "${PROJECT_SOURCE_DIR}/cmake/libwire-config.cmake"
+        "${PROJECT_BINARY_DIR}/libwire-config-version.cmake"
+        DESTINATION lib/cmake/libwire)
