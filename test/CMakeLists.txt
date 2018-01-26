@@ -9,6 +9,7 @@ endmacro()
 libwire_test(util-tests
     internal/endianess.cpp
     address.cpp
+    memory_view.cpp
     main.cpp)
 
 add_custom_target(

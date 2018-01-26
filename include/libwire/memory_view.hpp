@@ -57,6 +57,7 @@ namespace libwire {
      * overload sets.
      */
     class memory_view {
+    public:
         using value_type        = uint8_t;
         using size_type         = size_t;
         using difference_type   = std::ptrdiff_t;
@@ -118,6 +119,8 @@ namespace libwire {
 
         /**
          * "Hide" X bytes from end of memory.
+         *
+         * Behavior is undefined if bytes_count > size().
          */
         void shrink_back(size_type bytes_count) noexcept;
 
