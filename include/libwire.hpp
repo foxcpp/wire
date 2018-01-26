@@ -9,5 +9,5 @@ namespace libwire {
 #include "libwire/error.hpp"
 #include "libwire/memory_view.hpp"
 #include "libwire/address.hpp"
-#include "libwire/posix_dns.hpp"
+#include "libwire/dns.hpp"
 #include "libwire/tcp.hpp"
