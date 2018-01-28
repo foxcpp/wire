@@ -36,8 +36,10 @@ int main(int argc, char** argv) {
     std::string buf;
     while (true) {
         auto sock = listener.accept();
+        std::tuple source = sock.remote_endpoint();
 
-        std::cout << "Accepted connection.\n";
+        std::cout << "Accepted connection from "
+                  << std::get<0>(source).to_string() << ':' << std::get<1>(source)  << ".\n";
 
         while (true) {
             try {

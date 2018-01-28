@@ -56,20 +56,6 @@ namespace libwire {
 #endif
     }
 
-    address::address(ip version, void* memory) {
-        switch (version) {
-        case ip::v4:
-            std::copy(static_cast<uint8_t*>(memory),
-                      static_cast<uint8_t*>(memory) + 4, parts.begin());
-            break;
-        case ip::v6:
-            std::copy(static_cast<uint8_t*>(memory),
-                      static_cast<uint8_t*>(memory) + 16, parts.begin());
-            break;
-        }
-        this->version = version;
-    }
-
     std::string address::to_string() const {
 #ifdef _POSIX_VERSION
         int family = (version == ip::v4) ? AF_INET : AF_INET6;
@@ -92,6 +78,13 @@ namespace libwire {
 
     bool address::operator!=(const address& o) const noexcept {
         return version == o.version && parts != o.parts;
+    }
+
+    address::address(const memory_view& mv) {
+        assert(mv.size() == 4 || mv.size() == 16);
+
+        version = mv.size() == 4 ? ip::v4 : ip::v6;
+        std::copy(mv.begin(), mv.end(), parts.begin());
     }
 } // namespace libwire
 

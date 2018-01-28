@@ -49,6 +49,14 @@ namespace libwire::tcp {
         if (ec) throw std::system_error(ec);
     }
 
+    std::tuple<address, uint16_t> socket::local_endpoint() const noexcept {
+        return implementation.local_endpoint();
+    }
+
+    std::tuple<address, uint16_t> socket::remote_endpoint() const noexcept {
+        return implementation.remote_endpoint();
+    }
+
     template std::vector<uint8_t>& socket::read(size_t, std::vector<uint8_t>&);
     template std::string& socket::read(size_t, std::string&);
 

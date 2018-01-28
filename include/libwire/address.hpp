@@ -27,6 +27,7 @@
 #include <string_view>
 #include <string>
 #include <libwire/protocols.hpp>
+#include <libwire/memory_view.hpp>
 
 /**
  * \file address.hpp
@@ -60,6 +61,12 @@ namespace libwire {
      * overhead of string parsing.
      */
     struct address {
+        /**
+         * Construct IP address from raw bytes in network byte order (big endian).
+         * Size of view must be either 4 or 16 bytes.
+         */
+        address(const memory_view&);
+
         /**
          * Construct IPv4 address from 4 bytes in network byte order (big endian).
          * Thus 127.0.0.1 => {127, 0, 0, 1}
@@ -104,14 +111,6 @@ namespace libwire {
          *  "000.0.11.11" will set success to false.
          */
         address(const std::string_view& text_ip, bool& success);
-
-        /**
-         * Construct from raw memory pointing to binary
-         * representation of address in network byte order.
-         *
-         * **Not part of the public API**
-         */
-        address(ip version, void* memory);
 
         /**
          * Convert address object to string representation.

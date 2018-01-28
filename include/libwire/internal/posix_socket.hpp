@@ -23,6 +23,7 @@
 #pragma once
 
 #include <cstdint>
+#include <tuple>
 #include <system_error>
 #include <libwire/address.hpp>
 #include <libwire/protocols.hpp>
@@ -132,6 +133,9 @@ namespace libwire::internal_ {
          */
         operator bool() const noexcept;
 
+        std::tuple<address, uint16_t> local_endpoint() const noexcept;
+
+        std::tuple<address, uint16_t> remote_endpoint() const noexcept;
     private:
         int fd = not_initialized;
     };

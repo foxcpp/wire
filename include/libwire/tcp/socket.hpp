@@ -23,6 +23,7 @@
 #pragma once
 
 #include <cstdint>
+#include <tuple>
 #include <system_error>
 #include <vector>
 #include <libwire/error.hpp>
@@ -146,6 +147,45 @@ namespace libwire::tcp {
         void set_option(const Option& /* tag */, Args&&... args) noexcept {
             Option::set(*this, {std::forward<Args>(args)...});
         }
+
+        /**
+         * \name Connection Endpoints Information
+         *
+         * Get address and port of local/remote end of connection.
+         *
+         * Pair of endpoints uniquely identifies **active** connection,
+         * server can use remote_endpoint() to identify "sessions",
+         * client can use local_endpoint() for same purpose.
+         *
+         * Return value is undefined if is_open() = false.
+         *
+         * **Example**
+         * ```cpp
+         * socket.connect({1, 2, 3, 4}, 5);
+         * socket.remote_endpoint(); // Will return 1.2.3.4:5.
+         * socket.local_endpoint(); // Will return LOCAL-IP:RANDOM-PORT.
+         * ```
+         */
+        ///@{
+
+        /**
+         * Get address and port of local end of connection.
+         *
+         * Address is a local address of interface used for connection and
+         * port is randomly picked from implementation-defined range of
+         * [ephemeral ports](https://en.wikipedia.org/wiki/Ephemeral_port)
+         * (usually 49152-65535).
+         */
+        std::tuple<address, uint16_t> local_endpoint() const noexcept;
+
+        /**
+         * Get address and port of remote end of connection.
+         *
+         * Usually same as address/port passed in \ref connect.
+         */
+        std::tuple<address, uint16_t> remote_endpoint() const noexcept;
+
+        ///@}
 
         /**
          * Initialize underlying socket and connect to remote endpoint.
