@@ -50,8 +50,8 @@ namespace libwire {
      * * Can't be modified (values itself can).
      * * Can shrink in both directions, but doesn't modifies allocation.
      * * Have no allocator.
-     * * Capacity is size of underlying memory size FROM begin() TO BIGGEST POSSIBLE end().
-     * * Can't extend more than capacity, hence max_size() == capacity().
+     * * Capacity is size of underlying memory size FROM \ref begin() TO BIGGEST POSSIBLE \ref end().
+     * * Can't extend more than capacity, hence \ref max_size() == \ref capacity().
      *
      * Implemented to allow to use raw memory in read/write operations without additional
      * overload sets.
@@ -107,32 +107,32 @@ namespace libwire {
         size_type size() const noexcept;
 
         /**
-         * Same as capacity().
+         * Same as \ref capacity.
          */
         size_type max_size() const noexcept;
 
         /**
-         * Return size of underlying memory size FROM begin() TO BIGGEST
-         * POSSIBLE end().
+         * Return size of underlying memory size FROM \ref begin() TO BIGGEST
+         * POSSIBLE \ref end().
          */
         size_type capacity() const noexcept;
 
         /**
          * "Hide" X bytes from end of memory.
          *
-         * Behavior is undefined if bytes_count > size().
+         * Behavior is undefined if bytes_count > \ref size().
          */
         void shrink_back(size_type bytes_count) noexcept;
 
         /**
          * "Hide" X bytes from begin of memory.
          *
-         * Behavior is undefined if bytes_count > size().
+         * Behavior is undefined if bytes_count > \ref size().
          */
         void shrink_front(size_type bytes_count) noexcept;
 
         /**
-         * Same as resize(0).
+         * Same as \ref resize(0).
          */
         void clear() noexcept;
 

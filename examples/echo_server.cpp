@@ -5,10 +5,10 @@
  * \example echo_server.cpp
  *
  * This example shows how to implement TCP echo server using
- * tcp::listener and tcp::socket classes.
+ * \ref tcp::listener and \ref tcp::socket classes.
  *
  * Example code is pretty simple to understand but let's describe each
- * step in detail if you are in doublt:
+ * step in detail if you are in doubt:
  * 1. \code
  *    listener.listen(ipv4::any, port);
  *    \endcode

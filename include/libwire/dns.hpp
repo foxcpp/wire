@@ -41,11 +41,11 @@
  */
 
 /**
- * Namespace with functions for interation with system DNS resolver.
+ * Namespace with functions for interaction with system DNS resolver.
  */
 namespace libwire::dns {
     /**
-     * Resolve domain name to one or more IP addresses of 'protocol' verison.
+     * Resolve domain name to one or more IP addresses of 'protocol' version.
      *
      * \note Numeric IP addresses is accepted too and will be just copied
      * to output.

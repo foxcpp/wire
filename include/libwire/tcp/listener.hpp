@@ -53,7 +53,7 @@ namespace libwire::tcp {
         /**
          * Construct listener object.
          *
-         * \note Due to some details socket is not allocated when listener() is called.
+         * \note Due to some details socket is not allocated when c-tor called.
          */
         listener() noexcept = default;
 
@@ -67,7 +67,7 @@ namespace libwire::tcp {
 
         /**
          * Construct listener and start accepting connections.
-         * See listen() documentation for arguments description.
+         * See \ref listen documentation for arguments description.
          */
         inline listener(address local_endpoint, uint16_t port,
                         std::error_code& ec,

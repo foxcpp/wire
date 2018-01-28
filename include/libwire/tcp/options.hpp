@@ -42,7 +42,7 @@ namespace libwire::tcp {
     class socket;
 
     /**
-     * Inline namespace with options applicable with for TCP sockets.
+     * Inline namespace with options applicable for TCP sockets.
      */
     inline namespace options {
         /**

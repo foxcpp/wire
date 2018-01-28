@@ -67,7 +67,7 @@ namespace libwire::tcp {
          * Create new socket object.
          *
          * **Implementation Note:** Constructor itself doesn't
-         * allocates socket descriptor. It's done on connect() call.
+         * allocates socket descriptor. It's done on \ref connect call.
          * This is done to allow socket to be constructed without
          * knowing remote endpoint IP version ahead-of-time.
          */
@@ -76,7 +76,7 @@ namespace libwire::tcp {
         /**
          * Initialize socket from underlying raw handle.
          *
-         * Used by tcp::listener for accept() function.
+         * Used by tcp::listener for \ref listener::accept function.
          * **Not part of the public API.**
          */
         socket(internal_::socket&& i) noexcept : implementation(std::move(i)) {}
@@ -95,20 +95,60 @@ namespace libwire::tcp {
         /**
          * Get native handle/descriptor for socket.
          *
-         * Returned value is undefined if is_open() = false.
+         * Returned value is undefined if \ref is_open returns false.
          */
         internal_::socket::native_handle_t native_handle() const noexcept;
 
         /**
          * Check whether underlying socket is open.
          *
-         * \warning Even if is_open() returns true connection may be in
+         * \warning Even if \ref is_open returns true connection may be in
          * "half-open" state. Remote side possibly already called close()
          * and destroyed socket. In this case your next attempt to perform
          * I/O will result in broken_pipe/connection_reset/etc error (generic
          * for these errors is error::generic::disconnected).
          */
         bool is_open() const;
+
+        /**
+         * \name Socket options
+         *
+         * Several aspects of socket behavior can be changes by setting flags.
+         *
+         * For example: You can disable Nagle's algorithm and specify
+         * smaller retransmission timeout using following code:
+         * ```cpp
+         * socket.set_option(tcp::no_delay, true);
+         * socket.set_option(tcp::user_timeout, 500ms);
+         * ```
+         *
+         * Even more, if some platform-specific option is not provided
+         * by generic libwire interface you can add it easily because option
+         * is just a class with two static functions.
+         *
+         * ```cpp
+         * struct example_option_t {
+         *      bool get(const tcp::socket& sock) const noexcept {
+         *          return true;
+         *      }
+         *
+         *      void set(tcp::socket& sock, bool value) const noexcept {
+         *          // You can just not declare this function if option
+         *          // can't be set.
+         *
+         *          // Use sock.native_handle() here to directly
+         *          // interact with system API.
+         *      }
+         * } example_option{};
+         * ```
+         *
+         * With example above you can write:
+         * ```cpp
+         * socket.set_option(example_option, true);
+         * socket.option(example_option); // => true
+         * ```
+         */
+        ///@{
 
         /**
          * Query socket option value specified by type tag Option.
@@ -147,6 +187,7 @@ namespace libwire::tcp {
         void set_option(const Option& /* tag */, Args&&... args) noexcept {
             Option::set(*this, {std::forward<Args>(args)...});
         }
+        ///@}
 
         /**
          * \name Connection Endpoints Information
@@ -190,14 +231,14 @@ namespace libwire::tcp {
         /**
          * Initialize underlying socket and connect to remote endpoint.
          *
-         * \note If connect() called for already connected socket if
-         * active connection will be closed by close() call.
+         * \note If \ref connect called for already connected socket if
+         * active connection will be closed.
          */
         void connect(address, uint16_t port, std::error_code& ec) noexcept;
 
         /**
          * Shutdown reading/writing part of full-duplex connection
-         * (or both if read and wirte is true).
+         * (or both if read and write is true).
          *
          * This function have no effect if socket is not connected
          * ("Not connected" error is silently ignored).
@@ -206,23 +247,27 @@ namespace libwire::tcp {
          * is undefined.
          *
          * \note Socket can't be reused after shutdown, i.e.
-         * you can't do connect() after shutdown().
+         * you can't do \ref connect after \ref shutdown.
          */
         void shutdown(bool read = true, bool write = true) noexcept;
 
         /**
          * Close and destroy underlying socket.
          *
-         * Closed socket object CAN be reused by calling connect().
+         * Closed socket object CAN be reused by calling \ref connect.
          *
          * May block if socket has untransmitted data even if socket
          * is in non-blocking mode.
-         *
-         * \warning If you don't call shutdown() before close(), this
-         * function will **forcibly** close the connection (RST will
-         * be sent).
          */
         void close() noexcept;
+
+        /**
+         * \name Blocking I/O
+         *
+         * I/O functions in this category usually block thread until
+         * operation is completed.
+         */
+        ///@{
 
         /**
          * Read up to bytes_count bytes from socket into buffer passed by
@@ -290,6 +335,7 @@ namespace libwire::tcp {
         size_t write(const Buffer&);
 #endif // ifdef __cpp_exceptions
 
+        ///@}
     private:
         internal_::socket implementation;
 

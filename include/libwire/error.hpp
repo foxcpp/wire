@@ -45,7 +45,6 @@
  * I.e. error::success, not error::generic_condition::success.
  */
 namespace libwire::error {
-
     /**
      * These values combine together different error codes to
      * simplify error handling where reaction to different
@@ -102,7 +101,7 @@ namespace libwire::error {
          * Error code that should not occur on normal library
          * operation. Causes program termination in debug builds.
          *
-         * Report it as a bug with std::error_code:message
+         * Report it as a bug with std::error_code::message
          * output.
          */
         unexpected = 254,
@@ -119,7 +118,7 @@ namespace libwire::error {
         /**
          * Access to **resource** disallowed.
          *
-         * **Do not** confuse with operation_not_permitted.
+         * **Do not** confuse with \ref operation_not_permitted.
          *
          * Usually occurs when you try to bind to privileged (1-1024)
          * port on POSIX systems while running as non-privileged
@@ -135,7 +134,7 @@ namespace libwire::error {
         /**
          * **Operation** disallowed.
          *
-         * **Do not** confuse with permission_denied.
+         * **Do not** confuse with \ref permission_denied.
          */
         operation_not_permitted,
 
@@ -190,7 +189,7 @@ namespace libwire::error {
         protocol_not_supported,
 
         /**
-         * Reported by socket::connect to indicate that
+         * Reported by \ref socket::connect to indicate that
          * no service is listening on specified port.
          */
         connection_refused,
@@ -205,14 +204,14 @@ namespace libwire::error {
          * -OR-
          * Read attempt after socket::shutdown called with read = true.
          *
-         * \note See error::shutdown for send operation.
+         * \note See \ref shutdown for send operation.
          */
         broken_pipe,
 
         /**
          * Write attempt after socket::shutdown called with write = true.
          *
-         * \note See error::broken_pipe for receive operation.
+         * \note See \ref broken_pipe for receive operation.
          */
         shutdown,
 

@@ -33,7 +33,7 @@ $ cmake --build .
 ```
 
 **Note 1** By default libwire will be built as a static library, if you want
-a shared library then you should add `-DBUILD_SHARED_LIBS` flag.
+a shared library then you should add `-DBUILD_SHARED_LIBS=ON` flag.
 
 ### Usage
 
@@ -46,48 +46,31 @@ target_link_library(your-exectuable libwire)
 ```
 It will use CMake magic to configure include path and other stuff.
 
-Alternatively, you can access system-installed version using `Findlibwire` module.
+Alternatively, you can access system-installed version using `find_package`.
 ```cmake
 find_package(libwire REQUIRED)
 target_link_library(your-executable libwire)
 ```
-
-##### Other build system
-
-You should try CMake sometime. It's a good thing! However, there is no integration for other build systems.
 
 
 #### In code
 
 Let's write a simple TCP server that echoes back `\n`-terminated strings.
 
-First, include TCP server header:
-```cpp
-#include <libwire/tcp_server.hpp>
-```
-
-Then... It's very short so it doesn't needs any commentary:
-```cpp
-tcp_server server{7};
-
-while (true) {
-    auto connection = server.wait_for_connection();
-    auto str = connection.read_until<std::string>('\n');
-    connection.write(str);
-}
-```
+_We can't show super-simple example to surprise you, see more complicated_
+_but complete examples in [examples/](examples/) directory._
 
 
 ### Examples
 
-See [examples/](examples/) directory for sources and [documentation](https://foxcpp.github.io/wire) for detailed description.
+See [examples/](examples/) directory for sources and [documentation][docs] for detailed description.
 
 
 ### Documentation
 
 Maintained in Markdown format (for separate page) and as a docstrings in code (for reference).
-Documentation for lastest commit in master is availiable [here](https://foxcpp.github.io/wire).
-You can also build it locally by running `make doc`. Ouput will be placed in `docs/` directory.
+Documentation for lastest commit in master is availiable [here][docs].
+You can also build it locally by running `make doc`. Ouput will be placed in `doxygen_output/` directory.
 
 **Note** Undocumented public function which behavior is not obvious is A BUG. Report it!
 
@@ -109,25 +92,6 @@ Distributed under terms of the MIT license. It allows you to do anything with
 libwire as long as you don't remove any copyright notices. Also, there
 is no warranties about anything.
 
-```
-Copyright © Maks Mazurov <foxcpp [at] yandex [dot] ru> (fox.cpp) 2017
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```
-
+[docs]: https://foxcpp.github.io/wire
