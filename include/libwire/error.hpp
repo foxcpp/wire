@@ -201,17 +201,11 @@ namespace libwire::error {
 
         /**
          * Destination finished transmission.
-         * -OR-
-         * Read attempt after socket::shutdown called with read = true.
-         *
-         * \note See \ref shutdown for send operation.
          */
         broken_pipe,
 
         /**
-         * Write attempt after socket::shutdown called with write = true.
-         *
-         * \note See \ref broken_pipe for receive operation.
+         * Cannot send after transport endpoint shutdown.
          */
         shutdown,
 
@@ -257,6 +251,11 @@ namespace libwire::error {
          * Attempt to use not connected socket.
          */
         not_connected,
+
+        /**
+         * Remote side of connection finished transmission.
+         */
+        end_of_file,
     };
 
     enum dns_condition {

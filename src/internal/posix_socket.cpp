@@ -160,6 +160,11 @@ namespace libwire::internal_ {
         assert(fd != not_initialized);
 
         ssize_t actually_readen = ::recv(fd, output, length_bytes, IO_FLAGS);
+        if (actually_readen == 0 && length_bytes != 0) {
+            // We wanted more than zero bytes but got zero, looks like EOF.
+            ec = std::error_code(EOF, error::system_category());
+            return 0;
+        }
         if (actually_readen < 0) {
             ec = std::error_code(errno, error::system_category());
             assert(ec != error::unexpected);

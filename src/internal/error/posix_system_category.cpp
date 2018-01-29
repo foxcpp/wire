@@ -28,6 +28,10 @@ const char* libwire::internal_::posix_system_category::name() const noexcept {
 }
 
 std::string libwire::internal_::posix_system_category::message(int code) const noexcept {
+    if (code == EOF) {
+        return "End of file";
+    }
+
     return strerror(code);
 }
 
@@ -108,6 +112,9 @@ bool libwire::internal_::posix_system_category::equivalent(int code, const std::
     MAP_CODE_3(ESHUTDOWN,       error::shutdown, error::generic::disconnected);
     MAP_CODE_3(EHOSTDOWN,       error::host_down, error::generic::no_destination);
     MAP_CODE_3(EHOSTUNREACH,    error::host_unreachable, error::generic::no_destination);
+
+    // Our custom code.
+    MAP_CODE_3(EOF,             error::end_of_file, error::generic::disconnected);
 
     MAP_CODE(EFAULT,       error::unexpected);
     MAP_CODE(EISCONN,      error::unexpected);

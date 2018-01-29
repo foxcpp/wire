@@ -20,6 +20,7 @@
 
 int main(int argc, char** argv) {
     using namespace libwire;
+    using namespace std::literals::string_view_literals;
 
     if (argc != 2) {
         std::cerr << "Usage: echo-server <port>\n";
@@ -43,8 +44,11 @@ int main(int argc, char** argv) {
 
         while (true) {
             try {
-                sock.read(1, buf);
+                sock.read_until('\n', buf);
+                std::cout << "< " << buf << '\n';
                 sock.write(buf);
+                sock.write("\n"sv);
+                std::cout << "> " << buf << '\n';
             } catch (std::system_error& ) {
                 break;
             }

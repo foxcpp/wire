@@ -16,6 +16,7 @@
 
 int main(int argc, char** argv) {
     using namespace libwire;
+    using namespace std::literals::string_view_literals;
 
     if (argc != 2 && argc != 3) {
         std::cerr << "Usage: echo-client <ip> [port]\n";
@@ -34,7 +35,8 @@ int main(int argc, char** argv) {
 
     while (std::cout << "> ", std::getline(std::cin, buffer)) {
         socket.write(buffer);
-        socket.read(buffer.size(), buffer);
+        socket.write("\n"sv);
+        socket.read_until('\n', buffer);
 
         std::cout << "< " << buffer << '\n';
     }
