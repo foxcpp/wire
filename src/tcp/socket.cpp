@@ -10,6 +10,12 @@ namespace libwire::tcp {
     template size_t socket::write(const std::vector<uint8_t>&, std::error_code&);
     template size_t socket::write(const std::string&, std::error_code&);
 
+    template std::vector<uint8_t> socket::read_until(uint8_t, std::error_code&, size_t);
+    template std::string socket::read_until(uint8_t, std::error_code&, size_t);
+
+    template std::vector<uint8_t>& socket::read_until(uint8_t, std::vector<uint8_t>&, std::error_code&, size_t);
+    template std::string& socket::read_until(uint8_t, std::string&, std::error_code&, size_t);
+
     socket::~socket() {
         open = false;
         shutdown();
@@ -66,6 +72,11 @@ namespace libwire::tcp {
     template size_t socket::write(const std::vector<uint8_t>&);
     template size_t socket::write(const std::string&);
 
+    template std::vector<uint8_t>& socket::read_until(uint8_t, std::vector<uint8_t>&, size_t);
+    template std::string& socket::read_until(uint8_t, std::string&, size_t);
+
+    template std::vector<uint8_t> socket::read_until(uint8_t, size_t);
+    template std::string socket::read_until(uint8_t, size_t);
 #endif // ifdef __cpp_exceptions
 
 } // namespace libwire::tcp

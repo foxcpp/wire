@@ -294,6 +294,32 @@ namespace libwire::tcp {
         Buffer read(size_t bytes_count, std::error_code&) noexcept;
 
         /**
+         * Read from socket until until gives byte is found or max_size
+         * bytes read.
+         *
+         * \note Delimiter will be removed from socket stream but will
+         * not be appended to buffer.
+         *
+         * \note max_size = 0 is a special case and means "no limit".
+         *
+         * **Buffer Type Requirements**
+         *
+         * size(), clear() and push_back() functions with behavior defined in
+         * SequenceContainer concept.
+         */
+        template<typename Buffer = std::vector<uint8_t>>
+        Buffer& read_until(uint8_t delimiter, Buffer& buf, std::error_code&,
+                           size_t max_size = 0) noexcept;
+
+        /**
+         * Same as overload with buffer argument but returns newly
+         * allocated buffer every time.
+         */
+        template<typename Buffer = std::vector<uint8_t>>
+        Buffer read_until(uint8_t delimiter, std::error_code&,
+                          size_t max_size = 0) noexcept;
+
+        /**
          * Write contents of buffer to socket.
          *
          * Error code will be set if anything went wrong.
@@ -333,6 +359,20 @@ namespace libwire::tcp {
          */
         template<typename Buffer = std::vector<uint8_t>>
         size_t write(const Buffer&);
+
+        /**
+         * Same as overload with error code but throws std::system_error
+         * instead of setting error code argument.
+         */
+        template<typename Buffer = std::vector<uint8_t>>
+        Buffer& read_until(uint8_t delimiter, Buffer& buf, size_t max_size = 0);
+
+        /**
+         * Same as overload with error code but throws std::system_error
+         * instead of setting error code argument.
+         */
+        template<typename Buffer = std::vector<uint8_t>>
+        Buffer read_until(uint8_t delimiter, size_t max_size = 0);
 #endif // ifdef __cpp_exceptions
 
         ///@}
@@ -385,11 +425,37 @@ namespace libwire::tcp {
     extern template size_t socket::write(const std::vector<uint8_t>&, std::error_code&);
     extern template size_t socket::write(const std::string&, std::error_code&);
 
+    template<typename Buffer>
+    Buffer& socket::read_until(uint8_t delimiter, Buffer& buf, std::error_code& ec, size_t max_size) noexcept {
+        uint8_t byte;
+        memory_view view{&byte, 1};
+        buf.clear();
+        while (read(1, view, ec), !ec) {
+            if (byte == delimiter) break;
+            if (max_size != 0 && buf.size() == max_size) break;
+            buf.push_back(byte);
+        }
+        return buf;
+    }
+
+    template<typename Buffer>
+    Buffer socket::read_until(uint8_t delimiter, std::error_code& ec, size_t max_size) noexcept {
+        Buffer buffer{};
+        read_until(delimiter, buffer, ec, max_size);
+        return buffer;
+    }
+
+    extern template std::vector<uint8_t> socket::read_until(uint8_t, std::error_code&, size_t);
+    extern template std::string socket::read_until(uint8_t, std::error_code&, size_t);
+
+    extern template std::vector<uint8_t>& socket::read_until(uint8_t, std::vector<uint8_t>&, std::error_code&, size_t);
+    extern template std::string& socket::read_until(uint8_t, std::string&, std::error_code&, size_t);
+
 #ifdef __cpp_exceptions
     template<typename Buffer>
     Buffer& socket::read(size_t bytes_count, Buffer& output) {
         std::error_code ec;
-        auto res = read(bytes_count, output, ec);
+        auto res = read<Buffer>(bytes_count, output, ec);
         if (ec) throw std::system_error(ec);
         return output;
     }
@@ -409,12 +475,34 @@ namespace libwire::tcp {
     template<typename Buffer>
     size_t socket::write(const Buffer& input) {
         std::error_code ec;
-        size_t res = write(input, ec);
+        size_t res = write<Buffer>(input, ec);
         if (ec) throw std::system_error(ec);
         return res;
     }
 
     extern template size_t socket::write(const std::vector<uint8_t>&);
     extern template size_t socket::write(const std::string&);
+
+    template<typename Buffer>
+    Buffer& socket::read_until(uint8_t delimiter, Buffer& buf, size_t max_size) {
+        std::error_code ec;
+        read_until<Buffer>(delimiter, buf, ec, max_size);
+        if (ec) throw std::system_error(ec);
+        return buf;
+    }
+
+    template<typename Buffer>
+    Buffer socket::read_until(uint8_t delimiter, size_t max_size) {
+        std::error_code ec;
+        auto res = read_until<Buffer>(delimiter, ec, max_size);
+        if (ec) throw std::system_error(ec);
+        return res;
+    }
+
+    extern template std::vector<uint8_t>& socket::read_until(uint8_t, std::vector<uint8_t>&, size_t);
+    extern template std::string& socket::read_until(uint8_t, std::string&, size_t);
+
+    extern template std::vector<uint8_t> socket::read_until(uint8_t, size_t);
+    extern template std::string socket::read_until(uint8_t, size_t);
 #endif // ifdef __cpp_exceptions
 } // namespace libwire::tcp
