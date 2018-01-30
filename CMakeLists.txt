@@ -105,3 +105,26 @@ install(FILES
         "${PROJECT_SOURCE_DIR}/cmake/libwire-config.cmake"
         "${PROJECT_BINARY_DIR}/libwire-config-version.cmake"
         DESTINATION lib/cmake/libwire)
+
+#-----------------------------------------------------------------------------
+# Linters/style checkers
+
+find_program(clangtidy_path NAMES clang-tidy)
+if(clangtidy_path)
+    add_custom_target(tidy
+        COMMAND "${clangtidy_path}" -p "${PROJECT_BINARY_DIR}" ${LIBWIRE_ALL_FILES}
+        COMMENT "Running clang-tidy tool"
+        WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/src"
+        SOURCES ${PROJECT_SOURCE_DIR}/.clang-tidy
+        )
+endif()
+
+find_program(clangformat_path NAMES clang-format)
+if(clangformat_path)
+    add_custom_target(format
+        COMMAND "${clangformat_path}" -i -style=file ${LIBWIRE_ALL_FILES}
+        COMMENT "Running clang-format tool"
+        WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/src"
+        SOURCES ${PROJECT_SOURCE_DIR}/.clang-format
+        )
+endif()

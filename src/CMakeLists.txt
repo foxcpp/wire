@@ -38,6 +38,11 @@ set(LIBWIRE_POSIX_HEADERS
     ../include/libwire/internal/posix_socket.hpp
     )
 
+set(LIBWIRE_ALL_FILES ${LIBWIRE_SOURCES} ${LIBWIRE_HEADERS}
+    ${LIBWIRE_POSIX_SOURCES} ${LIBWIRE_POSIX_HEADERS}
+    PARENT_SCOPE
+    )
+
 if(UNIX)
     set(LIBWIRE_PLATFORM "POSIX")
 else()
