@@ -65,13 +65,13 @@ namespace libwire {
          * Construct IP address from raw bytes in network byte order (big endian).
          * Size of view must be either 4 or 16 bytes.
          */
-        address(const memory_view&);
+        address(const memory_view&) noexcept;
 
         /**
          * Construct IPv4 address from 4 bytes in network byte order (big endian).
          * Thus 127.0.0.1 => {127, 0, 0, 1}
          */
-        address(uint8_t, uint8_t, uint8_t, uint8_t);
+        address(uint8_t, uint8_t, uint8_t, uint8_t) noexcept;
 
         /**
          * Construct IPv6 address from 16 bytes in network byte order (big endian).
@@ -81,7 +81,7 @@ namespace libwire {
          * a solution without templates hell - PR's are welcome!
          */
         address(uint8_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t,
-                uint8_t, uint8_t, uint8_t, uint8_t, uint8_t);
+                uint8_t, uint8_t, uint8_t, uint8_t, uint8_t) noexcept;
 
         /**
          * Parse IP address from string. supports both IPv4 and IPv6,
@@ -108,14 +108,14 @@ namespace libwire {
          * \warning Multiple consecutive zeros is NOT allowed
          *  "000.0.11.11" will set success to false.
          */
-        address(const std::string_view& text_ip, bool& success);
+        address(const std::string_view& text_ip, bool& success) noexcept;
 
         /**
          * Convert address object to string representation.
          *
          * For IPv6 it gives correctly compacted version.
          */
-        std::string to_string() const;
+        std::string to_string() const noexcept;
 
         bool operator==(const address&) const noexcept;
         bool operator!=(const address&) const noexcept;
@@ -148,6 +148,6 @@ namespace std {
      */
     template<>
     struct hash<libwire::address> {
-        std::size_t operator()(const libwire::address&) const;
+        std::size_t operator()(const libwire::address&) const noexcept;
     };
 } // namespace std
