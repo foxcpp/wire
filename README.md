@@ -6,7 +6,7 @@ libwire
 [![Issues](https://img.shields.io/github/issues-raw/foxcpp/wire.svg?style=flat-square)](https://github.com/foxcpp/wire/issues)
 [![License](https://img.shields.io/github/license/foxcpp/wire.svg?style=flat-square)](https://github.com/foxcpp/wire/blob/master/LICENSE)
 
-Next-generation C++ networking library.
+C++ networking library.
 This repository contains implementation of platform-independent wrapper
 on top system TCP & UDP implementation.
 
@@ -57,8 +57,23 @@ target_link_library(your-executable libwire)
 
 Let's write a simple TCP server that echoes back `\n`-terminated strings.
 
-_We can't show super-simple example to surprise you, see more complicated_
-_but complete examples in [examples/](examples/) directory._
+First, include TCP listener header:
+```cpp
+#include <libwire/tcp/listener.hpp>
+```
+
+Then... It's very short so it doesn't needs any commentary:
+```cpp
+using namespace libwire;
+
+tcp::listener listener{ipv4::any, 7};
+
+while (true) {
+    auto sock = listener.accept();
+    auto str = sock.read_until<std::string>('\n');
+    sock.write(str);
+}
+```
 
 
 ### Examples
@@ -83,14 +98,14 @@ Here is some of the ways that you can contribute:
 * Write code. Check issues marked with [**help wanted**](https://github.com/foxcpp/wire/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22) tag.
 
 See [CODE_STYLE.md](CODE_STYLE.md) and [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
-Use [Uncrustify](http://uncrustify.sourceforge.net/) for auto-formatting.
-(there is no configuration file for it yet, sorry, but it's not possible to configure different formatters for 100% match with our codestyle)
 
 ### License
 
 Distributed under terms of the MIT license. It allows you to do anything with
 libwire as long as you don't remove any copyright notices. Also, there
 is no warranties about anything.
+
+See [LICENSE.md](LICENSE.md) for details.
 
 
 

@@ -1,6 +1,13 @@
+## Disclaimer
+
+Sometimes `.clang-format` output doesn't matches this document. This is fine,
+errors happen sometimes. clang-format take priority in this case but it's better
+to report such problem.
+
 # Identation
 
-* Use spaces, not tabs. Tabs should only appear in files that require them for semantic meaning, like Makefiles.
+* Use spaces, not tabs. Tabs should only appear in files that require them for
+  semantic meaning, like Makefiles.
 
 * The indent size is 4 spaces.
 
@@ -11,10 +18,10 @@
       return 0;
   }
   ```
-  
+
   Wrong:
-  ```cpp 
-  int main() 
+  ```cpp
+  int main()
   {
           return 0;
   }
@@ -25,7 +32,7 @@
   statement is **not** indented.
 
   Right:
-  ```cpp 
+  ```cpp
   switch (condition) {
   case fooCondition:
   case barCondition:
@@ -35,7 +42,7 @@
       i--;
   }
   ```
-  
+
   Wrong:
   ```cpp
   switch (condition) {
@@ -48,18 +55,36 @@
   }
   ```
 
+* Same goes for access modifiers.
+
+  Right:
+  ```cpp
+  class Foo {
+  public:
+  private:
+  };
+  ```
+
+  Wrong:
+  ```cpp
+  class Foo {
+      public:
+      private:
+  };
+  ```
+
 * Boolean expressions at the same nesting level that span multiple lines
   should have their operators on the right side of the line.
 
   Right:
-  ```cpp 
+  ```cpp
   return attribute.name() == srcAttr ||
       attribute.name() == lowsrcAttr ||
       (attribute.name() == usemapAttr && attr->value().string()[0] != '#');
   ```
 
   Wrong:
-  ```cpp 
+  ```cpp
   return attribute.name() == srcAttr
       || attribute.name() == lowsrcAttr
       || (attribute.name() == usemapAttr && attribute.value().string()[0] != '#');
@@ -68,21 +93,21 @@
 # Spacing
 
 * **Do not** place spaces around unary operators.
-  
+
   Right:
   ```cpp
   i++;
   ```
 
   Wrong:
-  ```cpp 
+  ```cpp
   i ++;
   ```
 
 * **Do** place spaces around binary and ternary operators.
 
   Right:
-  ```cpp 
+  ```cpp
   y = m * x + b;
   f(a, b);
   c = a | b;
@@ -90,7 +115,7 @@
   ```
 
   Wrong:
-  ```cpp 
+  ```cpp
   y=m*x+b;
   f(a,b);
   c = a|b;
@@ -100,14 +125,14 @@
 * **Place** spaces around the colon in a range-based for loop.
 
   Right:
-  ```cpp 
+  ```cpp
   std::vector<plugin_module_info> plugins;
   for (auto& plugin : plugins)
       register_plugin(plugin);
   ```
 
   Wrong:
-  ```cpp 
+  ```cpp
   std::vector<plugin_module_info> plugins;
   for (auto& plugin: plugins)
       register_plugin(plugin);
@@ -116,49 +141,73 @@
 * **Do not** place spaces before comma and semicolon.
 
   Right:
-  ```cpp 
+  ```cpp
   for (int i = 0; i < 10; ++i)
       do_something();
-  
+
   f(a, b);
   ```
 
   Wrong:
-  ```cpp 
+  ```cpp
   for (int i = 0 ; i < 10 ; ++i)
       do_something();
-  
+
   f(a , b) ;
   ```
-  
+
 * **Place** spaces between control statements and their parentheses.
 
   Right:
   ```cpp
-  if (condition)
+  if (condition) {
       do_it();
+  }
   ```
 
   Wrong:
   ```cpp
-  if(condition)
+  if(condition) {
       do_it();
+  }
   ```
 
 * Do not place spaces between a function and its parentheses, or between a
   parenthesis and its content.
 
   Right:
-  ```cpp 
+  ```cpp
   f(a, b);
   ```
-  
+
   Wrong:
-  ```cpp 
+  ```cpp
   f (a, b);
   f( a, b );
   ```
 
+* Do not place spaces around braces in braced list.
+
+  Right:
+  ```cpp
+  vector<int> x{1, 2, 3, 4};
+  vector<T> x{{}, {}, {}, {}};
+  f(MyMap[{composite, key}]);
+  new int[3]{1, 2, 3};
+  ```
+
+  Wrong:
+  ```cpp
+  vector<int> x{ 1, 2, 3, 4 };
+  vector<T> x{ {}, {}, {}, {} };
+  f(MyMap[{ composite, key }]);
+  new int[3]{ 1, 2, 3 };
+  ```
+
+# Vertical Whitespace
+
+* Don't add more than one empty line
+* Add empty line between entites (classes, functions, etc).
 
 # Line breaking
 
@@ -194,10 +243,10 @@
   }
   else {
       ...
-  }  
+  }
   ```
 
-* An `else if` statement should be written as an `if` statement when the 
+* An `else if` statement should be written as an `if` statement when the
   prior `if` concludes with a return statement.
 
   Right:
@@ -225,20 +274,20 @@
   brace on its own line.
 
   Right:
-  ```cpp 
+  ```cpp
   int main() {
       ...
   }
   ```
-  
+
   Wrong:
-  ```cpp 
+  ```cpp
   int main()
   {
       ...
   }
 
-  int main 
+  int main
   { ... }
   ```
 
@@ -249,9 +298,6 @@
   if (condition) {
       do_it();
   }
-
-  // You can also write it this way if clause is very small (e.g. return statement).
-  if (condition) return -1;
   ```
 
   Wrong:
@@ -278,7 +324,7 @@
 # Null, false and zero
 
 * In C++, the null pointer value should be written as `nullptr`. In C, it
-  should be written as `NULL`. 
+  should be written as `NULL`.
 
 * C++ and C bool values should be written as `true` and `false`.
 
@@ -323,7 +369,7 @@
   `.f` and `.0f` to floating point literals.
 
   Right:
-  ```cpp 
+  ```cpp
   const double duration = 60;
 
   void set(float i);
@@ -335,7 +381,7 @@
   ```
 
   Wrong:
-  ```cpp 
+  ```cpp
   const double duration = 60.0;
 
   void set(float i);
@@ -343,12 +389,12 @@
   set(10.0f);
 
   const int fps = 12;
-  double frame_duration = 1 / fps; // integer division 
+  double frame_duration = 1 / fps; // integer division
   ```
 
 # Names
 
-* Use snake_case everywhere.
+* Use snake_case in function, variable, namespace, class, structure names.
 
   Right:
   ```cpp
@@ -356,12 +402,36 @@
   ```
 
   Wrong:
-  ```
+  ```cpp
   size_t rawBlockSize;
   ```
 
+* Use CapitalCase in template arguments.
+
+  Right:
+  ```cpp
+  template<typename Option>
+  ```
+
+  Wrong:
+  ```cpp
+  template<typename option>
+  ```
+
+* Use CapitalCase in test names.
+
+  Right:
+  ```cpp
+  TEST(TestCase, TestName) {}
+  ```
+
+  Wrong:
+  ```cpp
+  TEST(TestCase, TestName) {}
+  ```
+
 * Don't capitalize letters in acronyms.
-  
+
   Right:
   ```cpp
   bool aes_used;
@@ -376,8 +446,8 @@
   more canonical and easier to understand.
 
   Right:
-  ```cpp 
-  size_t char_size; // questionable 
+  ```cpp
+  size_t char_size; // questionable
   size_t length;
   int16_t tab_index; // more canonical
   ```
@@ -406,13 +476,13 @@
     define as const public data member.
 
   Right:
-  ```cpp 
+  ```cpp
   class foo {
   public:
       int mutable_attribute;
       const int immutable_attribute;
 
-      const int& readonly_attribute() const { 
+      const int& readonly_attribute() const {
           return readonly_attribute_;
       }
   private:
@@ -424,7 +494,7 @@
   ```cpp
   class foo {
   public:
-      int mutable_attribute() const { 
+      int mutable_attribute() const {
           return mutable_attribute_;
       }
 
@@ -436,14 +506,14 @@
   };
   ```
 
-* Use bare words for getters. Getter names should match the names of 
+* Use bare words for getters. Getter names should match the names of
   the variables being gotten.
 
   Right:
   ```cpp
   class foo {
   public:
-      const int& readonly_attribute() const { 
+      const int& readonly_attribute() const {
           return readonly_attribute_;
       }
   private:
@@ -455,7 +525,7 @@
   ```cpp
   class foo {
   public:
-      const int& get_readonly_attribute() const { 
+      const int& get_readonly_attribute() const {
           return readonly_attribute_;
       }
   private:
@@ -466,13 +536,13 @@
 * **Do not** precede boolean values with words like “is” and “did”.
 
   Right:
-  ```cpp 
+  ```cpp
   bool valid;
   bool send_data;
   ```
 
   Wrong:
-  ```cpp 
+  ```cpp
   bool is_valid;
   bool did_sent_data;
   ```
@@ -496,12 +566,12 @@
   Right:
   ```cpp
   #pragma once
-  
+
   ...
   ```
 
   Wrong:
-  ```cpp 
+  ```cpp
   #ifndef LSMP_SECURE_MEMORY_HPP
   #define LSMP_SECURE_MEMORY_HPP
 
@@ -512,18 +582,18 @@
 
 # Other Punctuation
 
-* If constructor's initializer lust is long then each member (and superclass) 
-  should be indented on a separate line, with the colon or comma preceding 
+* If constructor's initializer lust is long then each member (and superclass)
+  should be indented on a separate line, with the colon or comma preceding
   the member on that line.
 
   Right:
   ```cpp
-  string::string(uint64_t length, char* contents) 
+  string::string(uint64_t length, char* contents)
       : container_base(length)
       , another_member(11)
       , another_another_member(11)
       , another_another_another_member(11) {}
-  
+
   // Initalizer list is short.
   string::string() : container_base(0) {}
   ```
@@ -535,8 +605,8 @@
   ```
 
   Wrong:
-  ```cpp 
-  string::string(uint64_t length, char* contents)  : container_base(length), another_member(11), another_another_member(11), another_another_another_member(11) {}
+  ```cpp
+  string::string(uint64_t length, char* contents) : container_base(length), another_member(11), another_another_member(11), another_another_another_member(11) {}
   ```
 
 * Prefer for-each loop over iterator for loop.
@@ -571,8 +641,12 @@ Must go in following order:
 
 * C standard library headers (`<cstring>`)
 * C++ standard library headers (`<vector>`)
+* System headers (`<sys/socket.h>`)
 * 3rd party library headers (`<boost/optional/optional.hpp>`)
 * Project headers (`"secure_memory.hpp"`)
+
+Prefer to use curly braces for includes in header files, prefer to use
+quotes in source files.
 
 # `using` Statements
 
@@ -612,7 +686,7 @@ Must go in following order:
       explicit vector(size_t size); // not a type conversion
 
       tempate<size_t N>
-      array<T, N> to_array() const; // costly conversion 
+      array<T, N> to_array() const; // costly conversion
   };
   ```
 
@@ -633,22 +707,22 @@ Must go in following order:
   };
   ```
 
-# Comments 
+# Comments
 
 * Use multi-line comments only for documentation, use single-line comments everywhere else.
 
 * Use Doxygen annotations with backslash.
 
-* Use FIXME: (without attribution) to denote __problems__ that need to be 
+* Use FIXME: (without attribution) to denote __problems__ that need to be
   addressed in the future.
 
 * Use TODO: (without attribution) to mark incomplete implemetation.
 
 # Inheritance
 
-* The base level declaration of a virtual method inside a class must be 
-  declared with the `virtual` keyword. All subclasses of that class must 
-  override virtual method with `virtual` and either `override` or `final`
+* The base level declaration of a virtual method inside a class must be
+  declared with the `virtual` keyword. All subclasses of that class must
+  override virtual method with either `override` or `final`
   keywords.
 
   Right:
@@ -662,9 +736,9 @@ Must go in following order:
 
   class student : public person {
   public:
-      virtual void do1() override;
-      virtual void do2() final;
-      virtual void do3() override;
+      void do1() override;
+      void do2() final;
+      void do3() override;
   };
   ```
 
@@ -679,7 +753,7 @@ Must go in following order:
   class student : public person {
   public:
       void do2() final;
-      virtual void do2(); // missing override 
+      virtual void do2(); // missing override
   };
   ```
 

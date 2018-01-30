@@ -1,9 +1,13 @@
 - [ ] Pull request contains incomplete implementation and it will be completed a bit later
 
+This PR (partially) resolves issue #XXX.
+
+[//]: # (Describe how you resolved issue here)
+
 ##### Pull Request Checklist
 
 - [ ] All previous tests pass correctly
-- [ ] I created an issue before submitting PR.
-- [ ] This PR addresses only one issue
-- [ ] I added enough tests for new code
-- [ ] I formatted code correctly
+- [ ] New code is covered by tests
+- [ ] New code is formatted correctly
+- [ ] New public entities is documented
+

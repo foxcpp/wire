@@ -56,8 +56,8 @@ At this point, you're ready to make your changes!
 Your patch should follow the same conventions & pass the same code quality
 checks as the rest of the project.
 
-* Run `make test`.
-* Run format checker (config is not included yet, sorry!)
+* Run `make check`.
+* Run `make format`.
 
 5. Make a Pull Request
 
