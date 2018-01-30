@@ -3,27 +3,22 @@
 #include <algorithm>
 
 #if __has_include(<unistd.h>)
-    #include <unistd.h>
+#    include <unistd.h>
 #endif
 
 #ifdef _POSIX_VERSION
-    #include <arpa/inet.h> // inet_pton on POSIX systems
+#    include <arpa/inet.h> // inet_pton on POSIX systems
 #endif
-
 
 namespace libwire {
     address::address(uint8_t o1, uint8_t o2, uint8_t o3, uint8_t o4)
-        : version(ip::v4)
-        , parts{o1,  o2,  o3,  o4,  0x0, 0x0, 0x0, 0x0,
-                0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0} {}
+        : version(ip::v4), parts{o1, o2, o3, o4, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0} {
+    }
 
-    address::address(uint8_t o1,  uint8_t o2,  uint8_t o3,  uint8_t o4,
-                     uint8_t o5,  uint8_t o6,  uint8_t o7,  uint8_t o8,
-                     uint8_t o9,  uint8_t o10, uint8_t o11, uint8_t o12,
-                     uint8_t o13, uint8_t o14, uint8_t o15, uint8_t o16)
-        : version(ip::v6)
-        , parts{o1, o2,  o3,  o4,  o5,  o6,  o7,  o8,
-                o9, o10, o11, o12, o13, o14, o15, o16} {
+    address::address(uint8_t o1, uint8_t o2, uint8_t o3, uint8_t o4, uint8_t o5, uint8_t o6, uint8_t o7, uint8_t o8,
+                     uint8_t o9, uint8_t o10, uint8_t o11, uint8_t o12, uint8_t o13, uint8_t o14, uint8_t o15,
+                     uint8_t o16)
+        : version(ip::v6), parts{o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16} {
     }
 
     address::address(const std::string_view& sv) {
@@ -52,7 +47,7 @@ namespace libwire {
             std::fill(parts.begin() + sizeof(in_addr), parts.end(), 0x00);
         }
 #else
-    #error "libwire doesn't supports your platform. :("
+#    error "libwire doesn't supports your platform. :("
 #endif
     }
 
@@ -62,13 +57,12 @@ namespace libwire {
 
         std::array<char, 45> buffer;
 
-        const char* buf_ptr = inet_ntop(family, parts.data(),
-                                        buffer.data(), buffer.size());
+        const char* buf_ptr = inet_ntop(family, parts.data(), buffer.data(), buffer.size());
         assert(buf_ptr != nullptr); // This function generally should not fail.
 
         return std::string(buffer.data());
 #else
-    #error "libwire doesn't supports your platform. :("
+#    error "libwire doesn't supports your platform. :("
 #endif
     }
 
@@ -93,7 +87,8 @@ namespace std { // NOLINT(cert-dcl58-cpp)
         std::hash<uint8_t> hash;
         auto result = std::size_t(addr.version);
         for (const uint8_t& i : addr.parts) {
-            // See https://stackoverflow.com/questions/4948780/magic-number-in-boosthash-combine
+            // See
+            // https://stackoverflow.com/questions/4948780/magic-number-in-boosthash-combine
             result ^= hash(i) + 0x9e3779b9 + (result << 6) + (result >> 2);
         }
         return result;

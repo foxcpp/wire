@@ -4,8 +4,8 @@
 /**
  * \example dns_query.cpp
  *
- * This super-simple example shows how to use \ref libwire::dns namespace functions
- * to query name-address mappings from system resolver.
+ * This super-simple example shows how to use \ref libwire::dns namespace
+ * functions to query name-address mappings from system resolver.
  */
 
 int main(int argc, char** argv) {

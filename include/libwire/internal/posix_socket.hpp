@@ -63,7 +63,8 @@ namespace libwire::internal_ {
          */
         socket() noexcept = default;
 
-        explicit socket(int fd) : fd(fd) {}
+        explicit socket(int fd) : fd(fd) {
+        }
 
         /**
          * Allocate new socket with specified family (network protocol)
@@ -136,7 +137,8 @@ namespace libwire::internal_ {
         std::tuple<address, uint16_t> local_endpoint() const noexcept;
 
         std::tuple<address, uint16_t> remote_endpoint() const noexcept;
+
     private:
         int fd = not_initialized;
     };
-}
+} // namespace libwire::internal_

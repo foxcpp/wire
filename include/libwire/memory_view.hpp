@@ -37,9 +37,9 @@
  */
 
 #ifdef __cpp_exceptions
-    #define LIBWIRE_EXCEPTIONS_ENABLED_BOOL true
+#    define LIBWIRE_EXCEPTIONS_ENABLED_BOOL true
 #else
-    #define LIBWIRE_EXCEPTIONS_ENABLED_BOOL false
+#    define LIBWIRE_EXCEPTIONS_ENABLED_BOOL false
 #endif
 
 namespace libwire {
@@ -58,16 +58,16 @@ namespace libwire {
      */
     class memory_view {
     public:
-        using value_type        = uint8_t;
-        using size_type         = size_t;
-        using difference_type   = std::ptrdiff_t;
-        using reference         = value_type&;
-        using const_reference   = const value_type&;
-        using pointer           = value_type*;
-        using const_pointer     = const pointer;
-        using iterator          = pointer;
-        using const_iterator    = const_pointer;
-        using reverse_iterator       = std::reverse_iterator<iterator>;
+        using value_type = uint8_t;
+        using size_type = size_t;
+        using difference_type = std::ptrdiff_t;
+        using reference = value_type&;
+        using const_reference = const value_type&;
+        using pointer = value_type*;
+        using const_pointer = const pointer;
+        using iterator = pointer;
+        using const_iterator = const_pointer;
+        using reverse_iterator = std::reverse_iterator<iterator>;
         using const_reverse_iterator = std::reverse_iterator<iterator>;
 
         memory_view() noexcept;
@@ -147,6 +147,7 @@ namespace libwire {
         void resize(size_t new_size) noexcept(!LIBWIRE_EXCEPTIONS_ENABLED_BOOL);
 
         void swap(memory_view& other) noexcept;
+
     private:
         uint8_t* data_;
         size_t size_;

@@ -2,8 +2,7 @@
 /**
  * Library namespace, everything in library placed here.
  */
-namespace libwire {
-} // namespace libwire
+namespace libwire {} // namespace libwire
 
 #include "libwire/protocols.hpp"
 #include "libwire/error.hpp"

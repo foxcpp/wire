@@ -12,7 +12,8 @@
  * 1. \code
  *    listener.listen(ipv4::any, port);
  *    \endcode
- *    Here we start listening on any IPv4-capable interface using specified port.
+ *    Here we start listening on any IPv4-capable interface using specified
+ * port.
  *
  * 2. Then we enter infinite loop, accept connection, echo received bytes until
  *    any error and continue with next connection.
@@ -39,8 +40,8 @@ int main(int argc, char** argv) {
         auto sock = listener.accept();
         std::tuple source = sock.remote_endpoint();
 
-        std::cout << "Accepted connection from "
-                  << std::get<0>(source).to_string() << ':' << std::get<1>(source)  << ".\n";
+        std::cout << "Accepted connection from " << std::get<0>(source).to_string() << ':' << std::get<1>(source)
+                  << ".\n";
 
         while (true) {
             try {
@@ -49,7 +50,7 @@ int main(int argc, char** argv) {
                 sock.write(buf);
                 sock.write("\n"sv);
                 std::cout << "> " << buf << '\n';
-            } catch (std::system_error& ) {
+            } catch (std::system_error&) {
                 break;
             }
         }

@@ -38,4 +38,4 @@ namespace libwire::internal_ {
         virtual std::error_condition default_error_condition(int i) const noexcept override;
         virtual bool equivalent(int code, const std::error_condition& condition) const noexcept override;
     };
-} // namespace libwire::internal_::error
+} // namespace libwire::internal_

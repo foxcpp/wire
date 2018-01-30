@@ -22,6 +22,4 @@ TEST(ImplEndianess, LittleEndianDetect) {
 
     bool big_endian = (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__);
     ASSERT_EQ(big_endian, host_is_network());
-
 }
-

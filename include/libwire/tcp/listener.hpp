@@ -69,16 +69,13 @@ namespace libwire::tcp {
          * Construct listener and start accepting connections.
          * See \ref listen documentation for arguments description.
          */
-        inline listener(address local_endpoint, uint16_t port,
-                        std::error_code& ec,
+        inline listener(address local_endpoint, uint16_t port, std::error_code& ec,
                         unsigned backlog = internal_::socket::max_pending_connections) noexcept {
-
             listen(local_endpoint, port, ec, backlog);
         }
 
         inline listener(address local_endpoint, uint16_t port,
                         unsigned backlog = internal_::socket::max_pending_connections) {
-
             listen(local_endpoint, port, backlog);
         }
 
@@ -95,8 +92,7 @@ namespace libwire::tcp {
          * This function combines bind() and listen() of underlying
          * socket API.
          */
-        void listen(address local_address, uint16_t port,
-                    std::error_code& ec,
+        void listen(address local_address, uint16_t port, std::error_code& ec,
                     unsigned backlog = internal_::socket::max_pending_connections) noexcept;
 
         /**
@@ -127,4 +123,3 @@ namespace libwire::tcp {
         internal_::socket implementation;
     };
 } // namespace libwire::tcp
-

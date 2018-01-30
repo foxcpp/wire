@@ -10,8 +10,7 @@ namespace libwire::internal_ {
     static std::tuple<address, uint16_t> sockaddr_to_endpoint(sockaddr in) {
         if (in.sa_family == AF_INET) {
             auto sock_address_v4 = reinterpret_cast<sockaddr_in&>(in);
-            return {memory_view(&sock_address_v4.sin_addr, sizeof(sock_address_v4.sin_addr)),
-                    sock_address_v4.sin_port};
+            return {memory_view(&sock_address_v4.sin_addr, sizeof(sock_address_v4.sin_addr)), sock_address_v4.sin_port};
         }
         if (in.sa_family == AF_INET6) {
             auto& sock_address_v6 = reinterpret_cast<sockaddr_in6&>(in);
@@ -32,8 +31,14 @@ namespace libwire::internal_ {
 
         int type, protocol;
         switch (transport) {
-        case transport::tcp: type = SOCK_STREAM; protocol = IPPROTO_TCP; break;
-        case transport::udp: type = SOCK_DGRAM; protocol = IPPROTO_UDP; break;
+        case transport::tcp:
+            type = SOCK_STREAM;
+            protocol = IPPROTO_TCP;
+            break;
+        case transport::udp:
+            type = SOCK_DGRAM;
+            protocol = IPPROTO_UDP;
+            break;
         }
 
         fd = ::socket(domain, type, protocol);
@@ -73,20 +78,20 @@ namespace libwire::internal_ {
         int how = 0;
         if (read && !write) how = SHUT_RD;
         if (!read && write) how = SHUT_WR;
-        if (read && write)  how = SHUT_RDWR;
+        if (read && write) how = SHUT_RDWR;
         assert(how != 0);
 
         int status = ::shutdown(fd, how);
         if (status < 0) {
             // Other errors mean that something broken in library.
-            assert(errno ==  ENOTCONN);
+            assert(errno == ENOTCONN);
         }
     }
 
     void socket::connect(address target, uint16_t port, std::error_code& ec) noexcept {
         assert(fd != not_initialized);
 
-        struct sockaddr_in address{};
+        struct sockaddr_in address {};
         address.sin_family = AF_INET;
         address.sin_port = host_to_network(port);
         address.sin_addr = *reinterpret_cast<in_addr*>(target.parts.data());
@@ -101,7 +106,7 @@ namespace libwire::internal_ {
     void socket::bind(uint16_t port, address interface_address, std::error_code& ec) noexcept {
         assert(fd != not_initialized);
 
-        sockaddr_in address {};
+        sockaddr_in address{};
         address.sin_family = AF_INET;
         address.sin_port = host_to_network(port);
         address.sin_addr = *reinterpret_cast<in_addr*>(interface_address.parts.data());
@@ -139,9 +144,9 @@ namespace libwire::internal_ {
     }
 
 #ifdef MSG_NOSIGNAL
-    #define IO_FLAGS MSG_NOSIGNAL
+#    define IO_FLAGS MSG_NOSIGNAL
 #else
-    #define IO_FLAGS 0
+#    define IO_FLAGS 0
 #endif
 
     size_t socket::write(const void* input, size_t length_bytes, std::error_code& ec) noexcept {

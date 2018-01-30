@@ -39,4 +39,3 @@ namespace libwire::internal_ {
         virtual bool equivalent(int code, const std::error_condition& condition) const noexcept override;
     };
 } // namespace libwire::internal_
-

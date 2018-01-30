@@ -303,4 +303,4 @@ namespace std {
 
     template<>
     struct is_error_condition_enum<libwire::error::dns_condition> : true_type {};
-}
+} // namespace std

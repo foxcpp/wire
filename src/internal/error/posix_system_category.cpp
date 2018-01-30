@@ -8,8 +8,8 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -36,11 +36,13 @@ std::string libwire::internal_::posix_system_category::message(int code) const n
 }
 
 std::error_condition libwire::internal_::posix_system_category::default_error_condition(int code) const noexcept {
-#define MAP_CODE(errno_code, condition_code)\
+#define MAP_CODE(errno_code, condition_code) \
     if (code == (errno_code)) return std::error_condition((condition_code), *this);
 
-    // TODO: This table duplicated in two places. Find a way to share it without much pain.
+    // TODO: This table duplicated in two places. Find a way to share it without
+    // much pain.
 
+    // clang-format off
     MAP_CODE(0,               error::success);
     MAP_CODE(EINVAL,          error::invalid_argument);
     MAP_CODE(EACCES,          error::permission_denied);
@@ -72,22 +74,24 @@ std::error_condition libwire::internal_::posix_system_category::default_error_co
     MAP_CODE(EPROTOTYPE,   error::unexpected);
     MAP_CODE(ENOTSOCK,     error::unexpected);
     MAP_CODE(EOPNOTSUPP,   error::unexpected);
+    // clang-format on
 
     return std::error_condition(error::unknown, *this);
 #undef MAP_CODE
 }
 
-bool libwire::internal_::posix_system_category::equivalent(int code, const std::error_condition& condition) const noexcept {
-#define MAP_CODE(errno_code, condition_code)\
+bool libwire::internal_::posix_system_category::equivalent(int code, const std::error_condition& condition) const
+    noexcept {
+#define MAP_CODE(errno_code, condition_code) \
     if (code == (errno_code)) return condition.value() == (condition_code)
-#define MAP_CODE_3(errno_code, condition_code, generic_code)\
-    do {\
-        if (code == (errno_code)) {\
-            return condition.value() == (condition_code) ||\
-                   condition.value() == int(generic_code);\
-        }\
+#define MAP_CODE_3(errno_code, condition_code, generic_code) \
+    do { \
+        if (code == (errno_code)) { \
+            return condition.value() == (condition_code) || condition.value() == int(generic_code); \
+        } \
     } while (false)
 
+    // clang-format off
     MAP_CODE  (0,               error::success);
     MAP_CODE  (EINVAL,          error::invalid_argument);
     MAP_CODE  (EACCES,          error::permission_denied);
@@ -122,6 +126,7 @@ bool libwire::internal_::posix_system_category::equivalent(int code, const std::
     MAP_CODE(EPROTOTYPE,   error::unexpected);
     MAP_CODE(ENOTSOCK,     error::unexpected);
     MAP_CODE(EOPNOTSUPP,   error::unexpected);
+    // clang-format on
 
     return condition.value() == error::unknown;
 

@@ -80,10 +80,8 @@ namespace libwire {
          * \todo Sadly, there is no good way to short-cut it, if you can come up with
          * a solution without templates hell - PR's are welcome!
          */
-        address(uint8_t, uint8_t, uint8_t, uint8_t,
-                uint8_t, uint8_t, uint8_t, uint8_t,
-                uint8_t, uint8_t, uint8_t, uint8_t,
-                uint8_t, uint8_t, uint8_t, uint8_t);
+        address(uint8_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t,
+                uint8_t, uint8_t, uint8_t, uint8_t, uint8_t);
 
         /**
          * Parse IP address from string. supports both IPv4 and IPv6,
@@ -130,21 +128,17 @@ namespace libwire {
      * Namespace with few IPv4 address constants.
      */
     namespace ipv4 {
-        inline address any = {0, 0, 0, 0},
-                       broadcast = {255, 255, 255, 255},
-                       loopback = {127, 0, 0, 1};
+        inline address any = {0, 0, 0, 0}, broadcast = {255, 255, 255, 255}, loopback = {127, 0, 0, 1};
     } // namespace ipv4
 
     /**
      * Namespace with few IPv6 address constants.
      */
     namespace ipv6 {
-        inline address any = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
-                              0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0},
+        inline address any = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0},
                        broadcast = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
                                     0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff},
-                       loopback = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
-                                   0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x1};
+                       loopback = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x1};
     } // namespace ipv6
 } // namespace libwire
 

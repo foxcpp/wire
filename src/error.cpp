@@ -8,8 +8,8 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -23,8 +23,8 @@
 #include "libwire/error.hpp"
 
 #if __has_include(<unistd.h>)
-    #include "libwire/internal/error/posix_system_category.hpp"
-    #include "libwire/internal/error/posix_dns_category.hpp"
+#    include "libwire/internal/error/posix_system_category.hpp"
+#    include "libwire/internal/error/posix_dns_category.hpp"
 #endif
 
 namespace libwire::error {
@@ -53,5 +53,4 @@ namespace libwire::error {
     std::error_condition make_error_condition(dns_condition val) {
         return std::error_condition(int(val), dns_category());
     }
-} // namespace libwire
-
+} // namespace libwire::error

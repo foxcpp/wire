@@ -29,9 +29,9 @@
 #include <libwire/error.hpp>
 
 #ifdef __unix__
-    #include <libwire/internal/posix_socket.hpp>
+#    include <libwire/internal/posix_socket.hpp>
 #else
-    #error "libwire doesn't supports socket interface on your platform. :("
+#    error "libwire doesn't supports socket interface on your platform. :("
 #endif
 
 /*
@@ -79,7 +79,8 @@ namespace libwire::tcp {
          * Used by tcp::listener for \ref listener::accept function.
          * **Not part of the public API.**
          */
-        socket(internal_::socket&& i) noexcept : implementation(std::move(i)) {}
+        socket(internal_::socket&& i) noexcept : implementation(std::move(i)) {
+        }
 
         socket(const socket&) = delete;
         socket(socket&&) noexcept = default;
@@ -308,16 +309,14 @@ namespace libwire::tcp {
          * SequenceContainer concept.
          */
         template<typename Buffer = std::vector<uint8_t>>
-        Buffer& read_until(uint8_t delimiter, Buffer& buf, std::error_code&,
-                           size_t max_size = 0) noexcept;
+        Buffer& read_until(uint8_t delimiter, Buffer& buf, std::error_code&, size_t max_size = 0) noexcept;
 
         /**
          * Same as overload with buffer argument but returns newly
          * allocated buffer every time.
          */
         template<typename Buffer = std::vector<uint8_t>>
-        Buffer read_until(uint8_t delimiter, std::error_code&,
-                          size_t max_size = 0) noexcept;
+        Buffer read_until(uint8_t delimiter, std::error_code&, size_t max_size = 0) noexcept;
 
         /**
          * Write contents of buffer to socket.

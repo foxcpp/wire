@@ -8,8 +8,8 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -44,10 +44,10 @@ std::error_condition libwire::internal_::posix_dns_category::default_error_condi
     // We can safetly define then to 0 because first branch cuts away
     // real success value.
 #ifndef EAI_NODATA
-    #define EAI_NODATA 0
+#    define EAI_NODATA 0
 #endif
 #ifndef EAI_ADDRFAMILY
-    #define EAI_ADDRFAMILY 0
+#    define EAI_ADDRFAMILY 0
 #endif
 
     if (code == EAI_NODATA || code == EAI_ADDRFAMILY) {
@@ -61,7 +61,8 @@ std::error_condition libwire::internal_::posix_dns_category::default_error_condi
     return std::error_condition(error::unknown, error::system_category());
 }
 
-bool libwire::internal_::posix_dns_category::equivalent(int code, const std::error_condition& condition) const noexcept {
+bool libwire::internal_::posix_dns_category::equivalent(int code, const std::error_condition& condition) const
+    noexcept {
     if (code == 0) {
         return condition.value() == error::success;
     }
@@ -73,10 +74,10 @@ bool libwire::internal_::posix_dns_category::equivalent(int code, const std::err
     // We can safetly define then to 0 because first branch cuts away
     // real success value.
 #ifndef EAI_NODATA
-    #define EAI_NODATA 0
+#    define EAI_NODATA 0
 #endif
 #ifndef EAI_ADDRFAMILY
-    #define EAI_ADDRFAMILY 0
+#    define EAI_ADDRFAMILY 0
 #endif
 
     if (code == EAI_NODATA || code == EAI_ADDRFAMILY) {
