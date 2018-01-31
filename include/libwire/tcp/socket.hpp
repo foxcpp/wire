@@ -387,14 +387,15 @@ namespace libwire::tcp {
         static_assert(sizeof(std::remove_pointer_t<decltype(output.data())>) == sizeof(uint8_t),
                       "socket::read can't be used with container with non-byte elements");
 
-        // Resize buffer so it can store maximum amount of bytes we can receive.
         output.resize(bytes_count);
-
-        size_t bytes_received = implementation.read(output.data(), bytes_count, ec);
+        size_t total_received = 0;
+        // Read exactly bytes_count bytes, retrying when needed.
+        while (total_received < bytes_count) {
+            size_t bytes_received = implementation.read(output.data() + total_received, bytes_count - total_received, ec);
+            if (ec) break;
+            total_received += bytes_received;
+        }
         open = (ec != error::generic::disconnected);
-
-        // Resize buffer to actual received size (implementtion returns 0 if error occured).
-        output.resize(bytes_received);
 
         return output;
     }
