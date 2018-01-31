@@ -16,9 +16,13 @@ namespace libwire::tcp {
     template std::vector<uint8_t>& socket::read_until(uint8_t, std::vector<uint8_t>&, std::error_code&, size_t);
     template std::string& socket::read_until(uint8_t, std::string&, std::error_code&, size_t);
 
+    socket::socket(internal_::socket&& i) noexcept : implementation(std::move(i)) {
+        open = (implementation.native_handle() != internal_::socket::not_initialized);
+    }
+
     socket::~socket() {
         open = false;
-        shutdown();
+        if (is_open()) shutdown();
         close();
     }
 
@@ -48,19 +52,19 @@ namespace libwire::tcp {
         implementation.shutdown(read, write);
     }
 
-#ifdef __cpp_exceptions
-    void socket::connect(address target, uint16_t port) {
-        std::error_code ec;
-        connect(target, port, ec);
-        if (ec) throw std::system_error(ec);
-    }
-
     std::tuple<address, uint16_t> socket::local_endpoint() const noexcept {
         return implementation.local_endpoint();
     }
 
     std::tuple<address, uint16_t> socket::remote_endpoint() const noexcept {
         return implementation.remote_endpoint();
+    }
+
+#ifdef __cpp_exceptions
+    void socket::connect(address target, uint16_t port) {
+        std::error_code ec;
+        connect(target, port, ec);
+        if (ec) throw std::system_error(ec);
     }
 
     template std::vector<uint8_t>& socket::read(size_t, std::vector<uint8_t>&);

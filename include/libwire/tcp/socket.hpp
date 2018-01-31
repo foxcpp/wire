@@ -79,8 +79,7 @@ namespace libwire::tcp {
          * Used by tcp::listener for \ref listener::accept function.
          * **Not part of the public API.**
          */
-        socket(internal_::socket&& i) noexcept : implementation(std::move(i)) {
-        }
+        socket(internal_::socket&& i) noexcept;
 
         socket(const socket&) = delete;
         socket(socket&&) noexcept = default;
@@ -186,7 +185,7 @@ namespace libwire::tcp {
          */
         template<typename Option, typename... Args>
         void set_option(const Option& /* tag */, Args&&... args) noexcept {
-            Option::set(*this, {std::forward<Args>(args)...});
+            Option::set(*this, std::forward<Args>(args)...);
         }
         ///@}
 

@@ -19,7 +19,7 @@ script:
 - cd build
 - cmake .. -DLIBWIRE_TESTS=ON -DLIBWIRE_EXAMPLES=ON -DLIBWIRE_DOCS=ON -DLIBWIRE_WSTRICT=ON
 - cmake --build . --target all
-- env LD_LIBRARY_PATH=/usr/local/clang-5.0.0/lib cmake --build . --target check-utils
+- env LD_LIBRARY_PATH=/usr/local/clang-5.0.0/lib cmake --build . --target check
 
 deploy:
   provider: pages
