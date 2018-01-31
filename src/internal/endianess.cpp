@@ -2,10 +2,15 @@
 
 namespace libwire::internal_ {
     uint16_t flip_endianess(uint16_t input) noexcept {
-        return (input >> 8) | (input << 8);
+        return (input >> 8u) | (input << 8u);
     }
     uint32_t flip_endianess(uint32_t input) noexcept {
-        return (input >> 8 * 3) | ((input << 8 * 1) & 0x00FF0000) | ((input >> 8 * 1) & 0x0000FF00) | (input << 8 * 3);
+        // clang-format off
+        return (input >> 8u * 3u)                 |
+               ((input << 8u * 1u) & 0x00FF0000u) |
+               ((input >> 8u * 1u) & 0x0000FF00u) |
+               (input << 8u * 3u);
+        // clang-format on
     }
 
     bool host_is_network() noexcept {

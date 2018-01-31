@@ -21,31 +21,24 @@ namespace libwire {
         : version(ip::v6), parts{o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16} {
     }
 
-    address::address(const std::string_view& sv) {
+    address::address(const std::string_view& text_ip) { // NOLINT(hicpp-member-init)
         bool success = true;
-        *this = address(sv, success);
+        *this = address(text_ip, success);
         if (!success) throw std::invalid_argument("Invalid address string");
     }
 
-    address::address(const std::string_view& sv, bool& success) noexcept {
+    address::address(const std::string_view& text_ip, bool& success) noexcept : version(ip::v4), parts{} {
 #ifdef _POSIX_VERSION
         int family = AF_INET;
-        version = ip::v4;
-        for (const char& ch : sv) {
+        for (const char& ch : text_ip) {
             if (ch == ':') {
                 family = AF_INET6;
                 version = ip::v6;
             }
         }
 
-        success = bool(inet_pton(family, sv.data(), parts.data()));
+        success = bool(inet_pton(family, text_ip.data(), parts.data()));
         // ^ returns 1 on success, 0 otherwise.
-
-        // For IPv4 we need to zero-rewrite parts not
-        // set by inet_pton.
-        if (family == AF_INET) {
-            std::fill(parts.begin() + sizeof(in_addr), parts.end(), 0x00);
-        }
 #else
 #    error "libwire doesn't supports your platform. :("
 #endif
@@ -89,7 +82,7 @@ namespace std { // NOLINT(cert-dcl58-cpp)
         for (const uint8_t& i : addr.parts) {
             // See
             // https://stackoverflow.com/questions/4948780/magic-number-in-boosthash-combine
-            result ^= hash(i) + 0x9e3779b9 + (result << 6) + (result >> 2);
+            result ^= hash(i) + 0x9e3779b9u + (result << 6u) + (result >> 2u);
         }
         return result;
     }

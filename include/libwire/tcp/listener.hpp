@@ -93,7 +93,7 @@ namespace libwire::tcp {
          * socket API.
          */
         void listen(address local_address, uint16_t port, std::error_code& ec,
-                    unsigned backlog = internal_::socket::max_pending_connections) noexcept;
+                    unsigned max_backlog = internal_::socket::max_pending_connections) noexcept;
 
         /**
          * Accept first connection from listener queue and create
@@ -116,7 +116,7 @@ namespace libwire::tcp {
          * instead of setting error code argument.
          */
         void listen(address local_address, uint16_t port,
-                    unsigned backlog = internal_::socket::max_pending_connections);
+                    unsigned max_backlog = internal_::socket::max_pending_connections);
 #endif // ifdef __cpp_exceptions
 
     private:

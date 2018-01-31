@@ -1,5 +1,5 @@
 ---
-Checks:          'clang-diagnostic-*,clang-analyzer-*,clang-diagnostic-*,clang-analyzer-*,bugprone-*,hicpp-*,cert-*,misc-*,modernize-*,performance-*,readability-*,google-runtime-int,google-readability-namespace-comments,google-global-names-in-headers,readability-identifier-naming,-hicpp-no-array-decay,-readability-named-parameter'
+Checks:          'clang-diagnostic-*,clang-analyzer-*,clang-diagnostic-*,clang-analyzer-*,bugprone-*,hicpp-*,cert-*,misc-*,modernize-*,performance-*,readability-*,google-runtime-int,google-readability-namespace-comments,google-global-names-in-headers,readability-identifier-naming,-hicpp-no-array-decay,-readability-named-parameter,-hicpp-member-init'
 WarningsAsErrors: ''
 HeaderFilterRegex: ''
 AnalyzeTemporaryDtors: false

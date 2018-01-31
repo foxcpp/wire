@@ -22,9 +22,9 @@ namespace libwire::internal_ {
 
     unsigned socket::max_pending_connections = SOMAXCONN;
 
-    socket::socket(ip net_proto, transport transport, std::error_code& ec) noexcept {
+    socket::socket(ip ipver, transport transport, std::error_code& ec) noexcept {
         int domain;
-        switch (net_proto) {
+        switch (ipver) {
         case ip::v4: domain = AF_INET; break;
         case ip::v6: domain = AF_INET6; break;
         }

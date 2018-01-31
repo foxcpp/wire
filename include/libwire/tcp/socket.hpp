@@ -391,7 +391,8 @@ namespace libwire::tcp {
         size_t total_received = 0;
         // Read exactly bytes_count bytes, retrying when needed.
         while (total_received < bytes_count) {
-            size_t bytes_received = implementation.read(output.data() + total_received, bytes_count - total_received, ec);
+            size_t bytes_received =
+                implementation.read(output.data() + total_received, bytes_count - total_received, ec);
             if (ec) break;
             total_received += bytes_received;
         }
