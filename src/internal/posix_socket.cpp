@@ -83,6 +83,10 @@ namespace libwire::internal_ {
 
         int status = ::shutdown(fd, how);
         if (status < 0) {
+            if (errno == EINTR) {
+                shutdown(read, write);
+                return;
+            }
             // Other errors mean that something broken in library.
             assert(errno == ENOTCONN);
         }
@@ -98,6 +102,10 @@ namespace libwire::internal_ {
 
         int status = ::connect(fd, reinterpret_cast<sockaddr*>(&address), sizeof(address));
         if (status < 0) {
+            if (errno == EINTR) {
+                connect(target, port, ec);
+                return;
+            }
             ec = std::error_code(errno, error::system_category());
             assert(ec != error::unexpected);
         }
@@ -113,6 +121,10 @@ namespace libwire::internal_ {
 
         int status = ::bind(fd, reinterpret_cast<sockaddr*>(&address), sizeof(address));
         if (status < 0) {
+            if (errno == EINTR) {
+                bind(port, interface_address, ec);
+                return;
+            }
             ec = std::error_code(errno, error::system_category());
             assert(ec != error::unexpected);
         }
@@ -123,6 +135,10 @@ namespace libwire::internal_ {
 
         int status = ::listen(fd, backlog);
         if (status < 0) {
+            if (errno == EINTR) {
+                listen(backlog, ec);
+                return;
+            }
             ec = std::error_code(errno, error::system_category());
             assert(ec != error::unexpected);
         }
@@ -135,6 +151,9 @@ namespace libwire::internal_ {
         // TODO (PR's welcomed): Allow to get client address.
 
         if (accepted_fd < 0) {
+            if (errno == EINTR) {
+                return accept(ec);
+            }
             ec = std::error_code(errno, error::system_category());
             assert(ec != error::unexpected);
             return socket();
@@ -154,6 +173,9 @@ namespace libwire::internal_ {
 
         ssize_t actually_written = ::send(fd, input, length_bytes, IO_FLAGS);
         if (actually_written < 0) {
+            if (errno == EINTR) {
+                return write(input, length_bytes, ec);
+            }
             ec = std::error_code(errno, error::system_category());
             assert(ec != error::unexpected);
             return 0;
@@ -171,6 +193,9 @@ namespace libwire::internal_ {
             return 0;
         }
         if (actually_readen < 0) {
+            if (errno == EINTR) {
+                return read(output, length_bytes, ec);
+            }
             ec = std::error_code(errno, error::system_category());
             assert(ec != error::unexpected);
             return 0;
