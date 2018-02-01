@@ -189,7 +189,7 @@ namespace libwire::error {
         protocol_not_supported,
 
         /**
-         * Reported by \ref socket::connect to indicate that
+         * Reported by \ref tcp::socket::connect to indicate that
          * no service is listening on specified port.
          */
         connection_refused,

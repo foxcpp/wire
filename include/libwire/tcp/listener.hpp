@@ -39,10 +39,10 @@ namespace libwire::tcp {
      * connection from queue using accept() method.
      *
      * Quick usage example:
-     * ```cpp
+     * \code
      * tcp::listener l{ipv4::any, 7777};
      * auto sock = l.accept();
-     * ```
+     * \endcode
      *
      * #### Thread-safety
      * * Distinct: safe

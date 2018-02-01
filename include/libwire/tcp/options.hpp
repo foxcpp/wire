@@ -66,7 +66,7 @@ namespace libwire::tcp {
         constexpr no_delay_t no_delay{};
 
         /**
-         * Dummy type for \ref user_timeout option.
+         * Dummy type for \ref timeout option.
          */
         struct timeout_t {
             void set(socket&, std::chrono::milliseconds) noexcept;

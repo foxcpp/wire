@@ -5,7 +5,7 @@
  * \example echo_server.cpp
  *
  * This example shows how to implement TCP echo server using
- * \ref tcp::listener and \ref tcp::socket classes.
+ * \ref libwire::tcp::listener and \ref libwire::tcp::socket classes.
  *
  * Example code is pretty simple to understand but let's describe each
  * step in detail if you are in doubt:

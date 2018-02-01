@@ -117,16 +117,16 @@ namespace libwire::tcp {
          *
          * For example: You can disable Nagle's algorithm and specify
          * smaller retransmission timeout using following code:
-         * ```cpp
+         * \code
          * socket.set_option(tcp::no_delay, true);
          * socket.set_option(tcp::user_timeout, 500ms);
-         * ```
+         * \endcode
          *
          * Even more, if some platform-specific option is not provided
          * by generic libwire interface you can add it easily because option
          * is just a class with two static functions.
          *
-         * ```cpp
+         * \code
          * struct example_option_t {
          *      bool get(const tcp::socket& sock) const noexcept {
          *          return true;
@@ -140,13 +140,13 @@ namespace libwire::tcp {
          *          // interact with system API.
          *      }
          * } example_option{};
-         * ```
+         * \endcode
          *
          * With example above you can write:
-         * ```cpp
+         * \code
          * socket.set_option(example_option, true);
          * socket.option(example_option); // => true
-         * ```
+         * \endcode
          */
         ///@{
 
@@ -154,12 +154,12 @@ namespace libwire::tcp {
          * Query socket option value specified by type tag Option.
          *
          * Example:
-         * ```cpp
+         * \code
          * socket.option(tcp::no_delay); // => false by default.
          *
          * // Some options May have multiple values returned in tuple.
          * auto [ enabled, timeout ] = socket.option(tcp::linger);
-         * ```
+         * \endcode
          */
         template<typename Option>
         auto option(const Option& /* tag */) const noexcept {
@@ -175,13 +175,13 @@ namespace libwire::tcp {
          * just ignored and corresponding option(tag) will return old value.
          *
          * Example:
-         * ```cpp
+         * \code
          * socket.set_option(tcp::no_delay, true);
          *
          * // Some options may have multiple values:
          * socket.set_option(tcp::linger, true, 20s);
          * // ^ enable linger with 20 seconds timeout.
-         * ```
+         * \endcode
          */
         template<typename Option, typename... Args>
         void set_option(const Option& /* tag */, Args&&... args) noexcept {
@@ -201,11 +201,11 @@ namespace libwire::tcp {
          * Return value is undefined if is_open() = false.
          *
          * **Example**
-         * ```cpp
+         * \code
          * socket.connect({1, 2, 3, 4}, 5);
          * socket.remote_endpoint(); // Will return 1.2.3.4:5.
          * socket.local_endpoint(); // Will return LOCAL-IP:RANDOM-PORT.
-         * ```
+         * \endcode
          */
         ///@{
 

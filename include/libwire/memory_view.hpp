@@ -132,7 +132,7 @@ namespace libwire {
         void shrink_front(size_type bytes_count) noexcept;
 
         /**
-         * Same as \ref resize(0).
+         * Same as \ref resize (0).
          */
         void clear() noexcept;
 
