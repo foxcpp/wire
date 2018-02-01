@@ -112,7 +112,7 @@ install(FILES
 find_program(clangtidy_path NAMES clang-tidy)
 if(clangtidy_path)
     add_custom_target(tidy
-        COMMAND "${clangtidy_path}" -p "${PROJECT_BINARY_DIR}" ${LIBWIRE_ALL_FILES}
+        COMMAND "${clangtidy_path}" -p "${PROJECT_BINARY_DIR}" ${LIBWIRE_ALL_SOURCES}
         COMMENT "Running clang-tidy tool"
         WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/src"
         SOURCES ${PROJECT_SOURCE_DIR}/.clang-tidy
@@ -122,7 +122,7 @@ endif()
 find_program(clangformat_path NAMES clang-format)
 if(clangformat_path)
     add_custom_target(format
-        COMMAND "${clangformat_path}" -i -style=file ${LIBWIRE_ALL_FILES}
+        COMMAND "${clangformat_path}" -i -style=file ${LIBWIRE_ALL_SOURCES} ${LIBWIRE_ALL_HEADERS}
         COMMENT "Running clang-format tool"
         WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/src"
         SOURCES ${PROJECT_SOURCE_DIR}/.clang-format

@@ -15,7 +15,7 @@ add_custom_command(OUTPUT ${PROJECT_BINARY_DIR}/doxygen_output
     COMMAND ${DOXYGEN_EXECUTABLE} ${PROJECT_BINARY_DIR}/Doxyfile
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
     COMMENT "Generating HTML documentation using Doxygen"
-    DEPENDS ${PROJECT_HEADERS} ${PROJECT_SOURCE_DIR}/docs/Doxyfile.in ${PROJECT_SOURCE_DIR}/README.md
+    DEPENDS ${LIBWIRE_ALL_HEADERS} ${PROJECT_SOURCE_DIR}/docs/Doxyfile.in ${PROJECT_SOURCE_DIR}/README.md
     VERBATIM)
 
 add_custom_target(doc ALL
