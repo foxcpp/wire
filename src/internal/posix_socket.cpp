@@ -54,13 +54,11 @@ namespace libwire::internal_ {
     }
 
     socket::socket(socket&& o) noexcept {
-        this->fd = o.fd;
-        o.fd = not_initialized;
+        std::swap(o.fd, this->fd);
     }
 
     socket& socket::operator=(socket&& o) noexcept {
-        this->fd = o.fd;
-        o.fd = not_initialized;
+        std::swap(o.fd, this->fd);
         return *this;
     }
 

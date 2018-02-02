@@ -26,68 +26,82 @@
 #include <libwire/tcp/socket.hpp>
 #include <libwire/tcp/listener.hpp>
 
-using namespace libwire;
 using namespace std::literals::chrono_literals;
 
 static uint16_t port_to_use = 7777;
 
-/**
- * Create two connected sockets for testing.
- */
-static std::tuple<tcp::socket, tcp::socket> socket_pair() {
-    ++port_to_use;
+using namespace libwire;
 
+struct TcpSocket : testing::Test {
+    static void SetUpTestCase() {
+        listener.listen(ipv4::loopback, port_to_use);
+    }
+
+    static void TearDownTestCase() {
+        listener = tcp::listener();
+    }
+
+    void SetUp() override {
+        std::thread connect_thr([&]() {
+            std::this_thread::sleep_for(100ms);
+            client.connect(ipv4::loopback, port_to_use);
+        });
+
+        server = listener.accept();
+        if (connect_thr.joinable()) connect_thr.join();
+    }
+
+    void TearDown() override {
+        if (client.is_open()) client.shutdown();
+        if (server.is_open()) server.shutdown();
+    }
+
+    static tcp::listener listener;
     tcp::socket server, client;
-    tcp::listener listener{ipv4::loopback, port_to_use};
+};
 
-    std::thread connect_thr([&]() {
-        std::this_thread::sleep_for(100ms);
-        client.connect(ipv4::loopback, port_to_use);
-    });
+tcp::listener TcpSocket::listener;
 
-    server = listener.accept();
-    if (connect_thr.joinable()) connect_thr.join();
-
-    return {std::move(server), std::move(client)};
-}
-
-static std::vector<uint8_t> random_vector(size_t size) {
-    std::vector<uint8_t> vec(size);
-    std::generate(vec.begin(), vec.end(), std::rand); // NOLINT(cert-msc30-c,cert-msc50-cpp)
-    return vec;
-}
-
-TEST(TcpSocket, Connect) {
-    auto [ server, client ] = socket_pair();
+TEST_F(TcpSocket, Connect) {
     ASSERT_TRUE(server.is_open());
     ASSERT_TRUE(client.is_open());
 }
 
-TEST(TcpSocket, BasicIntegrityCheck) {
-    std::srand(std::time(nullptr));
+TEST_F(TcpSocket, BasicIntegrityCheck) {
     for (unsigned i = 0; i < 10; ++i) {
-        auto vec = random_vector(1024 * std::rand() % 1024); // NOLINT(cert-msc30-c,cert-msc50-cpp)
-        auto [ server, client ] = socket_pair();
+        auto vec = std::vector<uint8_t>(1024 * (i + 1), 0x00);
 
         client.write(vec);
         auto vec2 = server.read(vec.size());
         ASSERT_EQ(vec, vec2);
-        client.shutdown();
-        server.shutdown();
     }
 }
 
-// TCP state machine is broken here, if we test
-// it from separate threads then it will cause Broken Pipe
-// on write as it should, but exactly here it doesn't works for
-// some reason.
+TEST_F(TcpSocket, ReadUntilIntegrityCheck) {
+    for (unsigned i = 0; i < 10; ++i) {
+        auto vec = std::vector<uint8_t>(1024 * (i + 1), 0x00);
+        vec.push_back(0xFF);
 
-//TEST(TcpSocker, CloseOnFailure) {
-//    auto vec = random_vector(512);
-//    auto [ server, client ] = socket_pair();
-//    server.close();
-//    ASSERT_FALSE(server.is_open());
-//    client.write(vec);
-//    ASSERT_FALSE(client.is_open());
-//}
+        client.write(vec);
+        auto vec2 = server.read_until(0xFF, vec);
+        ASSERT_EQ(vec, vec2);
+    }
+}
+
+TEST_F(TcpSocket, CloseOnReadAfterRemoteClose) {
+    auto vec = std::vector<uint8_t>(512, 0x00);
+    server.close();
+    ASSERT_FALSE(server.is_open());
+    ASSERT_THROW(client.read(5, vec), std::system_error);
+    ASSERT_FALSE(client.is_open());
+}
+
+// TODO: Investigate this, I don't think things should work this way.
+TEST_F(TcpSocket, DISABLED_CloseOnWriteAfterRemoteClose) {
+    auto vec = std::vector<uint8_t>(512, 0x00);
+    server.close();
+    ASSERT_FALSE(server.is_open());
+    ASSERT_THROW(client.write(vec), std::system_error);
+    ASSERT_FALSE(client.is_open());
+}
 
