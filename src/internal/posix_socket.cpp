@@ -10,12 +10,13 @@ namespace libwire::internal_ {
     static std::tuple<address, uint16_t> sockaddr_to_endpoint(sockaddr in) {
         if (in.sa_family == AF_INET) {
             auto sock_address_v4 = reinterpret_cast<sockaddr_in&>(in);
-            return {memory_view(&sock_address_v4.sin_addr, sizeof(sock_address_v4.sin_addr)), sock_address_v4.sin_port};
+            return {memory_view(&sock_address_v4.sin_addr, sizeof(sock_address_v4.sin_addr)),
+                    network_to_host(sock_address_v4.sin_port)};
         }
         if (in.sa_family == AF_INET6) {
             auto& sock_address_v6 = reinterpret_cast<sockaddr_in6&>(in);
             return {memory_view(&sock_address_v6.sin6_addr, sizeof(sock_address_v6.sin6_addr)),
-                    sock_address_v6.sin6_port};
+                    network_to_host(sock_address_v6.sin6_port)};
         }
         assert(false);
     }
@@ -208,9 +209,9 @@ namespace libwire::internal_ {
     std::tuple<address, uint16_t> socket::local_endpoint() const noexcept {
         assert(fd != not_initialized);
 
-        sockaddr sock_address;
+        sockaddr sock_address{};
         socklen_t length = sizeof(sock_address);
-        [[maybe_unused]] int status = getpeername(fd, &sock_address, &length);
+        [[maybe_unused]] int status = getsockname(fd, &sock_address, &length);
 #ifndef NDEBUG
         if (status < 0) return {{0, 0, 0, 0}, 0u};
 #endif
@@ -220,9 +221,9 @@ namespace libwire::internal_ {
     std::tuple<address, uint16_t> socket::remote_endpoint() const noexcept {
         assert(fd != not_initialized);
 
-        sockaddr sock_address;
+        sockaddr sock_address{};
         socklen_t length = sizeof(sock_address);
-        [[maybe_unused]] int status = getsockname(fd, &sock_address, &length);
+        [[maybe_unused]] int status = getpeername(fd, &sock_address, &length);
 #ifndef NDEBUG
         if (status < 0) return {{0, 0, 0, 0}, 0u};
 #endif

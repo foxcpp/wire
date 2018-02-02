@@ -73,6 +73,14 @@ TEST_F(TcpSocket, Connect) {
     ASSERT_TRUE(client.is_open());
 }
 
+TEST_F(TcpSocket, EndpointsConsistency) {
+    ASSERT_EQ(client.remote_endpoint(), std::tuple(ipv4::loopback, 7777));
+    ASSERT_EQ(std::get<0>(client.local_endpoint()), ipv4::loopback);
+    ASSERT_EQ(std::get<0>(server.local_endpoint()), ipv4::loopback);
+    ASSERT_EQ(client.remote_endpoint(), server.local_endpoint());
+    ASSERT_EQ(server.remote_endpoint(), client.local_endpoint());
+}
+
 TEST_F(TcpSocket, BasicIntegrityCheck) {
     for (unsigned i = 0; i < 10; ++i) {
         auto vec = std::vector<uint8_t>(1024 * (i + 1), 0x00);
