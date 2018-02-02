@@ -15,8 +15,3 @@ libwire_test(libwire-tests
     tcp/socket.cpp
     )
 
-add_custom_target(
-    check
-    COMMAND libwire-tests
-    COMMENT "Running libwire tests"
-    )

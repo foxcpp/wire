@@ -7,25 +7,42 @@ branches:
   - master
   - dev
 
-addons:
-  apt:
-    packages:
-    - doxygen
+matrix:
+  include:
+  # Build & test using clang with sanitizers.
+  - env: BUILD_TYPE=Debug LD_LIBRARY_PATH=/usr/local/clang-5.0.0/lib CXXFLAGS="-stdlib=libc++ -fsanitize=address,undefined" TESTS=ON EXAMPLES=ON WSTRICT=ON DOCS=OFF
+    compiler: clang
+  # Generate coverage report.
+  - env: BUILD_TYPE=Coverage COMPILER=g++-7 TESTS=ON EXAMPLES=ON WSTRICT=OFF DOCS=OFF
+    compiler: gcc
+    addons:
+      apt:
+        sources: ['ubuntu-toolchain-r-test']
+        packages: ['g++-7', 'lcov']
+    after_script:
+    - cd ${TRAVIS_BUILD_DIR}/build
+    - lcov --list coverage.info.cleaned
+    - bash <(curl -s https://codecov.io/bash) -f coverage.info.cleaned
+  # Generate and deploy documentation
+  - compiler: clang
+    addons:
+      apt:
+        packages: ['doxygen']
+    script:
+    - mkdir -p build && cd build
+    - cmake .. -DLIBWIRE_DOCS=ON
+    - cmake --build . --target doc
+    deploy:
+      provider: pages
+      skip-cleanup: true
+      github-token: $GITHUB_TOKEN
+      local-dir: build/doxygen_output/
+      on:
+        branch: dev
 
 script:
-- export CXX=clang++
-- export CXXFLAGS="-stdlib=libc++ -O1 -g -fsanitize=address,undefined -fno-omit-frame-pointer -fno-optimize-sibling-calls"
-- mkdir build
-- cd build
-- cmake .. -DLIBWIRE_TESTS=ON -DLIBWIRE_EXAMPLES=ON -DLIBWIRE_DOCS=ON -DLIBWIRE_WSTRICT=ON
+- mkdir -p build && cd build
+- cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_CXX_COMPILER=${COMPILER} -DLIBWIRE_TESTS=${TESTS} -DLIBWIRE_EXAMPLES=${TESTS} -DLIBWIRE_DOCS=${DOCS} -DLIBWIRE_WSTRICT=${WSTRICT}
 - cmake --build . --target all
-- env LD_LIBRARY_PATH=/usr/local/clang-5.0.0/lib cmake --build . --target check
-
-deploy:
-  provider: pages
-  skip-cleanup: true
-  github-token: $GITHUB_TOKEN
-  local-dir: build/doxygen_output/
-  on:
-    branch: dev
+- cmake --build . --target check
 

@@ -2,6 +2,7 @@ libwire
 =========
 
 [![Travis CI](https://img.shields.io/travis/foxcpp/wire.svg?style=flat-square)](https://travis-ci.org/foxcpp/wire)
+[![CodeCov](https://img.shields.io/codecov/c/github/foxcpp/wire.svg?style=flat-square)](https://codecov.io/gh/foxcpp/wire)
 [![Latest Release](https://img.shields.io/github/release/foxcpp/wire.svg?style=flat-square)](https://github.com/foxcpp/wire/releases/latest)
 [![Issues](https://img.shields.io/github/issues-raw/foxcpp/wire.svg?style=flat-square)](https://github.com/foxcpp/wire/issues)
 [![License](https://img.shields.io/github/license/foxcpp/wire.svg?style=flat-square)](https://github.com/foxcpp/wire/blob/master/LICENSE)
@@ -23,6 +24,7 @@ on top system TCP & UDP implementation.
 #### Requirements
 * C++17 compatible compiler
 * _(Optional)_ Google Test for tests (included as submodule)
+* _(Optional)_ Doxygen for API documentation generation
 
 ```
 $ git clone https://github.com/foxcpp/wire

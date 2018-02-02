@@ -128,3 +128,30 @@ if(clangformat_path)
         SOURCES ${PROJECT_SOURCE_DIR}/.clang-format
         )
 endif()
+
+#------------------------------------------------------------------------------
+# Coverage generation
+
+if(CMAKE_BUILD_TYPE STREQUAL "Coverage")
+    set(DEFAULT_LIBWIRE_COVERAGE ON)
+elseif()
+    set(DEFAULT_LIBWIRE_COVERAGE OFF)
+endif()
+
+option(LIBWIRE_COVERAGE "Enable coverage build type option" ${DEFAULT_LIBWIRE_COVERAGE})
+
+if(LIBWIRE_COVERAGE)
+    include(cmake/code_coverage.cmake)
+
+    setup_target_for_coverage(
+        check
+        libwire-tests
+        coverage
+    )
+else()
+    add_custom_target(
+        check
+        COMMAND libwire-tests
+        COMMENT "Running libwire tests"
+        )
+endif()
