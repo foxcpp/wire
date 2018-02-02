@@ -291,21 +291,31 @@ to report such problem.
   { ... }
   ```
 
-* One-line control clauses should use braces.
+* One-line control clauses should use braces unless they are short
+  and contain exactly one statement. In this case clause must be
+  written in one line.
 
   Right:
   ```cpp
-  if (condition) {
+  if (condition) { // OK
       do_it();
   }
+
+  if (condition) do_it(); // OK too, prefered.
   ```
 
   Wrong:
   ```cpp
   if (condition) {
       do_it();
+      do_it2();
   }
 
+  if (condition)
+      do_it(); // Can create bug if somebody wiil try to add
+               // another statement.
+
+  // Hard to read.
   if (condition) pretty_long_statement_blah_blah_blah_blah_blah_blah_blah();
   ```
 

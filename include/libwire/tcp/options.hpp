@@ -76,6 +76,7 @@ namespace libwire::tcp {
                 set_impl(socket, ch::duration_cast<ch::milliseconds>(d));
             }
             static std::chrono::milliseconds get(const socket&) noexcept;
+
         private:
             static void set_impl(socket&, std::chrono::milliseconds) noexcept;
         };
@@ -128,6 +129,7 @@ namespace libwire::tcp {
             }
 
             static std::tuple<bool, std::chrono::seconds> get(const socket&) noexcept;
+
         private:
             static void set_impl(socket&, bool enabled, std::chrono::seconds timeout) noexcept;
         };
