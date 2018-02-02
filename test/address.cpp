@@ -1,14 +1,14 @@
 #include "gtest.hpp"
 #include <libwire/address.hpp>
 
-TEST(IPv4Address, VersionInitialization) {
+TEST(Ipv4Address, VersionInitialization) {
     using namespace libwire;
 
     address adr1({127, 0, 0, 1});
     ASSERT_EQ(adr1.version, ip::v4);
 }
 
-TEST(IPv4Address, FromString) {
+TEST(Ipv4Address, FromString) {
     using namespace libwire;
 
     // Basic test.
@@ -22,7 +22,7 @@ TEST(IPv4Address, FromString) {
     ASSERT_THROW(address("000.00.11.11"), std::invalid_argument);
 }
 
-TEST(IPv4Address, ToString) {
+TEST(Ipv4Address, ToString) {
     using namespace libwire;
 
     // Basic test.
@@ -30,14 +30,14 @@ TEST(IPv4Address, ToString) {
     ASSERT_EQ(address({127, 0, 0, 1}).to_string(), "127.0.0.1");
 }
 
-TEST(IPv6Address, VersionInitialization) {
+TEST(Ipv6Address, VersionInitialization) {
     using namespace libwire;
 
     address adr1({0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x1});
     ASSERT_EQ(adr1.version, ip::v6);
 }
 
-TEST(IPv6Address, FromString) {
+TEST(Ipv6Address, FromString) {
     using namespace libwire;
 
     address adr1({0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x1});
