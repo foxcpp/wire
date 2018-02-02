@@ -24,21 +24,24 @@
 #include "gtest.hpp"
 #include <libwire/dns.hpp>
 
+TEST(DNSResolve, Error) {
+    using namespace libwire;
+
+    ASSERT_THROW(dns::resolve(ip::v4, "this-domain-will-never-exist"), std::system_error);
+}
+
 TEST(DNSResolve, NoMixedIPVersion) {
     using namespace libwire;
 
     std::unordered_set<address> unique_addresses;
 
-    std::error_code ec;
-    std::vector<address> result_v4 = dns::resolve(ip::v4, "example.com", ec);
-    ASSERT_FALSE(ec) << "Resolution failed, do you have working Internet connection?";
+    std::vector<address> result_v4 = dns::resolve(ip::v4, "example.com");
     for (const auto& address : result_v4) {
         ASSERT_EQ(address.version, ip::v4);
         unique_addresses.insert(address);
     }
 
-    std::vector<address> result_v6 = dns::resolve(ip::v6, "example.com", ec);
-    ASSERT_FALSE(ec) << "Resolution failed, do you have working Internet connection?";
+    std::vector<address> result_v6 = dns::resolve(ip::v6, "example.com");
     for (const auto& address : result_v6) {
         ASSERT_EQ(address.version, ip::v6);
         unique_addresses.insert(address);
@@ -50,15 +53,12 @@ TEST(DNSResolve, NoDuplicates) {
 
     std::unordered_set<address> unique_addresses;
 
-    std::error_code ec;
-    std::vector<address> result_v4 = dns::resolve(ip::v4, "example.com", ec);
-    ASSERT_FALSE(ec) << "Resolution failed, do you have working Internet connection?";
+    std::vector<address> result_v4 = dns::resolve(ip::v4, "example.com");
     for (const auto& address : result_v4) {
         unique_addresses.insert(address);
     }
 
-    std::vector<address> result_v6 = dns::resolve(ip::v6, "example.com", ec);
-    ASSERT_FALSE(ec) << "Resolution failed, do you have working Internet connection?";
+    std::vector<address> result_v6 = dns::resolve(ip::v6, "example.com");
     for (const auto& address : result_v6) {
         unique_addresses.insert(address);
     }

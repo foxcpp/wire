@@ -33,7 +33,7 @@ static uint16_t port_to_use = 7777;
 
 using namespace libwire;
 
-struct TcpSocket : testing::Test {
+struct TcpSocketPair : testing::Test {
     static void SetUpTestCase() {
         listener.listen(ipv4::loopback, port_to_use);
     }
@@ -66,14 +66,14 @@ struct TcpSocket : testing::Test {
     tcp::socket server, client;
 };
 
-tcp::listener TcpSocket::listener;
+tcp::listener TcpSocketPair::listener;
 
-TEST_F(TcpSocket, Connect) {
+TEST_F(TcpSocketPair, Connect) {
     ASSERT_TRUE(server.is_open());
     ASSERT_TRUE(client.is_open());
 }
 
-TEST_F(TcpSocket, EndpointsConsistency) {
+TEST_F(TcpSocketPair, EndpointsConsistency) {
     ASSERT_EQ(client.remote_endpoint(), std::tuple(ipv4::loopback, 7777));
     ASSERT_EQ(std::get<0>(client.local_endpoint()), ipv4::loopback);
     ASSERT_EQ(std::get<0>(server.local_endpoint()), ipv4::loopback);
@@ -81,7 +81,7 @@ TEST_F(TcpSocket, EndpointsConsistency) {
     ASSERT_EQ(server.remote_endpoint(), client.local_endpoint());
 }
 
-TEST_F(TcpSocket, BasicIntegrityCheck) {
+TEST_F(TcpSocketPair, BasicIntegrityCheck) {
     for (unsigned i = 0; i < 10; ++i) {
         auto vec = std::vector<uint8_t>(1024 * (i + 1), 0x00);
 
@@ -91,7 +91,7 @@ TEST_F(TcpSocket, BasicIntegrityCheck) {
     }
 }
 
-TEST_F(TcpSocket, ReadUntilIntegrityCheck) {
+TEST_F(TcpSocketPair, ReadUntilIntegrityCheck) {
     for (unsigned i = 0; i < 10; ++i) {
         auto vec = std::vector<uint8_t>(1024 * (i + 1), 0x00);
         vec.push_back(0xFF);
@@ -102,7 +102,7 @@ TEST_F(TcpSocket, ReadUntilIntegrityCheck) {
     }
 }
 
-TEST_F(TcpSocket, CloseOnReadAfterRemoteClose) {
+TEST_F(TcpSocketPair, CloseOnReadAfterRemoteClose) {
     auto vec = std::vector<uint8_t>(512, 0x00);
     server.close();
     ASSERT_FALSE(server.is_open());
@@ -110,3 +110,13 @@ TEST_F(TcpSocket, CloseOnReadAfterRemoteClose) {
     ASSERT_FALSE(client.is_open());
 }
 
+TEST(TcpSocket, Errors) {
+    std::error_code ec;
+    {
+        tcp::socket socket;
+
+        socket.connect({127, 0, 0, 1}, 65535, ec);
+        ASSERT_TRUE(ec);
+        ASSERT_EQ(ec, error::connection_refused);
+    }
+}
