@@ -25,6 +25,7 @@
 #include "../gtest.hpp"
 #include <libwire/tcp/socket.hpp>
 #include <libwire/tcp/listener.hpp>
+#include <libwire/tcp/options.hpp>
 
 using namespace std::literals::chrono_literals;
 
@@ -49,6 +50,11 @@ struct TcpSocket : testing::Test {
 
         server = listener.accept();
         if (connect_thr.joinable()) connect_thr.join();
+
+        // This will allow us to rerun tests without waiting for
+        // TIME_WAIT (2*msl). Magic but works.
+        server.set_option(tcp::linger, true, 0s);
+        client.set_option(tcp::linger, true, 0s);
     }
 
     void TearDown() override {
@@ -93,15 +99,6 @@ TEST_F(TcpSocket, CloseOnReadAfterRemoteClose) {
     server.close();
     ASSERT_FALSE(server.is_open());
     ASSERT_THROW(client.read(5, vec), std::system_error);
-    ASSERT_FALSE(client.is_open());
-}
-
-// TODO: Investigate this, I don't think things should work this way.
-TEST_F(TcpSocket, DISABLED_CloseOnWriteAfterRemoteClose) {
-    auto vec = std::vector<uint8_t>(512, 0x00);
-    server.close();
-    ASSERT_FALSE(server.is_open());
-    ASSERT_THROW(client.write(vec), std::system_error);
     ASSERT_FALSE(client.is_open());
 }
 
