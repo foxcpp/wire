@@ -69,9 +69,15 @@ namespace libwire::tcp {
          * Dummy type for \ref timeout option.
          */
         struct timeout_t {
-            void set(socket&, std::chrono::milliseconds) noexcept;
+            template<typename Duration>
+            static void set(socket& socket, Duration d) noexcept {
+                namespace ch = std::chrono;
 
-            std::chrono::milliseconds get(const socket&) noexcept;
+                set_impl(socket, ch::duration_cast<ch::milliseconds>(d));
+            }
+            static std::chrono::milliseconds get(const socket&) noexcept;
+        private:
+            static void set_impl(socket&, std::chrono::milliseconds) noexcept;
         };
 
         /**
@@ -98,7 +104,6 @@ namespace libwire::tcp {
          */
         struct keep_alive_t {
             static void set(socket&, bool) noexcept;
-
             static bool get(const socket&) noexcept;
         };
 
@@ -115,9 +120,16 @@ namespace libwire::tcp {
          * Dummy type for linger option.
          */
         struct linger_t {
-            static void set(socket&, bool enabled, std::chrono::seconds timeout) noexcept;
+            template<typename Duration>
+            static void set(socket& sock, bool enabled, Duration timeout) noexcept {
+                namespace ch = std::chrono;
+
+                set_impl(sock, enabled, ch::duration_cast<ch::seconds>(timeout));
+            }
 
             static std::tuple<bool, std::chrono::seconds> get(const socket&) noexcept;
+        private:
+            static void set_impl(socket&, bool enabled, std::chrono::seconds timeout) noexcept;
         };
 
         /**

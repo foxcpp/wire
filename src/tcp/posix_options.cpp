@@ -51,7 +51,7 @@ namespace libwire::tcp {
             return bool(result);
         }
 
-        void linger_t::set(socket& sock, bool enabled, std::chrono::seconds timeout) noexcept {
+        void linger_t::set_impl(socket& sock, bool enabled, std::chrono::seconds timeout) noexcept {
             struct linger linger_opt {};
             linger_opt.l_onoff = int(enabled);
             linger_opt.l_linger = int(timeout.count());
@@ -66,7 +66,7 @@ namespace libwire::tcp {
             return {bool(linger_opt.l_onoff), std::chrono::seconds(linger_opt.l_linger)};
         }
 
-        void timeout_t::set(socket& sock, std::chrono::milliseconds timeout) noexcept {
+        void timeout_t::set_impl(socket& sock, std::chrono::milliseconds timeout) noexcept {
 #ifdef TCP_USER_TIMEOUT
             auto timeout_count = unsigned(timeout.count());
             setsockopt(sock.native_handle(), IPPROTO_TCP, TCP_USER_TIMEOUT, &timeout_count, sizeof(timeout_count));
