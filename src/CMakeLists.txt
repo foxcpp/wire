@@ -16,6 +16,7 @@ set(LIBWIRE_POSIX_SOURCES
     internal/error/posix_system_category.cpp
     posix_dns.cpp
     tcp/posix_options.cpp
+    posix_options.cpp
     )
 
 set(LIBWIRE_HEADERS
@@ -30,6 +31,7 @@ set(LIBWIRE_HEADERS
     ../include/libwire/memory_view.hpp
     ../include/libwire/protocols.hpp
     ../include/libwire/dns.hpp
+    ../include/libwire/options.hpp
     )
 
 set(LIBWIRE_POSIX_HEADERS

@@ -9,4 +9,5 @@ namespace libwire {} // namespace libwire
 #include "libwire/memory_view.hpp"
 #include "libwire/address.hpp"
 #include "libwire/dns.hpp"
+#include "libwire/options.hpp"
 #include "libwire/tcp.hpp"
