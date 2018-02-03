@@ -29,6 +29,10 @@ add_subdirectory(src/)
 option(LIBWIRE_WSTRICT "Extra warnings (Clang-only)" OFF)
 
 if(LIBWIRE_WSTRICT)
+    if(NOT CMAKE_CXX_COMPILER_ID MATCHES "(Clang|AppleClang)")
+        message(FATAL_ERROR "Clang is required for LIBWIRE_WSTRICT.")
+    endif()
+
     target_compile_options(libwire PUBLIC -Wall -Wextra -pedantic -Wdocumentation
         -Wconversion -Wdeprecated -Wformat -Weffc++)
 endif()
@@ -36,13 +40,18 @@ endif()
 #------------------------------------------------------------------------------
 # Tests
 
-option(LIBWIRE_TESTS "Enable tests" OFF)
-
-add_subdirectory(external/gtest/googletest EXCLUDE_FROM_ALL)
+option(LIBWIRE_TESTS "Enable tests (requires Google Test submodule)" OFF)
 
 if(LIBWIRE_TESTS)
+    if(NOT EXISTS external/gtest/googletest)
+        message(FATAL_ERROR "Google Test submodule is missing.")
+    endif()
+
+    add_subdirectory(external/gtest/googletest EXCLUDE_FROM_ALL)
+
     add_subdirectory(test/)
-else()
+elseif(EXISTS external/gtest/googletest)
+    add_subdirectory(external/gtest/googletest EXCLUDE_FROM_ALL)
     add_subdirectory(test/ EXCLUDE_FROM_ALL)
 endif()
 
