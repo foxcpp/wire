@@ -43,14 +43,14 @@ endif()
 option(LIBWIRE_TESTS "Enable tests (requires Google Test submodule)" OFF)
 
 if(LIBWIRE_TESTS)
-    if(NOT EXISTS external/gtest/googletest)
+    if(NOT EXISTS ${PROJECT_SOURCE_DIR}/external/gtest/CMakeLists.txt)
         message(FATAL_ERROR "Google Test submodule is missing.")
     endif()
 
     add_subdirectory(external/gtest/googletest EXCLUDE_FROM_ALL)
 
     add_subdirectory(test/)
-elseif(EXISTS external/gtest/googletest)
+elseif(EXISTS ${PROJECT_SOURCE_DIR}/external/gtest/CMakeLists.txt)
     add_subdirectory(external/gtest/googletest EXCLUDE_FROM_ALL)
     add_subdirectory(test/ EXCLUDE_FROM_ALL)
 endif()
