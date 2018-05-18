@@ -20,38 +20,32 @@
  * SOFTWARE.
  */
 
-#include "libwire/options.hpp"
-#include "libwire/internal/platform.hpp"
+#pragma once
 
-#if defined(LIBWIRE_POSIX)
-#   include <fcntl.h>
-#endif
-#if defined(LIBWIRE_WINDOWS)
-#   include <winsock2.h>
-#   include <ws2tcpip.h>
-#endif
+#include "../../../../../../../../usr/include/c++/8.1.0/system_error"
+#include "../../../../../../../../usr/include/c++/8.1.0/string"
+#include "libwire/error.hpp"
 
-namespace libwire {
-    bool non_blocking_t::get_impl(internal_::socket& sock) noexcept {
-#if defined(LIBWIRE_POSIX)
-        int flags = fcntl(sock.native_handle(), F_GETFL, 0);
-        return (flags & O_NONBLOCK) == O_NONBLOCK;
-#endif
-#if defined(LIBWIRE_WINDOWS)
-        return sock.state.user_non_blocking;
-#endif
-    }
+/**
+ * Mapping of POSIX EAI_* codes to error conditions defined in error.hpp.
+ */
 
-    void non_blocking_t::set_impl(internal_::socket& sock, bool enable) noexcept {
-#if defined(LIBWIRE_POSIX)
-        int flags = fcntl(sock.native_handle(), F_GETFL, 0);
-        flags = enable ? (flags | O_NONBLOCK) : (flags & ~O_NONBLOCK);
-        fcntl(sock.native_handle(), F_SETFL, flags);
-#endif
-#if defined(LIBWIRE_WINDOWS)
-        unsigned long mode = enable;
-        ioctlsocket(sock.native_handle(), FIONBIO, &mode);
-        sock.state.user_non_blocking = true;
-#endif
-    }
-} // namespace libwire
+namespace libwire::internal_ {
+    /**
+     * Get error code set by last called DNS resolver function.
+     *
+     * status is a value returned by DNS resolver function.
+     *
+     * Caller should not assume that value will be preserved after
+     * call (this function *may* clear code).
+     */
+    std::error_code last_dns_error(int status) noexcept;
+
+    class dns_errors : public std::error_category {
+    public:
+        const char* name() const noexcept override;
+        std::string message(int code) const noexcept override;
+        std::error_condition default_error_condition(int code) const noexcept override;
+        bool equivalent(int code, const std::error_condition& condition) const noexcept override;
+    };
+} // namespace libwire::internal_

@@ -19,22 +19,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 #pragma once
 
-#include "../../../../../../../../usr/include/c++/8.1.0/system_error"
-#include "../../../../../../../../usr/include/c++/8.1.0/string"
-#include "../error.hpp"
-
 /**
- * Mapping of POSIX errno codes to error conditions defined in error.hpp.
+ * This file contains aux definitions to make platform selection in code *a bit* easier.
  */
 
-namespace libwire::internal_ {
-    class system_errors : public std::error_category {
-    public:
-        virtual const char* name() const noexcept override;
-        virtual std::string message(int code) const noexcept override;
-        virtual std::error_condition default_error_condition(int code) const noexcept override;
-        virtual bool equivalent(int code, const std::error_condition& condition) const noexcept override;
-    };
-} // namespace libwire::internal_
+#if defined(__unix__)
+#   define LIBWIRE_POSIX
+#endif
+
+#if defined(__linux__)
+#   define LIBWIRE_LINUX
+#endif
+
+#if defined(_WIN32) || defined(WIN32) || defined(__WIN32) || defined(WINNT)
+#   define LIBWIRE_WINDOWS
+#endif

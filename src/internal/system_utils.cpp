@@ -20,38 +20,22 @@
  * SOFTWARE.
  */
 
-#include "libwire/options.hpp"
-#include "libwire/internal/platform.hpp"
+#include <libwire/internal/endianess.hpp>
+#include <cassert>
+#include "libwire/internal/system_utils.hpp"
 
-#if defined(LIBWIRE_POSIX)
-#   include <fcntl.h>
-#endif
-#if defined(LIBWIRE_WINDOWS)
-#   include <winsock2.h>
-#   include <ws2tcpip.h>
-#endif
-
-namespace libwire {
-    bool non_blocking_t::get_impl(internal_::socket& sock) noexcept {
-#if defined(LIBWIRE_POSIX)
-        int flags = fcntl(sock.native_handle(), F_GETFL, 0);
-        return (flags & O_NONBLOCK) == O_NONBLOCK;
-#endif
-#if defined(LIBWIRE_WINDOWS)
-        return sock.state.user_non_blocking;
-#endif
+std::tuple<libwire::address, uint16_t> libwire::internal_::sockaddr_to_endpoint(sockaddr in) {
+    // FIXME: Broken for IPv6, sockaddr can't store IPv6 addresses but sockaddr_storage can.
+    if (in.sa_family == AF_INET) {
+        auto sock_address_v4 = reinterpret_cast<sockaddr_in&>(in);
+        return {memory_view(&sock_address_v4.sin_addr, sizeof(sock_address_v4.sin_addr)),
+                network_to_host(sock_address_v4.sin_port)};
     }
-
-    void non_blocking_t::set_impl(internal_::socket& sock, bool enable) noexcept {
-#if defined(LIBWIRE_POSIX)
-        int flags = fcntl(sock.native_handle(), F_GETFL, 0);
-        flags = enable ? (flags | O_NONBLOCK) : (flags & ~O_NONBLOCK);
-        fcntl(sock.native_handle(), F_SETFL, flags);
-#endif
-#if defined(LIBWIRE_WINDOWS)
-        unsigned long mode = enable;
-        ioctlsocket(sock.native_handle(), FIONBIO, &mode);
-        sock.state.user_non_blocking = true;
-#endif
+    if (in.sa_family == AF_INET6) {
+        auto& sock_address_v6 = reinterpret_cast<sockaddr_in6&>(in);
+        return {memory_view(&sock_address_v6.sin6_addr, sizeof(sock_address_v6.sin6_addr)),
+                network_to_host(sock_address_v6.sin6_port)};
     }
-} // namespace libwire
+    assert(false);
+}
+

@@ -22,9 +22,19 @@
 
 #include "libwire/dns.hpp"
 #include "libwire/error.hpp"
+#include "libwire/internal/platform.hpp"
+#include "libwire/internal/dns_errors.hpp"
 #include <cstring>
 #include <cassert>
-#include <netdb.h>
+
+#if defined(LIBWIRE_POSIX)
+#   include <netdb.h>
+#endif
+#if defined(LIBWIRE_WINDOWS)
+#   include <winsock2.h>
+#   include <ws2tcpip.h>
+
+#endif
 
 namespace libwire::dns {
     std::vector<address> resolve(ip protocol, const std::string_view& domain, std::error_code& ec) noexcept {
@@ -32,11 +42,7 @@ namespace libwire::dns {
 
         int status = getaddrinfo(domain.data(), nullptr, nullptr, &result_raw);
         if (status != 0) {
-            if (status == EAI_SYSTEM) {
-                ec = std::error_code(errno, error::system_category());
-            }
-            ec = std::error_code(status, error::dns_category());
-            assert(ec != error::unexpected);
+            ec = internal_::last_dns_error(status);
             return {};
         }
 

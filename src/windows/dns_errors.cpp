@@ -21,13 +21,11 @@
  */
 #include <libwire/internal/dns_errors.hpp>
 #include <cassert>
-#include <netdb.h>
+#include <winsock2.h>
+#include <ws2tcpip.h>
 
 std::error_code libwire::internal_::last_dns_error(int status) noexcept {
-    if (status == EAI_SYSTEM) {
-        return std::error_code(errno, libwire::error::system_category());
-    }
-    std::error_code ec(status, libwire::error::dns_category());
+    std::error_code ec(WSAGetLastError(), libwire::error::dns_category());
     assert(ec != error::unexpected);
     return ec;
 }

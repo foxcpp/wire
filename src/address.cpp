@@ -20,12 +20,19 @@
  * SOFTWARE.
  */
 
+#define _WIN32_WINNT 0x600 // Windows Vista+, required for inet_pton.
+
 #include <libwire/address.hpp>
 #include <cassert>
 #include <algorithm>
+#include "libwire/internal/platform.hpp"
 
-#if defined(__unix__) || defined(__linux__)
-#    include <arpa/inet.h> // inet_pton on POSIX systems
+#if defined(LIBWIRE_POSIX)
+#    include <arpa/inet.h>
+#endif
+#if defined(LIBWIRE_WINDOWS)
+#    include <winsock2.h>
+#    include <ws2tcpip.h>
 #endif
 
 namespace libwire {
@@ -63,7 +70,8 @@ namespace libwire {
 
         std::array<char, 45> buffer;
 
-        const char* buf_ptr = inet_ntop(family, parts.data(), buffer.data(), buffer.size());
+        // const_cast is required on Windows because function accepts PVOID (void*).
+        const char* buf_ptr = inet_ntop(family, const_cast<uint8_t*>(parts.data()), buffer.data(), buffer.size());
         assert(buf_ptr != nullptr); // This function generally should not fail.
 
         return std::string(buffer.data());

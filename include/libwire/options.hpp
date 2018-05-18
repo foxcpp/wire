@@ -31,17 +31,17 @@ namespace libwire {
     struct non_blocking_t {
         template<typename Socket>
         static bool get(const Socket& sock) noexcept {
-            return get_impl(sock.native_handle());
+            return get_impl(sock.implementation());
         }
 
         template<typename Socket>
         static void set(Socket& sock, bool value) noexcept {
-            set_impl(sock.native_handle(), value);
+            set_impl(sock.implementation(), value);
         }
 
     private:
-        static bool get_impl(internal_::socket::native_handle_t) noexcept;
-        static void set_impl(internal_::socket::native_handle_t, bool) noexcept;
+        static bool get_impl(internal_::socket&) noexcept;
+        static void set_impl(internal_::socket&, bool) noexcept;
     };
 
     /**

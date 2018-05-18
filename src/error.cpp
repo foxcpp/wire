@@ -22,24 +22,18 @@
 
 #include "libwire/error.hpp"
 
-#if __has_include(<unistd.h>)
-#    include "libwire/posix/system_errors.hpp"
-#    include "libwire/posix/dns_errors.hpp"
-#endif
+#include "libwire/internal/system_errors.hpp"
+#include "libwire/internal/dns_errors.hpp"
 
 namespace libwire::error {
     std::error_category& system_category() {
-#if __has_include(<unistd.h>)
         static internal_::system_errors cat;
         return cat;
-#endif
     }
 
     std::error_category& dns_category() {
-#if __has_include(<unistd.h>)
         static internal_::dns_errors cat;
         return cat;
-#endif
     }
 
     std::error_condition make_error_condition(generic val) {

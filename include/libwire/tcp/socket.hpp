@@ -27,12 +27,7 @@
 #include <system_error>
 #include <vector>
 #include <libwire/error.hpp>
-
-#ifdef __unix__
-#    include "../internal/bsdsocket.hpp"
-#else
-#    error "libwire doesn't supports socket interface on your platform. :("
-#endif
+#include "libwire/internal/bsdsocket.hpp"
 
 /*
  * If you had to open this file to find answer for your question - we are so

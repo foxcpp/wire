@@ -20,8 +20,15 @@
  * SOFTWARE.
  */
 
+#include "libwire/internal/system_errors.hpp"
 #include <cstring>
-#include "libwire/posix/system_errors.hpp"
+#include <cassert>
+
+std::error_code libwire::internal_::last_system_error(int status) noexcept {
+    std::error_code ec(errno, libwire::error::system_category());
+    assert(ec != error::unexpected);
+    return ec;
+}
 
 const char* libwire::internal_::system_errors::name() const noexcept {
     return "system";

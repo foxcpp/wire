@@ -22,20 +22,42 @@
 
 #pragma once
 
-#include "../../../../../../../../usr/include/c++/8.1.0/system_error"
-#include "../../../../../../../../usr/include/c++/8.1.0/string"
-#include "../error.hpp"
+#include <tuple>
+#include <libwire/error.hpp>
+#include <libwire/address.hpp>
+#include <libwire/internal/system_errors.hpp>
+#include <libwire/internal/platform.hpp>
+
+#if defined(LIBWIRE_POSIX)
+#    include <sys/socket.h>
+#    include <netinet/in.h>
+#endif
+#if defined(LIBWIRE_WINDOWS)
+#    include <winsock2.h>
+#    include <ws2tcpip.h>
+#endif
 
 /**
- * Mapping of POSIX EAI_* codes to error conditions defined in error.hpp.
+ * \file system_utils.hpp
+ *
+ * Set of misc utilities placed here because separate header for one function is too much.
  */
 
 namespace libwire::internal_ {
-    class dns_errors : public std::error_category {
-    public:
-        const char* name() const noexcept override;
-        std::string message(int code) const noexcept override;
-        std::error_condition default_error_condition(int code) const noexcept override;
-        bool equivalent(int code, const std::error_condition& condition) const noexcept override;
-    };
-} // namespace libwire::internal_
+    std::tuple<address, uint16_t> sockaddr_to_endpoint(sockaddr in);
+
+    /**
+     * Silently retry system call on EINTR, placing any other error in ec argument.
+     */
+    template<typename Func, typename... Args>
+    auto error_wrapper(const Func& func, std::error_code& ec, Args&&... args) {
+        ec = std::error_code();
+        decltype(func(std::forward<Args>(args)...)) res;
+        do {
+            res = func(std::forward<Args>(args)...);
+            ec = last_system_error();
+        } while (ec == error::interrupted);
+        return res;
+    }
+}
+

@@ -22,30 +22,53 @@
 
 #include "libwire/internal/bsdsocket.hpp"
 #include <cassert>
-#include <unistd.h>
-#include <sys/socket.h>
-#include <netinet/ip.h>
-#include "libwire/internal/endianess.hpp"
 #include "libwire/error.hpp"
+#include "libwire/internal/platform.hpp"
+#include "libwire/internal/system_utils.hpp"
+#include "libwire/internal/system_errors.hpp"
+#include "libwire/internal/endianess.hpp"
+
+#if defined(LIBWIRE_POSIX)
+#   include <unistd.h>
+#   include <sys/socket.h>
+#   include <netinet/ip.h>
+#   define closesocket close
+#endif
+#if defined(LIBWIRE_WINDOWS)
+#   include <winsock2.h>
+#   include <ws2tcpip.h>
+#   define SHUT_RD    SD_RECEIVE
+#   define SHUT_WR    SD_SEND
+#   define SHUT_RDWR  SD_BOTH
+#endif
 
 namespace libwire::internal_ {
-    static std::tuple<address, uint16_t> sockaddr_to_endpoint(sockaddr in) {
-        if (in.sa_family == AF_INET) {
-            auto sock_address_v4 = reinterpret_cast<sockaddr_in&>(in);
-            return {memory_view(&sock_address_v4.sin_addr, sizeof(sock_address_v4.sin_addr)),
-                    network_to_host(sock_address_v4.sin_port)};
-        }
-        if (in.sa_family == AF_INET6) {
-            auto& sock_address_v6 = reinterpret_cast<sockaddr_in6&>(in);
-            return {memory_view(&sock_address_v6.sin6_addr, sizeof(sock_address_v6.sin6_addr)),
-                    network_to_host(sock_address_v6.sin6_port)};
-        }
-        assert(false);
-    }
-
     unsigned socket::max_pending_connections = SOMAXCONN;
 
+#if defined(LIBWIRE_WINDOWS)
+    struct Initializer {
+        Initializer() {
+            WSAData wsa_data;
+            int initres = WSAStartup(MAKEWORD(2, 2), &wsa_data);
+            if (initres != 0) {
+                ec = last_system_error();
+            }
+        }
+
+        ~Initializer() {
+            WSACleanup();
+        }
+
+        std::error_code ec;
+    };
+#endif
+
     socket::socket(ip ipver, transport transport, std::error_code& ec) noexcept {
+#if defined(LIBWIRE_WINDOWS)
+        static Initializer init;
+        if (init.ec) ec = init.ec;
+#endif
+
         int domain;
         switch (ipver) {
         case ip::v4: domain = AF_INET; break;
@@ -64,37 +87,36 @@ namespace libwire::internal_ {
             break;
         }
 
-        fd = ::socket(domain, type, protocol);
-        if (fd < 0) {
-            ec = std::error_code(errno, error::system_category());
-            assert(ec != error::unexpected);
+        handle = error_wrapper(::socket, ec, domain, type, protocol);
+        if (handle < 0) {
+            return;
         }
 
 #ifdef SO_NOSIGPIPE
         int one = 1;
-        setsockopt(fd, SOL_SOCKET, SO_NOSIGPIPE, &one, sizeof(one));
+        setsockopt(handle, SOL_SOCKET, SO_NOSIGPIPE, &one, sizeof(one));
 #endif
     }
 
     socket::socket(socket&& o) noexcept {
-        std::swap(o.fd, this->fd);
+        std::swap(o.handle, this->handle);
     }
 
     socket& socket::operator=(socket&& o) noexcept {
-        std::swap(o.fd, this->fd);
+        std::swap(o.handle, this->handle);
         return *this;
     }
 
     socket::~socket() {
-        if (fd != not_initialized) close(fd);
+        if (handle != not_initialized) closesocket(handle);
     }
 
     socket::native_handle_t socket::native_handle() const noexcept {
-        return fd;
+        return handle;
     }
 
     void socket::shutdown(bool read, bool write) noexcept {
-        assert(fd != not_initialized);
+        assert(handle != not_initialized);
 
         int how = 0;
         if (read && !write) how = SHUT_RD;
@@ -102,7 +124,7 @@ namespace libwire::internal_ {
         if (read && write) how = SHUT_RDWR;
         assert(how != 0);
 
-        int status = ::shutdown(fd, how);
+        int status = ::shutdown(handle, how);
         if (status < 0) {
             if (errno == EINTR) {
                 shutdown(read, write);
@@ -114,69 +136,40 @@ namespace libwire::internal_ {
     }
 
     void socket::connect(address target, uint16_t port, std::error_code& ec) noexcept {
-        assert(fd != not_initialized);
+        assert(handle != not_initialized);
 
         struct sockaddr_in address {};
         address.sin_family = AF_INET;
         address.sin_port = host_to_network(port);
         address.sin_addr = *reinterpret_cast<in_addr*>(target.parts.data());
 
-        int status = ::connect(fd, reinterpret_cast<sockaddr*>(&address), sizeof(address));
-        if (status < 0) {
-            if (errno == EINTR) {
-                connect(target, port, ec);
-                return;
-            }
-            ec = std::error_code(errno, error::system_category());
-            assert(ec != error::unexpected);
-        }
+        error_wrapper(::connect, ec, handle, reinterpret_cast<sockaddr *>(&address), sizeof(address));
     }
 
     void socket::bind(uint16_t port, address interface_address, std::error_code& ec) noexcept {
-        assert(fd != not_initialized);
+        assert(handle != not_initialized);
 
         sockaddr_in address{};
         address.sin_family = AF_INET;
         address.sin_port = host_to_network(port);
         address.sin_addr = *reinterpret_cast<in_addr*>(interface_address.parts.data());
 
-        int status = ::bind(fd, reinterpret_cast<sockaddr*>(&address), sizeof(address));
-        if (status < 0) {
-            if (errno == EINTR) {
-                bind(port, interface_address, ec);
-                return;
-            }
-            ec = std::error_code(errno, error::system_category());
-            assert(ec != error::unexpected);
-        }
+        error_wrapper(::bind, ec, handle, reinterpret_cast<sockaddr *>(&address), sizeof(address));
     }
 
     void socket::listen(int backlog, std::error_code& ec) noexcept {
-        assert(fd != not_initialized);
+        assert(handle != not_initialized);
 
-        int status = ::listen(fd, backlog);
-        if (status < 0) {
-            if (errno == EINTR) {
-                listen(backlog, ec);
-                return;
-            }
-            ec = std::error_code(errno, error::system_category());
-            assert(ec != error::unexpected);
-        }
+        error_wrapper(::listen, ec, handle, backlog);
     }
 
     socket socket::accept(std::error_code& ec) noexcept {
-        assert(fd != not_initialized);
+        assert(handle != not_initialized);
 
-        int accepted_fd = ::accept(fd, nullptr, nullptr);
+        native_handle_t accepted_fd = error_wrapper(::accept, ec, handle, nullptr, nullptr);
         // TODO (PR's welcomed): Allow to get client address.
 
         if (accepted_fd < 0) {
-            if (errno == EINTR) {
-                return accept(ec);
-            }
-            ec = std::error_code(errno, error::system_category());
-            assert(ec != error::unexpected);
             return socket();
         }
 
@@ -190,63 +183,54 @@ namespace libwire::internal_ {
 #endif
 
     size_t socket::write(const void* input, size_t length_bytes, std::error_code& ec) noexcept {
-        assert(fd != not_initialized);
+        assert(handle != not_initialized);
 
-        ssize_t actually_written = ::send(fd, input, length_bytes, IO_FLAGS);
+        ssize_t actually_written = error_wrapper(::send, ec, handle, reinterpret_cast<const char*>(input), length_bytes, IO_FLAGS);
         if (actually_written < 0) {
-            if (errno == EINTR) {
-                return write(input, length_bytes, ec);
-            }
-            ec = std::error_code(errno, error::system_category());
-            assert(ec != error::unexpected);
             return 0;
         }
         return size_t(actually_written);
     }
 
     size_t socket::read(void* output, size_t length_bytes, std::error_code& ec) noexcept {
-        assert(fd != not_initialized);
+        assert(handle != not_initialized);
 
-        ssize_t actually_readen = ::recv(fd, output, length_bytes, IO_FLAGS);
+        ssize_t actually_readen = error_wrapper(::recv, ec, handle, reinterpret_cast<char*>(output), length_bytes, IO_FLAGS);
+        // FIXME: Needs to be improved for non-blocking I/O.
         if (actually_readen == 0 && length_bytes != 0) {
             // We wanted more than zero bytes but got zero, looks like EOF.
             ec = std::error_code(EOF, error::system_category());
             return 0;
         }
         if (actually_readen < 0) {
-            if (errno == EINTR) {
-                return read(output, length_bytes, ec);
-            }
-            ec = std::error_code(errno, error::system_category());
-            assert(ec != error::unexpected);
             return 0;
         }
         return size_t(actually_readen);
     }
 
     socket::operator bool() const noexcept {
-        return fd != not_initialized;
+        return handle != not_initialized;
     }
 
     std::tuple<address, uint16_t> socket::local_endpoint() const noexcept {
-        assert(fd != not_initialized);
+        assert(handle != not_initialized);
 
         sockaddr sock_address{};
         socklen_t length = sizeof(sock_address);
-        [[maybe_unused]] int status = getsockname(fd, &sock_address, &length);
-#ifndef NDEBUG
+        [[maybe_unused]] int status = getsockname(handle, &sock_address, &length);
+#ifndef NDEBUG // FIXME: This can explode with EINTR in production.
         if (status < 0) return {{0, 0, 0, 0}, 0u};
 #endif
         return sockaddr_to_endpoint(sock_address);
     }
 
     std::tuple<address, uint16_t> socket::remote_endpoint() const noexcept {
-        assert(fd != not_initialized);
+        assert(handle != not_initialized);
 
         sockaddr sock_address{};
         socklen_t length = sizeof(sock_address);
-        [[maybe_unused]] int status = getpeername(fd, &sock_address, &length);
-#ifndef NDEBUG
+        [[maybe_unused]] int status = getpeername(handle, &sock_address, &length);
+#ifndef NDEBUG // FIXME: This can explode with EINTR in production.
         if (status < 0) return {{0, 0, 0, 0}, 0u};
 #endif
         return sockaddr_to_endpoint(sock_address);

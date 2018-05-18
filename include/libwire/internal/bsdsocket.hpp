@@ -27,25 +27,19 @@
 #include <system_error>
 #include <libwire/address.hpp>
 #include <libwire/protocols.hpp>
+#include <libwire/internal/platform.hpp>
 
 namespace libwire::internal_ {
     /**
-     * Thin C++ wrapper for POSIX sockets.
-     *
-     * Consult related POSIX Programmer's Manual pages for exact
-     * behavior of each function.
-     * * connect(3P) for socket::connect
-     * * socket(3P) for socket::socket
-     * * write(3P) for socket::write
-     * * read(3P) for socket::read
-     * * listen(3P) for socket::listen
-     * etc...
+     * Thin C++ wrapper for BSD-like sockets with little hacks to work with Winsocks.
      */
     struct socket {
-#ifdef __unix__
+#if defined(LIBWIRE_POSIX)
         using native_handle_t = int;
-#else
-        using native_handle_t = void*;
+#endif
+#if defined(LIBWIRE_WINDOWS)
+        using native_handle_t = unsigned long long;
+        // Actually SOCKET type, but defined here as ULL to avoid inclusion of system headers.
 #endif
 
         static unsigned max_pending_connections;
@@ -56,14 +50,20 @@ namespace libwire::internal_ {
          *
          * \note Prefer to use operator bool() for this check.
          */
+#if defined(LIBWIRE_POSIX)
         static constexpr native_handle_t not_initialized = -1;
+#endif
+#if defined(LIBWIRE_WINDOWS)
+        static constexpr native_handle_t not_initialized = ~0;
+        // Actually INVALID_SOCKET, but defined here to avoid inclusion of system headers.
+#endif
 
         /**
          * Construct handle without allocating socket.
          */
         socket() noexcept = default;
 
-        explicit socket(int fd) : fd(fd) {
+        explicit socket(native_handle_t fd) : handle(fd) {
         }
 
         /**
@@ -138,7 +138,11 @@ namespace libwire::internal_ {
 
         std::tuple<address, uint16_t> remote_endpoint() const noexcept;
 
-    private:
-        int fd = not_initialized;
+        native_handle_t handle = not_initialized;
+
+        struct state {
+            // Set if user did set_option(non_blocking, ...);
+            bool user_non_blocking : 1;
+        } state{};
     };
 } // namespace libwire::internal_
