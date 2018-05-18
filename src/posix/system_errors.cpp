@@ -1,5 +1,5 @@
 /*
- * Copyright © 2018 Maks Mazurov (fox.cpp) <foxcpp [at] yandex [dot] ru>
+ * Copyright © 2018 Max Mazurov (fox.cpp) <fox.cpp [at] disroot [dot] org>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,13 +21,13 @@
  */
 
 #include <cstring>
-#include "libwire/internal/error/posix_system_category.hpp"
+#include "libwire/posix/system_errors.hpp"
 
-const char* libwire::internal_::posix_system_category::name() const noexcept {
+const char* libwire::internal_::system_errors::name() const noexcept {
     return "system";
 }
 
-std::string libwire::internal_::posix_system_category::message(int code) const noexcept {
+std::string libwire::internal_::system_errors::message(int code) const noexcept {
     if (code == EOF) {
         return "End of file";
     }
@@ -35,7 +35,7 @@ std::string libwire::internal_::posix_system_category::message(int code) const n
     return strerror(code);
 }
 
-std::error_condition libwire::internal_::posix_system_category::default_error_condition(int code) const noexcept {
+std::error_condition libwire::internal_::system_errors::default_error_condition(int code) const noexcept {
 #define MAP_CODE(errno_code, condition_code) \
     if (code == (errno_code)) return std::error_condition((condition_code), *this);
 
@@ -80,7 +80,7 @@ std::error_condition libwire::internal_::posix_system_category::default_error_co
 #undef MAP_CODE
 }
 
-bool libwire::internal_::posix_system_category::equivalent(int code, const std::error_condition& condition) const
+bool libwire::internal_::system_errors::equivalent(int code, const std::error_condition& condition) const
     noexcept {
 #define MAP_CODE(errno_code, condition_code) \
     if (code == (errno_code)) return condition.value() == (condition_code)

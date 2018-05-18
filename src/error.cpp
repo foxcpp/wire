@@ -1,5 +1,5 @@
 /*
- * Copyright © 2018 Maks Mazurov (fox.cpp) <foxcpp [at] yandex [dot] ru>
+ * Copyright © 2018 Max Mazurov (fox.cpp) <fox.cpp [at] disroot [dot] org>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,21 +23,21 @@
 #include "libwire/error.hpp"
 
 #if __has_include(<unistd.h>)
-#    include "libwire/internal/error/posix_system_category.hpp"
-#    include "libwire/internal/error/posix_dns_category.hpp"
+#    include "libwire/posix/system_errors.hpp"
+#    include "libwire/posix/dns_errors.hpp"
 #endif
 
 namespace libwire::error {
     std::error_category& system_category() {
 #if __has_include(<unistd.h>)
-        static internal_::posix_system_category cat;
+        static internal_::system_errors cat;
         return cat;
 #endif
     }
 
     std::error_category& dns_category() {
 #if __has_include(<unistd.h>)
-        static internal_::posix_dns_category cat;
+        static internal_::dns_errors cat;
         return cat;
 #endif
     }

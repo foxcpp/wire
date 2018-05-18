@@ -1,5 +1,5 @@
 /*
- * Copyright © 2018 Maks Mazurov (fox.cpp) <foxcpp [at] yandex [dot] ru>
+ * Copyright © 2018 Max Mazurov (fox.cpp) <fox.cpp [at] disroot [dot] org>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -8,8 +8,8 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -22,16 +22,16 @@
 
 #pragma once
 
-#include <system_error>
-#include <string>
-#include <libwire/error.hpp>
+#include "../../../../../../../../usr/include/c++/8.1.0/system_error"
+#include "../../../../../../../../usr/include/c++/8.1.0/string"
+#include "../error.hpp"
 
 /**
  * Mapping of POSIX EAI_* codes to error conditions defined in error.hpp.
  */
 
 namespace libwire::internal_ {
-    class posix_dns_category : public std::error_category {
+    class dns_errors : public std::error_category {
     public:
         const char* name() const noexcept override;
         std::string message(int code) const noexcept override;

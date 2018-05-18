@@ -1,5 +1,5 @@
 /*
- * Copyright © 2018 Maks Mazurov (fox.cpp) <foxcpp [at] yandex [dot] ru>
+ * Copyright © 2018 Max Mazurov (fox.cpp) <fox.cpp [at] disroot [dot] org>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -19,20 +19,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
-#include <libwire/internal/error/posix_dns_category.hpp>
+#include <libwire/posix/dns_errors.hpp>
 
 #include <netdb.h>
 
-const char* libwire::internal_::posix_dns_category::name() const noexcept {
+const char* libwire::internal_::dns_errors::name() const noexcept {
     return "dns";
 }
 
-std::string libwire::internal_::posix_dns_category::message(int code) const noexcept {
+std::string libwire::internal_::dns_errors::message(int code) const noexcept {
     return gai_strerror(code);
 }
 
-std::error_condition libwire::internal_::posix_dns_category::default_error_condition(int code) const noexcept {
+std::error_condition libwire::internal_::dns_errors::default_error_condition(int code) const noexcept {
     if (code == 0) {
         return std::error_condition(error::success, error::system_category());
     }
@@ -61,7 +60,7 @@ std::error_condition libwire::internal_::posix_dns_category::default_error_condi
     return std::error_condition(error::unknown, error::system_category());
 }
 
-bool libwire::internal_::posix_dns_category::equivalent(int code, const std::error_condition& condition) const
+bool libwire::internal_::dns_errors::equivalent(int code, const std::error_condition& condition) const
     noexcept {
     if (code == 0) {
         return condition.value() == error::success;

@@ -7,7 +7,7 @@ project(LIBWIRE
     VERSION ${LIBWIRE_SHORT_VERSION}
     LANGUAGES CXX)
 
-message(STATUS "Configuring libwire ${LIBWIRE_DETECTED_VERSION}")
+message(STATUS "libwire: detected version: ${LIBWIRE_DETECTED_VERSION}")
 
 #------------------------------------------------------------------------------
 # C++ standard
