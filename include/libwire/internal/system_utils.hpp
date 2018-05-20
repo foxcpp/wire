@@ -44,7 +44,8 @@
  */
 
 namespace libwire::internal_ {
-    std::tuple<address, uint16_t> sockaddr_to_endpoint(sockaddr in);
+    std::tuple<address, uint16_t> sockaddr_to_endpoint(sockaddr_storage in);
+    sockaddr_storage endpoint_to_sockaddr(std::tuple<libwire::address, uint16_t> in);
 
     /**
      * Silently retry system call on EINTR, placing any other error in ec argument.
@@ -55,7 +56,9 @@ namespace libwire::internal_ {
         decltype(func(std::forward<Args>(args)...)) res;
         do {
             res = func(std::forward<Args>(args)...);
-            ec = last_system_error();
+            if (res < 0) {
+                ec = last_system_error();
+            }
         } while (ec == error::interrupted);
         return res;
     }

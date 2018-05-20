@@ -138,10 +138,7 @@ namespace libwire::internal_ {
     void socket::connect(address target, uint16_t port, std::error_code& ec) noexcept {
         assert(handle != not_initialized);
 
-        struct sockaddr_in address {};
-        address.sin_family = AF_INET;
-        address.sin_port = host_to_network(port);
-        address.sin_addr = *reinterpret_cast<in_addr*>(target.parts.data());
+        sockaddr_storage address = endpoint_to_sockaddr({target, port});
 
         error_wrapper(::connect, ec, handle, reinterpret_cast<sockaddr *>(&address), sizeof(address));
     }
@@ -149,10 +146,7 @@ namespace libwire::internal_ {
     void socket::bind(uint16_t port, address interface_address, std::error_code& ec) noexcept {
         assert(handle != not_initialized);
 
-        sockaddr_in address{};
-        address.sin_family = AF_INET;
-        address.sin_port = host_to_network(port);
-        address.sin_addr = *reinterpret_cast<in_addr*>(interface_address.parts.data());
+        sockaddr_storage address = endpoint_to_sockaddr({interface_address, port});
 
         error_wrapper(::bind, ec, handle, reinterpret_cast<sockaddr *>(&address), sizeof(address));
     }
@@ -215,9 +209,9 @@ namespace libwire::internal_ {
     std::tuple<address, uint16_t> socket::local_endpoint() const noexcept {
         assert(handle != not_initialized);
 
-        sockaddr sock_address{};
+        sockaddr_storage sock_address{};
         socklen_t length = sizeof(sock_address);
-        [[maybe_unused]] int status = getsockname(handle, &sock_address, &length);
+        [[maybe_unused]] int status = getsockname(handle, (sockaddr*)&sock_address, &length);
 #ifndef NDEBUG // FIXME: This can explode with EINTR in production.
         if (status < 0) return {{0, 0, 0, 0}, 0u};
 #endif
@@ -227,9 +221,9 @@ namespace libwire::internal_ {
     std::tuple<address, uint16_t> socket::remote_endpoint() const noexcept {
         assert(handle != not_initialized);
 
-        sockaddr sock_address{};
+        sockaddr_storage sock_address{};
         socklen_t length = sizeof(sock_address);
-        [[maybe_unused]] int status = getpeername(handle, &sock_address, &length);
+        [[maybe_unused]] int status = getpeername(handle, (sockaddr*)&sock_address, &length);
 #ifndef NDEBUG // FIXME: This can explode with EINTR in production.
         if (status < 0) return {{0, 0, 0, 0}, 0u};
 #endif

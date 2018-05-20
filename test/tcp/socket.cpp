@@ -33,19 +33,12 @@ static uint16_t port_to_use = 7777;
 
 using namespace libwire;
 
-struct TcpSocketPair : testing::Test {
-    static void SetUpTestCase() {
-        listener.listen(ipv4::loopback, port_to_use);
-    }
-
-    static void TearDownTestCase() {
-        listener = tcp::listener();
-    }
-
+struct TcpSocketPair : testing::TestWithParam<address> {
     void SetUp() override {
+        listener.listen(GetParam(), port_to_use);
         std::thread connect_thr([&]() {
             std::this_thread::sleep_for(100ms);
-            client.connect(ipv4::loopback, port_to_use);
+            client.connect(GetParam(), port_to_use);
         });
 
         server = listener.accept();
@@ -60,28 +53,27 @@ struct TcpSocketPair : testing::Test {
     void TearDown() override {
         if (client.is_open()) client.shutdown();
         if (server.is_open()) server.shutdown();
+        listener = tcp::listener();
     }
 
-    static tcp::listener listener;
+    tcp::listener listener;
     tcp::socket server, client;
 };
 
-tcp::listener TcpSocketPair::listener;
-
-TEST_F(TcpSocketPair, Connect) {
+TEST_P(TcpSocketPair, Connect) {
     ASSERT_TRUE(server.is_open());
     ASSERT_TRUE(client.is_open());
 }
 
-TEST_F(TcpSocketPair, EndpointsConsistency) {
-    ASSERT_EQ(client.remote_endpoint(), std::tuple(ipv4::loopback, 7777));
-    ASSERT_EQ(std::get<0>(client.local_endpoint()), ipv4::loopback);
-    ASSERT_EQ(std::get<0>(server.local_endpoint()), ipv4::loopback);
+TEST_P(TcpSocketPair, EndpointsConsistency) {
+    ASSERT_EQ(client.remote_endpoint(), std::tuple(GetParam(), 7777));
+    ASSERT_EQ(std::get<0>(client.local_endpoint()), GetParam());
+    ASSERT_EQ(std::get<0>(server.local_endpoint()), GetParam());
     ASSERT_EQ(client.remote_endpoint(), server.local_endpoint());
     ASSERT_EQ(server.remote_endpoint(), client.local_endpoint());
 }
 
-TEST_F(TcpSocketPair, BasicIntegrityCheck) {
+TEST_P(TcpSocketPair, BasicIntegrityCheck) {
     for (unsigned i = 0; i < 10; ++i) {
         auto vec = std::vector<uint8_t>(1024 * (i + 1), 0x00);
 
@@ -91,7 +83,7 @@ TEST_F(TcpSocketPair, BasicIntegrityCheck) {
     }
 }
 
-TEST_F(TcpSocketPair, ReadUntilIntegrityCheck) {
+TEST_P(TcpSocketPair, ReadUntilIntegrityCheck) {
     for (unsigned i = 0; i < 10; ++i) {
         auto vec = std::vector<uint8_t>(1024 * (i + 1), 0x00);
         vec.push_back(0xFF);
@@ -102,7 +94,7 @@ TEST_F(TcpSocketPair, ReadUntilIntegrityCheck) {
     }
 }
 
-TEST_F(TcpSocketPair, CloseOnReadAfterRemoteClose) {
+TEST_P(TcpSocketPair, CloseOnReadAfterRemoteClose) {
     auto vec = std::vector<uint8_t>(512, 0x00);
     server.close();
     ASSERT_FALSE(server.is_open());
@@ -110,12 +102,15 @@ TEST_F(TcpSocketPair, CloseOnReadAfterRemoteClose) {
     ASSERT_FALSE(client.is_open());
 }
 
+INSTANTIATE_TEST_CASE_P(Ipv4, TcpSocketPair, ::testing::Values(ipv4::loopback));
+INSTANTIATE_TEST_CASE_P(Ipv6, TcpSocketPair, ::testing::Values(ipv6::loopback));
+
 TEST(TcpSocket, Errors) {
     std::error_code ec;
     {
         tcp::socket socket;
 
-        socket.connect({127, 0, 0, 1}, 65535, ec);
+        socket.connect({127, 0, 0, 1}, 65500, ec);
         ASSERT_TRUE(ec);
         ASSERT_EQ(ec, error::connection_refused);
     }
