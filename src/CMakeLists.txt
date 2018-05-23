@@ -4,6 +4,7 @@ set(CMAKE_STATIC_LIBRARY_PREFIX "")
 file(GLOB LIBWIRE_PORTABLE_SOURCES
         *.cpp
         tcp/*.cpp
+        udp/*.cpp
         internal/*.cpp)
 file(GLOB LIBWIRE_POSIX_SOURCES
         posix/*.cpp)
@@ -14,7 +15,7 @@ file(GLOB LIBWIRE_PORTABLE_HEADERS
         ../include/libwire/*.hpp
         ../include/libwire/internal/*.hpp
         ../include/libwire/tcp/*.hpp
-        ../include/tcp/*.hpp)
+        ../include/libwire/udp/*.hpp)
 file(GLOB LIBWIRE_POSIX_HEADERS
         ../include/libwire/posix/*.hpp)
 file(GLOB LIBWIRE_WINDOWS_HEADERS

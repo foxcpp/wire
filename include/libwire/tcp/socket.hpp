@@ -383,11 +383,16 @@ namespace libwire::tcp {
 
         output.resize(bytes_count);
         size_t total_received = 0;
+        // FIXME: Needs to be improved for non-blocking I/O.
         // Read exactly bytes_count bytes, retrying when needed.
         while (total_received < bytes_count) {
             size_t bytes_received =
                 implementation.read(output.data() + total_received, bytes_count - total_received, ec);
-            if (ec) break;
+            if (ec) {
+                if (ec != error::interrupted) {
+                    return output;
+                }
+            };
             total_received += bytes_received;
         }
         open = (ec != error::generic::disconnected);

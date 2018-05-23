@@ -130,6 +130,22 @@ namespace libwire::internal_ {
         size_t read(void* output, size_t length_bytes, std::error_code& ec) noexcept;
 
         /**
+         * Connect to AF_UNSPEC.
+         * This will undo connect() for UDP socket.
+         */
+        void disassociate() noexcept;
+
+        /**
+         * Version of write for UDP sockets, uses dest instead of destination set using connect().
+         */
+        size_t sendto(const void* input, size_t length_bytes, std::tuple<address, uint16_t> dest, std::error_code& ec) noexcept;
+
+        /**
+         * Version of read for UDP sockets, writes datagram source to source tuple passed by reference.
+         */
+        size_t recvfrom(void* output, size_t length_bytes, std::tuple<address, uint16_t>& source, std::error_code& ec) noexcept;
+
+        /**
          * Allows to check whether socket is initialized and can be operated on.
          */
         operator bool() const noexcept;
