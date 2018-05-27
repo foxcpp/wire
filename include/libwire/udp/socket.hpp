@@ -84,6 +84,9 @@ namespace libwire::udp {
          */
         void close() noexcept;
 
+        internal_::socket& implementation() noexcept;
+        const internal_::socket& implementation() const noexcept;
+
         /**
          * Get native handle/descriptor for socket.
          *
@@ -211,7 +214,7 @@ namespace libwire::udp {
          * behavior as in std::vector.
          */
         template<typename Buffer = std::vector<uint8_t>>
-        size_t write(const Buffer&, std::error_code&, const std::tuple<address, uint16_t>* dest = nullptr) noexcept;
+        size_t write(const Buffer&, std::error_code&, const std::tuple<address, uint16_t>& dest = {{0, 0, 0, 0}, 0}) noexcept;
 
 #ifdef __cpp_exceptions
         /**
@@ -241,12 +244,12 @@ namespace libwire::udp {
          * instead of setting error code argument.
          */
         template<typename Buffer = std::vector<uint8_t>>
-        size_t write(const Buffer&, const std::tuple<address, uint16_t>* dest = nullptr);
+        size_t write(const Buffer&, const std::tuple<address, uint16_t>& dest = {{0, 0, 0, 0}, 0});
 #endif // ifdef __cpp_exceptions
 
         ///@}
     private:
-        internal_::socket implementation;
+        internal_::socket impl;
     };
 
     template<typename Buffer>
@@ -257,9 +260,9 @@ namespace libwire::udp {
         output.resize(bytes_count);
         size_t bytes_received;
         if (source == nullptr) {
-            bytes_received = implementation.read(output.data(), bytes_count, ec);
+            bytes_received = impl.read(output.data(), bytes_count, ec);
         } else {
-            bytes_received = implementation.recvfrom(output.data(), bytes_count, *source, ec);
+            bytes_received = impl.recvfrom(output.data(), bytes_count, *source, ec);
         }
         if (ec) return output;
         output.resize(bytes_received);
@@ -280,19 +283,19 @@ namespace libwire::udp {
     extern template std::string& socket::read(size_t, std::string&, std::error_code&, std::tuple<address, uint16_t>*);
 
     template<typename Buffer>
-    size_t socket::write(const Buffer& input, std::error_code& ec, const std::tuple<address, uint16_t>* dest) noexcept {
+    size_t socket::write(const Buffer& input, std::error_code& ec, const std::tuple<address, uint16_t>& dest) noexcept {
         static_assert(sizeof(std::remove_pointer_t<decltype(input.data())>) == sizeof(uint8_t),
                       "socket::write can't be used with container with non-byte elements");
 
-        if (dest == nullptr) {
-            return implementation.write(input.data(), input.size(), ec);
+        if (std::get<1>(dest) == 0) { // invalid dest endpoint, default value
+            return impl.write(input.data(), input.size(), ec);
         } else {
-            return implementation.sendto(input.data(), input.size(), *dest, ec);
+            return impl.sendto(input.data(), input.size(), dest, ec);
         }
     }
 
-    extern template size_t socket::write(const std::vector<uint8_t>&, std::error_code&, const std::tuple<address, uint16_t>*);
-    extern template size_t socket::write(const std::string&, std::error_code&, const std::tuple<address, uint16_t>*);
+    extern template size_t socket::write(const std::vector<uint8_t>&, std::error_code&, const std::tuple<address, uint16_t>&);
+    extern template size_t socket::write(const std::string&, std::error_code&, const std::tuple<address, uint16_t>&);
 
 #ifdef __cpp_exceptions
     template<typename Buffer>
@@ -316,14 +319,14 @@ namespace libwire::udp {
     extern template std::string socket::read(size_t, std::tuple<address, uint16_t>* source);
 
     template<typename Buffer>
-    size_t socket::write(const Buffer& input, const std::tuple<address, uint16_t>* dest) {
+    size_t socket::write(const Buffer& input, const std::tuple<address, uint16_t>& dest) {
         std::error_code ec;
         size_t res = write<Buffer>(input, ec, dest);
         if (ec) throw std::system_error(ec);
         return res;
     }
 
-    extern template size_t socket::write(const std::vector<uint8_t>&, const std::tuple<address, uint16_t>*);
-    extern template size_t socket::write(const std::string&, const std::tuple<address, uint16_t>*);
+    extern template size_t socket::write(const std::vector<uint8_t>&, const std::tuple<address, uint16_t>&);
+    extern template size_t socket::write(const std::string&, const std::tuple<address, uint16_t>&);
 #endif // ifdef __cpp_exceptions
 } // namespace libwire::tcp

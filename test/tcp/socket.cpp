@@ -1,5 +1,5 @@
 /*
- * Copyright © 2018 Maks Mazurov (fox.cpp) <foxcpp [at] yandex [dot] ru>
+ * Copyright © 2018 Max Mazurov (fox.cpp) <fox.cpp [at] disroot [dot] org>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -8,8 +8,8 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -23,9 +23,7 @@
 #include <thread>
 #include <chrono>
 #include "../gtest.hpp"
-#include <libwire/tcp/socket.hpp>
-#include <libwire/tcp/listener.hpp>
-#include <libwire/tcp/options.hpp>
+#include <libwire/tcp.hpp>
 
 using namespace std::literals::chrono_literals;
 
@@ -92,14 +90,6 @@ TEST_P(TcpSocketPair, ReadUntilIntegrityCheck) {
         auto vec2 = server.read_until(0xFF, vec);
         ASSERT_EQ(vec, vec2);
     }
-}
-
-TEST_P(TcpSocketPair, CloseOnReadAfterRemoteClose) {
-    auto vec = std::vector<uint8_t>(512, 0x00);
-    server.close();
-    ASSERT_FALSE(server.is_open());
-    ASSERT_THROW(client.read(5, vec), std::system_error);
-    ASSERT_FALSE(client.is_open());
 }
 
 INSTANTIATE_TEST_CASE_P(Ipv4, TcpSocketPair, ::testing::Values(ipv4::loopback));

@@ -29,41 +29,41 @@ namespace libwire::udp {
     template std::vector<uint8_t> socket::read(size_t, std::error_code&, std::tuple<address, uint16_t>*);
     template std::string socket::read(size_t, std::error_code&, std::tuple<address, uint16_t>*);
 
-    template size_t socket::write(const std::vector<uint8_t>&, std::error_code&, const std::tuple<address, uint16_t>*);
-    template size_t socket::write(const std::string&, std::error_code&, const std::tuple<address, uint16_t>*);
+    template size_t socket::write(const std::vector<uint8_t>&, std::error_code&, const std::tuple<address, uint16_t>&);
+    template size_t socket::write(const std::string&, std::error_code&, const std::tuple<address, uint16_t>&);
 
     socket::socket(ip ipver) noexcept {
         std::error_code ec;
-        implementation = internal_::socket(ipver, transport::udp, ec);
+        impl = internal_::socket(ipver, transport::udp, ec);
         if (ec) {
-            implementation = internal_::socket();
+            impl = internal_::socket();
         }
     }
 
     socket::~socket() {
-        implementation = internal_::socket();
+        impl = internal_::socket();
     }
 
     internal_::socket::native_handle_t socket::native_handle() const noexcept {
-        return implementation.native_handle();
+        return impl.native_handle();
     }
 
     void socket::associate(address target, uint16_t port, std::error_code& ec) noexcept {
-        implementation.connect(target, port, ec);
+        impl.connect(target, port, ec);
     }
 
     void socket::disassociate() noexcept {
-        implementation.disassociate();
+        impl.disassociate();
     }
 
     void socket::listen(address local_address, uint16_t port, std::error_code& ec) noexcept {
-        implementation.bind(port, local_address, ec);
+        impl.bind(port, local_address, ec);
     }
 
     void socket::close() noexcept {
         // Reassignment to null socket will call destructor and
         // close destroyed socket.
-        implementation = internal_::socket();
+        impl = internal_::socket();
     }
 
 #ifdef __cpp_exceptions
@@ -79,14 +79,22 @@ namespace libwire::udp {
         if (ec) throw std::system_error(ec);
     }
 
+    internal_::socket& socket::implementation() noexcept {
+        return impl;
+    }
+
+    const internal_::socket& socket::implementation() const noexcept {
+        return impl;
+    }
+
     template std::vector<uint8_t>& socket::read(size_t, std::vector<uint8_t>&, std::tuple<address, uint16_t>*);
     template std::string& socket::read(size_t, std::string&, std::tuple<address, uint16_t>*);
 
     template std::vector<uint8_t> socket::read(size_t, std::tuple<address, uint16_t>*);
     template std::string socket::read(size_t, std::tuple<address, uint16_t>*);
 
-    template size_t socket::write(const std::vector<uint8_t>&, const std::tuple<address, uint16_t>*);
-    template size_t socket::write(const std::string&, const std::tuple<address, uint16_t>*);
+    template size_t socket::write(const std::vector<uint8_t>&, const std::tuple<address, uint16_t>&);
+    template size_t socket::write(const std::string&, const std::tuple<address, uint16_t>&);
 #endif // ifdef __cpp_exceptions
 
 } // namespace libwire::tcp
