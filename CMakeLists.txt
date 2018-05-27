@@ -161,7 +161,7 @@ if(LIBWIRE_COVERAGE)
 else()
     add_custom_target(
         check
-        COMMAND libwire-tests
+        COMMAND libwire-tests --gtest_filter=-*Ipv6*:-*IPv6*
         COMMENT "Running libwire tests"
         )
 endif()

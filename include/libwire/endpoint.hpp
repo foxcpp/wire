@@ -30,7 +30,7 @@ namespace libwire {
         address addr;
         uint16_t port;
 
-        endpoint(const struct address& addr, uint16_t port);
+        endpoint(const address& addr, uint16_t port);
 
         /**
          * Parse endpoint information from string representation.

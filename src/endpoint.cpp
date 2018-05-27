@@ -43,7 +43,7 @@ namespace libwire {
         return uint16_t(res);
     }
 
-    endpoint::endpoint(const struct address& addr, uint16_t port) : addr(addr), port(port) {
+    endpoint::endpoint(const address& addr, uint16_t port) : addr(addr), port(port) {
     }
 
     endpoint::endpoint(const std::string_view& str) noexcept(!LIBWIRE_EXCEPTIONS_ENABLED_BOOL) {
