@@ -155,7 +155,7 @@ if(LIBWIRE_COVERAGE)
 
     setup_target_for_coverage(
         check
-        libwire-tests
+        "libwire-tests --gtest_filter=-*Ipv6*:-*IPv6*"
         coverage
     )
 else()
