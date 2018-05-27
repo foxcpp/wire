@@ -41,7 +41,7 @@ namespace libwire::udp {
     }
 
     socket::~socket() {
-
+        implementation = internal_::socket();
     }
 
     internal_::socket::native_handle_t socket::native_handle() const noexcept {
@@ -56,6 +56,10 @@ namespace libwire::udp {
         implementation.disassociate();
     }
 
+    void socket::listen(address local_address, uint16_t port, std::error_code& ec) noexcept {
+        implementation.bind(port, local_address, ec);
+    }
+
     void socket::close() noexcept {
         // Reassignment to null socket will call destructor and
         // close destroyed socket.
@@ -66,6 +70,12 @@ namespace libwire::udp {
     void socket::associate(address target, uint16_t port) {
         std::error_code ec;
         associate(target, port, ec);
+        if (ec) throw std::system_error(ec);
+    }
+
+    void socket::listen(address local_address, uint16_t port) {
+        std::error_code ec;
+        listen(local_address, port, ec);
         if (ec) throw std::system_error(ec);
     }
 

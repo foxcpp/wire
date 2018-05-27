@@ -6,7 +6,9 @@ endmacro()
 
 add_custom_target(examples)
 
-libwire_example(echo-client echo_client.cpp)
-libwire_example(echo-server echo_server.cpp)
-libwire_example(dns-query   dns_query.cpp)
+libwire_example(tcp-echo-client tcp_echo_client.cpp)
+libwire_example(tcp-echo-server tcp_echo_server.cpp)
+libwire_example(udp-echo-client udp_echo_client.cpp)
+libwire_example(udp-echo-server udp_echo_server.cpp)
+libwire_example(dns-query       dns_query.cpp)
 

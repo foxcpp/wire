@@ -159,6 +159,13 @@ namespace libwire::udp {
         void disassociate() noexcept;
 
         /**
+         * Accept datagrams coming on specified endpoint.
+         *
+         * ec will be set if something went wrong.
+         */
+        void listen(address local_address, uint16_t port, std::error_code& ec) noexcept;
+
+        /**
          * \name Blocking I/O
          *
          * I/O functions in this category usually block thread until
@@ -212,6 +219,12 @@ namespace libwire::udp {
          * instead of setting error code argument.
          */
         void associate(address, uint16_t port);
+
+        /**
+         * Same as overload with error code but throws std::system_error
+         * instead of setting error code argument.
+         */
+        void listen(address local_address, uint16_t port);
 
         /**
          * Same as overload with error code but throws std::system_error
