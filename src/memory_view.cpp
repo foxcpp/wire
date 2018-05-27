@@ -34,7 +34,7 @@ namespace libwire {
 #ifdef __cpp_exceptions
     memory_view::const_reference memory_view::at(memory_view::size_type i) const {
         if (i > size()) {
-            throw std::out_of_range("Index is bigger than size");
+            throw std::out_of_range("index is bigger than size");
         }
         return *(data_ + i);
     }
@@ -47,7 +47,7 @@ namespace libwire {
 #ifdef __cpp_exceptions
     memory_view::reference memory_view::at(memory_view::size_type i) {
         if (i > size()) {
-            throw std::out_of_range("Index is bigger than size");
+            throw std::out_of_range("index is bigger than size");
         }
         return *(data_ + i);
     }
@@ -134,7 +134,7 @@ namespace libwire {
     void memory_view::resize(size_t new_size) noexcept(!LIBWIRE_EXCEPTIONS_ENABLED_BOOL) {
         if (new_size > capacity_) {
 #ifdef __cpp_exceptions
-            throw std::out_of_range("Too big new_size");
+            throw std::out_of_range("too big new_size");
 #else
             return;
 #endif

@@ -28,6 +28,7 @@
 #include <libwire/address.hpp>
 #include <libwire/protocols.hpp>
 #include <libwire/internal/platform.hpp>
+#include <libwire/endpoint.hpp>
 
 namespace libwire::internal_ {
     /**
@@ -90,7 +91,7 @@ namespace libwire::internal_ {
          * Connect socket to remote endpoint, set ec if any error
          * occurred.
          */
-        void connect(address target, uint16_t port, std::error_code& ec) noexcept;
+        void connect(endpoint target, std::error_code& ec) noexcept;
 
         /**
          * Shutdown read/write parts of full-duplex connection.
@@ -101,7 +102,7 @@ namespace libwire::internal_ {
          * Bind socket to local port using interface specified in interface_address,
          * set ec if any error occurred.
          */
-        void bind(uint16_t port, address interface_address, std::error_code& ec) noexcept;
+        void bind(endpoint target, std::error_code& ec) noexcept;
 
         /**
          * Start accepting connections on this listener socket.
@@ -138,21 +139,21 @@ namespace libwire::internal_ {
         /**
          * Version of write for UDP sockets, uses dest instead of destination set using connect().
          */
-        size_t sendto(const void* input, size_t length_bytes, std::tuple<address, uint16_t> dest, std::error_code& ec) noexcept;
+        size_t sendto(const void* input, size_t length_bytes, endpoint dest, std::error_code& ec) noexcept;
 
         /**
          * Version of read for UDP sockets, writes datagram source to source tuple passed by reference.
          */
-        size_t recvfrom(void* output, size_t length_bytes, std::tuple<address, uint16_t>& source, std::error_code& ec) noexcept;
+        size_t recvfrom(void* output, size_t length_bytes, endpoint& source, std::error_code& ec) noexcept;
 
         /**
          * Allows to check whether socket is initialized and can be operated on.
          */
         operator bool() const noexcept;
 
-        std::tuple<address, uint16_t> local_endpoint() const noexcept;
+        endpoint local_endpoint() const noexcept;
 
-        std::tuple<address, uint16_t> remote_endpoint() const noexcept;
+        endpoint remote_endpoint() const noexcept;
 
         native_handle_t handle = not_initialized;
 

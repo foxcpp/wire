@@ -33,7 +33,7 @@ TEST(UDPSocket, Integrity) {
     // This tests checks the most trivial case of operation.
 
     udp::socket receiver(ip::v4), sender(ip::v4);
-    receiver.listen(ipv4::loopback, port_to_use);
+    receiver.listen({ipv4::loopback, port_to_use});
 
     std::vector<uint8_t> buffer(128, 0xEF);
     sender.write(buffer, {ipv4::loopback, port_to_use});
@@ -46,7 +46,7 @@ TEST(UDPSocket, TruncatedDatagram) {
     // when receiver buffer is too small.
 
     udp::socket receiver(ip::v4), sender(ip::v4);
-    receiver.listen(ipv4::loopback, port_to_use);
+    receiver.listen({ipv4::loopback, port_to_use});
 
     std::vector<uint8_t> buffer(128, 0xEF);
     buffer.push_back(0xFF); buffer.push_back(0xFF); buffer.push_back(0xFF);
@@ -64,7 +64,7 @@ TEST(UDPSocket, TooSmallDatagram) {
     // If datagram is too small - buffer should be resized to it's size.
 
     udp::socket receiver(ip::v4), sender(ip::v4);
-    receiver.listen(ipv4::loopback, port_to_use);
+    receiver.listen({ipv4::loopback, port_to_use});
 
     std::vector<uint8_t> buffer(64, 0xEF);
     sender.write(buffer, {ipv4::loopback, port_to_use});
@@ -87,9 +87,9 @@ TEST(UDPSocket, Association) {
     // it may be broken... Let's see if everything is fine.
 
     udp::socket receiver(ip::v4), sender(ip::v4);
-    receiver.listen(ipv4::loopback, port_to_use);
+    receiver.listen({ipv4::loopback, port_to_use});
 
-    sender.associate(ipv4::loopback, port_to_use);
+    sender.associate({ipv4::loopback, port_to_use});
     // No explicit destination but association present.
     sender.write(std::vector<uint8_t>{1,2,3,4});
 
@@ -102,9 +102,9 @@ TEST(UDPSocket, Association) {
 
 TEST(UDPSocket, Disassociate) {
     udp::socket receiver(ip::v4), sender(ip::v4);
-    receiver.listen(ipv4::loopback, port_to_use);
+    receiver.listen({ipv4::loopback, port_to_use});
 
-    sender.associate(ipv4::loopback, port_to_use);
+    sender.associate({ipv4::loopback, port_to_use});
     sender.disassociate();
     // Ouch! No association and no explicit destination
     ASSERT_THROW(sender.write(std::vector<uint8_t>{1,2,3,4}), std::system_error);

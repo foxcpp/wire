@@ -31,7 +31,7 @@ int main(int argc, char** argv) {
     }
 
     udp::socket socket(ip::v4);
-    socket.associate(dns::resolve(ip::v4, argv[1]).at(0), port);
+    socket.associate({dns::resolve(ip::v4, argv[1]).at(0), port});
 
     std::string buffer;
 

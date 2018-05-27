@@ -36,6 +36,15 @@
 #endif
 
 namespace libwire {
+    const address address::invalid;
+
+    address::address(const memory_view& mv) noexcept : parts{} {
+        assert(mv.size() == 4 || mv.size() == 16);
+
+        version = mv.size() == 4 ? ip::v4 : ip::v6;
+        std::copy(mv.begin(), mv.end(), parts.begin());
+    }
+
     address::address(uint8_t o1, uint8_t o2, uint8_t o3, uint8_t o4) noexcept
         : version(ip::v4), parts{o1, o2, o3, o4, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0} {
     }
@@ -46,28 +55,35 @@ namespace libwire {
         : version(ip::v6), parts{o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12, o13, o14, o15, o16} {
     }
 
-    address::address(const std::string_view& text_ip) { // NOLINT(hicpp-member-init)
-        bool success = true;
-        *this = address(text_ip, success);
-        if (!success) throw std::invalid_argument("Invalid address string");
-    }
-
-    address::address(const std::string_view& text_ip, bool& success) noexcept : version(ip::v4), parts{} {
-        int family = AF_INET;
-        for (const char& ch : text_ip) {
-            if (ch == ':') {
-                family = AF_INET6;
-                version = ip::v6;
+    address::address(const std::string& text_ip, ip assume_ipver) noexcept(!LIBWIRE_EXCEPTIONS_ENABLED_BOOL) {
+        int family;
+        if (assume_ipver == ip(0)) {
+            family = AF_INET;
+            version = ip::v4;
+            for (const char& ch : text_ip) {
+                if (ch == ':') {
+                    family = AF_INET6;
+                    version = ip::v6;
+                }
             }
+        } else {
+            family = (assume_ipver == ip::v4) ? AF_INET : AF_INET6;
+            version = assume_ipver;
         }
 
-        success = bool(inet_pton(family, text_ip.data(), parts.data()));
-        // ^ returns 1 on success, 0 otherwise.
+        if (inet_pton(family, text_ip.data(), parts.data()) <= 0) {
+            *this = invalid;
+#ifdef __cpp_exceptions
+            throw std::invalid_argument("invalid address string");
+#endif
+        }
     }
 
     std::string address::to_string() const noexcept {
+        assert(!is_invalid());
         int family = (version == ip::v4) ? AF_INET : AF_INET6;
 
+        // 45 - maximum possible IPv6 address length.
         std::array<char, 45> buffer;
 
         // const_cast is required on Windows because function accepts PVOID (void*).
@@ -82,14 +98,11 @@ namespace libwire {
     }
 
     bool address::operator!=(const address& o) const noexcept {
-        return version == o.version && parts != o.parts;
+        return version != o.version || parts != o.parts;
     }
 
-    address::address(const memory_view& mv) noexcept : parts{} {
-        assert(mv.size() == 4 || mv.size() == 16);
-
-        version = mv.size() == 4 ? ip::v4 : ip::v6;
-        std::copy(mv.begin(), mv.end(), parts.begin());
+    bool address::is_invalid() const noexcept {
+        return version == ip(0);
     }
 } // namespace libwire
 

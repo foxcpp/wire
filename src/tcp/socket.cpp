@@ -56,10 +56,10 @@ namespace libwire::tcp {
         return this->open;
     }
 
-    void socket::connect(address target, uint16_t port, std::error_code& ec) noexcept {
-        implementation = internal_::socket(target.version, transport::tcp, ec);
+    void socket::connect(endpoint target, std::error_code& ec) noexcept {
+        implementation = internal_::socket(target.address.version, transport::tcp, ec);
         if (ec) return;
-        implementation.connect(target, port, ec);
+        implementation.connect(target, ec);
         open = !ec;
     }
 
@@ -74,18 +74,18 @@ namespace libwire::tcp {
         implementation.shutdown(read, write);
     }
 
-    std::tuple<address, uint16_t> socket::local_endpoint() const noexcept {
+    endpoint socket::local_endpoint() const noexcept {
         return implementation.local_endpoint();
     }
 
-    std::tuple<address, uint16_t> socket::remote_endpoint() const noexcept {
+    endpoint socket::remote_endpoint() const noexcept {
         return implementation.remote_endpoint();
     }
 
 #ifdef __cpp_exceptions
-    void socket::connect(address target, uint16_t port) {
+    void socket::connect(endpoint target) {
         std::error_code ec;
-        connect(target, port, ec);
+        connect(target, ec);
         if (ec) throw std::system_error(ec);
     }
 

@@ -26,7 +26,7 @@
 TEST(Ipv4Address, VersionInitialization) {
     using namespace libwire;
 
-    address adr1({127, 0, 0, 1});
+    address adr1{127, 0, 0, 1};
     ASSERT_EQ(adr1.version, ip::v4);
 }
 
@@ -34,7 +34,7 @@ TEST(Ipv4Address, FromString) {
     using namespace libwire;
 
     // Basic test.
-    ASSERT_EQ(address("127.0.0.1"), address({127, 0, 0, 1}));
+    ASSERT_EQ(address("127.0.0.1"), address(127, 0, 0, 1));
 
     ASSERT_THROW(address("444.4422.22.223"), std::invalid_argument);
     ASSERT_THROW(address("256.0.0.0"), std::invalid_argument);
@@ -49,26 +49,29 @@ TEST(Ipv4Address, ToString) {
 
     // Basic test.
     // Also: We should "normalize" output, so only one zero is allowed.
-    ASSERT_EQ(address({127, 0, 0, 1}).to_string(), "127.0.0.1");
+    ASSERT_EQ(address(127, 0, 0, 1).to_string(), "127.0.0.1");
 }
 
 TEST(Ipv6Address, VersionInitialization) {
     using namespace libwire;
 
-    address adr1({0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x1});
+    address adr1{0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x1};
     ASSERT_EQ(adr1.version, ip::v6);
 }
 
 TEST(Ipv6Address, FromString) {
     using namespace libwire;
 
-    address adr1({0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x1});
+    address adr1{0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x1};
 
     // Basic test
     ASSERT_EQ(address("::1"), adr1);
 
-    // TODO: Check for other error conditions.
+    ASSERT_THROW(address(":"), std::invalid_argument);
+    ASSERT_THROW(address("leading_characters::1"), std::invalid_argument);
+    ASSERT_THROW(address("::1trailing_characters"), std::invalid_argument);
+    ASSERT_THROW(address(":ffffff:"), std::invalid_argument);
 
-    // Incorrectly folded.
+    // Incorrectly folded, we reject it for security reasons.
     ASSERT_THROW(address(":00::000:1"), std::invalid_argument);
 }

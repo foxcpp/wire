@@ -33,10 +33,10 @@ using namespace libwire;
 
 struct TcpSocketPair : testing::TestWithParam<address> {
     void SetUp() override {
-        listener.listen(GetParam(), port_to_use);
+        listener.listen({GetParam(), port_to_use});
         std::thread connect_thr([&]() {
             std::this_thread::sleep_for(100ms);
-            client.connect(GetParam(), port_to_use);
+            client.connect({GetParam(), port_to_use});
         });
 
         server = listener.accept();
@@ -64,9 +64,9 @@ TEST_P(TcpSocketPair, Connect) {
 }
 
 TEST_P(TcpSocketPair, EndpointsConsistency) {
-    ASSERT_EQ(client.remote_endpoint(), std::tuple(GetParam(), 7777));
-    ASSERT_EQ(std::get<0>(client.local_endpoint()), GetParam());
-    ASSERT_EQ(std::get<0>(server.local_endpoint()), GetParam());
+    ASSERT_EQ(client.remote_endpoint(), endpoint(GetParam(), 7777));
+    ASSERT_EQ(client.local_endpoint().address, GetParam());
+    ASSERT_EQ(server.local_endpoint().address, GetParam());
     ASSERT_EQ(client.remote_endpoint(), server.local_endpoint());
     ASSERT_EQ(server.remote_endpoint(), client.local_endpoint());
 }
@@ -100,7 +100,9 @@ TEST(TcpSocket, Errors) {
     {
         tcp::socket socket;
 
-        socket.connect({127, 0, 0, 1}, 65500, ec);
+        // XXX: This can fail if we actually have something on 65500 (and we can
+        // have because this is dynamic port!!!).
+        socket.connect({ipv4::loopback, 65500}, ec);
         ASSERT_TRUE(ec);
         ASSERT_EQ(ec, error::connection_refused);
     }

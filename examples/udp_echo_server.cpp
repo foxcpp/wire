@@ -1,5 +1,6 @@
 #include <iostream>
 #include <libwire/udp.hpp>
+#include <libwire/endpoint.hpp>
 
 /**
  * \example echo_server.cpp
@@ -34,9 +35,9 @@ int main(int argc, char** argv) {
     std::cout << "Listening on port " << port << ".\n";
 
     udp::socket sock(ip::v4);
-    sock.listen(ipv4::loopback, port);
+    sock.listen({ipv4::loopback, port});
 
-    std::tuple<address, uint16_t> source{{0, 0, 0, 0}, 0};
+    endpoint source{{0, 0, 0, 0}, 0};
     std::string buf;
     while (true) {
         try {
@@ -51,7 +52,7 @@ int main(int argc, char** argv) {
             std::cout << "> " << buf << '\n';
 
             buf.push_back('\n');
-            sock.write(buf, &source);
+            sock.write(buf, source);
         } catch (std::system_error& ex) {
             std::cout << "ERR: " << ex.what() << '\n';
         }

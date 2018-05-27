@@ -212,14 +212,14 @@ namespace libwire::tcp {
          * [ephemeral ports](https://en.wikipedia.org/wiki/Ephemeral_port)
          * (usually 49152-65535).
          */
-        std::tuple<address, uint16_t> local_endpoint() const noexcept;
+        endpoint local_endpoint() const noexcept;
 
         /**
          * Get address and port of remote end of connection.
          *
          * Usually same as address/port passed in \ref connect.
          */
-        std::tuple<address, uint16_t> remote_endpoint() const noexcept;
+        endpoint remote_endpoint() const noexcept;
 
         ///@}
 
@@ -229,7 +229,7 @@ namespace libwire::tcp {
          * \note If \ref connect called for already connected socket if
          * active connection will be closed.
          */
-        void connect(address, uint16_t port, std::error_code& ec) noexcept;
+        void connect(endpoint target, std::error_code& ec) noexcept;
 
         /**
          * Shutdown reading/writing part of full-duplex connection
@@ -334,7 +334,7 @@ namespace libwire::tcp {
          * Same as overload with error code but throws std::system_error
          * instead of setting error code argument.
          */
-        void connect(address, uint16_t port);
+        void connect(endpoint target);
 
         /**
          * Same as overload with error code but throws std::system_error

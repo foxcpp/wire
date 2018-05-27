@@ -23,14 +23,14 @@
 #include "libwire/udp/socket.hpp"
 
 namespace libwire::udp {
-    template std::vector<uint8_t>& socket::read(size_t, std::vector<uint8_t>&, std::error_code&, std::tuple<address, uint16_t>*);
-    template std::string& socket::read(size_t, std::string&, std::error_code&, std::tuple<address, uint16_t>*);
+    template std::vector<uint8_t>& socket::read(size_t, std::vector<uint8_t>&, std::error_code&, endpoint*);
+    template std::string& socket::read(size_t, std::string&, std::error_code&, endpoint*);
 
-    template std::vector<uint8_t> socket::read(size_t, std::error_code&, std::tuple<address, uint16_t>*);
-    template std::string socket::read(size_t, std::error_code&, std::tuple<address, uint16_t>*);
+    template std::vector<uint8_t> socket::read(size_t, std::error_code&, endpoint*);
+    template std::string socket::read(size_t, std::error_code&, endpoint*);
 
-    template size_t socket::write(const std::vector<uint8_t>&, std::error_code&, const std::tuple<address, uint16_t>&);
-    template size_t socket::write(const std::string&, std::error_code&, const std::tuple<address, uint16_t>&);
+    template size_t socket::write(const std::vector<uint8_t>&, std::error_code&, const endpoint&);
+    template size_t socket::write(const std::string&, std::error_code&, const endpoint&);
 
     socket::socket(ip ipver) noexcept {
         std::error_code ec;
@@ -48,16 +48,16 @@ namespace libwire::udp {
         return impl.native_handle();
     }
 
-    void socket::associate(address target, uint16_t port, std::error_code& ec) noexcept {
-        impl.connect(target, port, ec);
+    void socket::associate(endpoint target, std::error_code& ec) noexcept {
+        impl.connect(target, ec);
     }
 
     void socket::disassociate() noexcept {
         impl.disassociate();
     }
 
-    void socket::listen(address local_address, uint16_t port, std::error_code& ec) noexcept {
-        impl.bind(port, local_address, ec);
+    void socket::listen(endpoint target, std::error_code& ec) noexcept {
+        impl.bind(target, ec);
     }
 
     void socket::close() noexcept {
@@ -67,15 +67,15 @@ namespace libwire::udp {
     }
 
 #ifdef __cpp_exceptions
-    void socket::associate(address target, uint16_t port) {
+    void socket::associate(endpoint target) {
         std::error_code ec;
-        associate(target, port, ec);
+        associate(target, ec);
         if (ec) throw std::system_error(ec);
     }
 
-    void socket::listen(address local_address, uint16_t port) {
+    void socket::listen(endpoint target) {
         std::error_code ec;
-        listen(local_address, port, ec);
+        listen(target, ec);
         if (ec) throw std::system_error(ec);
     }
 
@@ -87,14 +87,14 @@ namespace libwire::udp {
         return impl;
     }
 
-    template std::vector<uint8_t>& socket::read(size_t, std::vector<uint8_t>&, std::tuple<address, uint16_t>*);
-    template std::string& socket::read(size_t, std::string&, std::tuple<address, uint16_t>*);
+    template std::vector<uint8_t>& socket::read(size_t, std::vector<uint8_t>&, endpoint*);
+    template std::string& socket::read(size_t, std::string&, endpoint*);
 
-    template std::vector<uint8_t> socket::read(size_t, std::tuple<address, uint16_t>*);
-    template std::string socket::read(size_t, std::tuple<address, uint16_t>*);
+    template std::vector<uint8_t> socket::read(size_t, endpoint*);
+    template std::string socket::read(size_t, endpoint*);
 
-    template size_t socket::write(const std::vector<uint8_t>&, const std::tuple<address, uint16_t>&);
-    template size_t socket::write(const std::string&, const std::tuple<address, uint16_t>&);
+    template size_t socket::write(const std::vector<uint8_t>&, const endpoint&);
+    template size_t socket::write(const std::string&, const endpoint&);
 #endif // ifdef __cpp_exceptions
 
 } // namespace libwire::tcp

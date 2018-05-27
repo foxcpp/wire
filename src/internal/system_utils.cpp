@@ -22,35 +22,37 @@
 
 #include <libwire/internal/endianess.hpp>
 #include <cassert>
+#include "libwire/endpoint.hpp"
 #include "libwire/internal/system_utils.hpp"
 
-std::tuple<libwire::address, uint16_t> libwire::internal_::sockaddr_to_endpoint(sockaddr_storage in) {
-    if (in.ss_family == AF_INET) {
-        auto sock_address_v4 = reinterpret_cast<sockaddr_in&>(in);
-        return {memory_view(&sock_address_v4.sin_addr, sizeof(sock_address_v4.sin_addr)),
-                network_to_host(sock_address_v4.sin_port)};
+namespace libwire::internal_ {
+    endpoint sockaddr_to_endpoint(sockaddr_storage in) {
+        if (in.ss_family == AF_INET) {
+            auto sock_address_v4 = reinterpret_cast<sockaddr_in&>(in);
+            return {memory_view(&sock_address_v4.sin_addr, sizeof(sock_address_v4.sin_addr)),
+                    network_to_host(sock_address_v4.sin_port)};
+        }
+        if (in.ss_family == AF_INET6) {
+            auto& sock_address_v6 = reinterpret_cast<sockaddr_in6&>(in);
+            return {memory_view(&sock_address_v6.sin6_addr, sizeof(sock_address_v6.sin6_addr)),
+                    network_to_host(sock_address_v6.sin6_port)};
+        }
+        assert(false);
     }
-    if (in.ss_family == AF_INET6) {
-        auto& sock_address_v6 = reinterpret_cast<sockaddr_in6&>(in);
-        return {memory_view(&sock_address_v6.sin6_addr, sizeof(sock_address_v6.sin6_addr)),
-                network_to_host(sock_address_v6.sin6_port)};
-    }
-    assert(false);
-}
 
-sockaddr_storage libwire::internal_::endpoint_to_sockaddr(std::tuple<libwire::address, uint16_t> in) {
-    sockaddr_storage res;
-    res.ss_family = AF_UNSPEC;
-    if (std::get<0>(in).version == ip::v4) {
-        res.ss_family = AF_INET;
-        ((sockaddr_in*)(&res))->sin_addr = *((in_addr*)std::get<0>(in).parts.data());
-        ((sockaddr_in*)(&res))->sin_port = host_to_network(std::get<1>(in));
+    sockaddr_storage endpoint_to_sockaddr(const endpoint& in) {
+        sockaddr_storage res;
+        res.ss_family = AF_UNSPEC;
+        if (in.address.version == ip::v4) {
+            res.ss_family = AF_INET;
+            ((sockaddr_in*) (&res))->sin_addr = *((in_addr*) in.address.parts.data());
+            ((sockaddr_in*) (&res))->sin_port = host_to_network(in.port);
+        }
+        if (in.address.version == ip::v6) {
+            res.ss_family = AF_INET6;
+            ((sockaddr_in6*) (&res))->sin6_addr = *((in6_addr*) in.address.parts.data());
+            ((sockaddr_in6*) (&res))->sin6_port = host_to_network(in.port);
+        }
+        return res;
     }
-    if (std::get<0>(in).version == ip::v6) {
-        res.ss_family = AF_INET6;
-        ((sockaddr_in6*)(&res))->sin6_addr = *((in6_addr*)std::get<0>(in).parts.data());
-        ((sockaddr_in6*)(&res))->sin6_port = host_to_network(std::get<1>(in));
-    }
-    return res;
-}
-
+} // namespace libwire::internal_

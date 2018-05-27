@@ -29,7 +29,7 @@ int main(int argc, char** argv) {
     }
 
     tcp::socket socket;
-    socket.connect(dns::resolve(ip::v4, argv[1]).at(0), port);
+    socket.connect({dns::resolve(ip::v4, argv[1]).at(0), port});
 
     std::string buffer;
 

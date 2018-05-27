@@ -44,8 +44,8 @@
  */
 
 namespace libwire::internal_ {
-    std::tuple<address, uint16_t> sockaddr_to_endpoint(sockaddr_storage in);
-    sockaddr_storage endpoint_to_sockaddr(std::tuple<libwire::address, uint16_t> in);
+    endpoint sockaddr_to_endpoint(sockaddr_storage in);
+    sockaddr_storage endpoint_to_sockaddr(const endpoint& in);
 
     /**
      * Silently retry system call on EINTR, placing any other error in ec argument.

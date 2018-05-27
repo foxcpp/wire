@@ -62,6 +62,15 @@ namespace libwire {
      */
     struct address {
         /**
+         * Uninitialized address value, is_invalid() = true.
+         *
+         * \note Any interaction with invalid address object other than \ref is_invalid and
+         * comparsions have undefined behavior, but invalid object can be used as a
+         * "null" value, since it will not be equal to any valid value.
+         */
+        address() = default;
+
+        /**
          * Construct IP address from raw bytes in network byte order (big endian).
          * Size of view must be either 4 or 16 bytes.
          */
@@ -87,28 +96,16 @@ namespace libwire {
          * Parse IP address from string. supports both IPv4 and IPv6,
          * use version member variable to determine address version.
          *
-         * Throws std::invalid_argument if supplied string is not a
-         * valid address.
+         * If exceptions are enabled - will throw std::invalid_argument,
+         * otherwise constructed address will have is_invalid() = true.
          *
-         * Defined as explicit because this is costly conversion.
+         * assume_ipver can be used to accept only one IP version (only
+         * IPv4 addresses or only IPv6).
          *
-         * \warning Multiple consecutive zeros is NOT allowed
+         * \warning Multiple consecutive zeros are NOT allowed
          *  "000.0.11.11" will throw.
          */
-        explicit address(const std::string_view& text_ip);
-
-        /**
-         * Parse IP address from string. supports both IPv4 and IPv6,
-         * use version member variable to determine address version.
-         *
-         * Sets success to true if supplied address is valid, false
-         * otherwise. Value of address is undefined if success is
-         * false.
-         *
-         * \warning Multiple consecutive zeros is NOT allowed
-         *  "000.0.11.11" will set success to false.
-         */
-        address(const std::string_view& text_ip, bool& success) noexcept;
+        address(const std::string& text_ip, ip assume_ipver = ip(0)) noexcept(!LIBWIRE_EXCEPTIONS_ENABLED_BOOL);
 
         /**
          * Convert address object to string representation.
@@ -117,11 +114,15 @@ namespace libwire {
          */
         std::string to_string() const noexcept;
 
+        bool is_invalid() const noexcept;
+
         bool operator==(const address&) const noexcept;
         bool operator!=(const address&) const noexcept;
 
-        ip version;
-        std::array<uint8_t, 16> parts;
+        ip version = ip(0);
+        std::array<uint8_t, 16> parts{};
+
+        static const address invalid;
     };
 
     /**

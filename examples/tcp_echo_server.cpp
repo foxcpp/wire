@@ -31,17 +31,16 @@ int main(int argc, char** argv) {
     uint16_t port = std::stoi(argv[1]);
 
     tcp::listener listener;
-    listener.listen(ipv4::any, port);
+    listener.listen({ipv4::any, port});
 
     std::cout << "Listening on port " << port << ".\n";
 
     std::string buf;
     while (true) {
         auto sock = listener.accept();
-        std::tuple source = sock.remote_endpoint();
+        endpoint source = sock.remote_endpoint();
 
-        std::cout << "Accepted connection from " << std::get<0>(source).to_string() << ':' << std::get<1>(source)
-                  << ".\n";
+        std::cout << "Accepted connection from " << source.to_string() << ".\n";
 
         while (true) {
             try {

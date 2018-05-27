@@ -135,18 +135,18 @@ namespace libwire::internal_ {
         }
     }
 
-    void socket::connect(address target, uint16_t port, std::error_code& ec) noexcept {
+    void socket::connect(endpoint target, std::error_code& ec) noexcept {
         assert(handle != not_initialized);
 
-        sockaddr_storage address = endpoint_to_sockaddr({target, port});
+        sockaddr_storage address = endpoint_to_sockaddr(target);
 
         error_wrapper(::connect, ec, handle, reinterpret_cast<sockaddr *>(&address), sizeof(address));
     }
 
-    void socket::bind(uint16_t port, address interface_address, std::error_code& ec) noexcept {
+    void socket::bind(endpoint target, std::error_code& ec) noexcept {
         assert(handle != not_initialized);
 
-        sockaddr_storage address = endpoint_to_sockaddr({interface_address, port});
+        sockaddr_storage address = endpoint_to_sockaddr(target);
 
         error_wrapper(::bind, ec, handle, reinterpret_cast<sockaddr *>(&address), sizeof(address));
     }
@@ -202,7 +202,7 @@ namespace libwire::internal_ {
         return size_t(actually_readen);
     }
 
-    size_t socket::sendto(const void* input, size_t length_bytes, std::tuple<address, uint16_t> dest,
+    size_t socket::sendto(const void* input, size_t length_bytes, endpoint dest,
                           std::error_code& ec) noexcept {
         assert(handle != not_initialized);
 
@@ -215,7 +215,7 @@ namespace libwire::internal_ {
         return size_t(actually_written);
     }
 
-    size_t socket::recvfrom(void* output, size_t length_bytes, std::tuple<address, uint16_t>& source,
+    size_t socket::recvfrom(void* output, size_t length_bytes, endpoint& source,
                             std::error_code& ec) noexcept {
         assert(handle != not_initialized);
 
@@ -240,7 +240,7 @@ namespace libwire::internal_ {
         return handle != not_initialized;
     }
 
-    std::tuple<address, uint16_t> socket::local_endpoint() const noexcept {
+    endpoint socket::local_endpoint() const noexcept {
         assert(handle != not_initialized);
 
         sockaddr_storage sock_address{};
@@ -252,7 +252,7 @@ namespace libwire::internal_ {
         return sockaddr_to_endpoint(sock_address);
     }
 
-    std::tuple<address, uint16_t> socket::remote_endpoint() const noexcept {
+    endpoint socket::remote_endpoint() const noexcept {
         assert(handle != not_initialized);
 
         sockaddr_storage sock_address{};
