@@ -24,11 +24,11 @@
 #include "libwire/internal/platform.hpp"
 
 #if defined(LIBWIRE_POSIX)
-#   include <fcntl.h>
+#    include <fcntl.h>
 #endif
 #if defined(LIBWIRE_WINDOWS)
-#   include <winsock2.h>
-#   include <ws2tcpip.h>
+#    include <winsock2.h>
+#    include <ws2tcpip.h>
 #endif
 
 namespace libwire {

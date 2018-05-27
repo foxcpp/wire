@@ -28,11 +28,11 @@
 #include <cassert>
 
 #if defined(LIBWIRE_POSIX)
-#   include <netdb.h>
+#    include <netdb.h>
 #endif
 #if defined(LIBWIRE_WINDOWS)
-#   include <winsock2.h>
-#   include <ws2tcpip.h>
+#    include <winsock2.h>
+#    include <ws2tcpip.h>
 
 #endif
 

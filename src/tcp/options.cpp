@@ -26,13 +26,13 @@
 #include "libwire/internal/platform.hpp"
 
 #if defined(LIBWIRE_POSIX)
-#   include <sys/socket.h>
-#   include <netinet/in.h>
-#   include <netinet/tcp.h>
+#    include <sys/socket.h>
+#    include <netinet/in.h>
+#    include <netinet/tcp.h>
 #endif
 #if defined(LIBWIRE_WINDOWS)
-#   include <winsock2.h>
-#   include <ws2tcpip.h>
+#    include <winsock2.h>
+#    include <ws2tcpip.h>
 #endif
 
 // TODO (PR's welcomed): There is a lot of code duplication, find a way to clean
@@ -57,7 +57,8 @@ namespace libwire::tcp {
         struct linger linger_opt {};
         linger_opt.l_onoff = int(enabled);
         linger_opt.l_linger = int(timeout.count());
-        setsockopt(sock.native_handle(), SOL_SOCKET, SO_LINGER, reinterpret_cast<char*>(&linger_opt), sizeof(linger_opt));
+        setsockopt(sock.native_handle(), SOL_SOCKET, SO_LINGER, reinterpret_cast<char*>(&linger_opt),
+                   sizeof(linger_opt));
     }
 
     std::tuple<bool, std::chrono::seconds> linger_t::get(const socket& sock) noexcept {

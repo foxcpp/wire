@@ -24,7 +24,7 @@
 
 namespace libwire::tcp {
     void listener::listen(endpoint target, std::error_code& ec, unsigned max_backlog) noexcept {
-        implementation = internal_::socket(target.address.version, transport::tcp, ec);
+        implementation = internal_::socket(target.addr.version, transport::tcp, ec);
         if (ec) return;
         implementation.bind(target, ec);
         if (ec) return;

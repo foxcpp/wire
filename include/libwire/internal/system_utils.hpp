@@ -62,5 +62,4 @@ namespace libwire::internal_ {
         } while (ec == error::interrupted);
         return res;
     }
-}
-
+} // namespace libwire::internal_

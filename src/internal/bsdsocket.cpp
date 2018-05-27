@@ -29,17 +29,17 @@
 #include "libwire/internal/endianess.hpp"
 
 #if defined(LIBWIRE_POSIX)
-#   include <unistd.h>
-#   include <sys/socket.h>
-#   include <netinet/ip.h>
-#   define closesocket close
+#    include <unistd.h>
+#    include <sys/socket.h>
+#    include <netinet/ip.h>
+#    define closesocket close
 #endif
 #if defined(LIBWIRE_WINDOWS)
-#   include <winsock2.h>
-#   include <ws2tcpip.h>
-#   define SHUT_RD    SD_RECEIVE
-#   define SHUT_WR    SD_SEND
-#   define SHUT_RDWR  SD_BOTH
+#    include <winsock2.h>
+#    include <ws2tcpip.h>
+#    define SHUT_RD SD_RECEIVE
+#    define SHUT_WR SD_SEND
+#    define SHUT_RDWR SD_BOTH
 #endif
 
 namespace libwire::internal_ {
@@ -140,7 +140,7 @@ namespace libwire::internal_ {
 
         sockaddr_storage address = endpoint_to_sockaddr(target);
 
-        error_wrapper(::connect, ec, handle, reinterpret_cast<sockaddr *>(&address), sizeof(address));
+        error_wrapper(::connect, ec, handle, reinterpret_cast<sockaddr*>(&address), sizeof(address));
     }
 
     void socket::bind(endpoint target, std::error_code& ec) noexcept {
@@ -148,7 +148,7 @@ namespace libwire::internal_ {
 
         sockaddr_storage address = endpoint_to_sockaddr(target);
 
-        error_wrapper(::bind, ec, handle, reinterpret_cast<sockaddr *>(&address), sizeof(address));
+        error_wrapper(::bind, ec, handle, reinterpret_cast<sockaddr*>(&address), sizeof(address));
     }
 
     void socket::listen(int backlog, std::error_code& ec) noexcept {
@@ -179,7 +179,8 @@ namespace libwire::internal_ {
     size_t socket::write(const void* input, size_t length_bytes, std::error_code& ec) noexcept {
         assert(handle != not_initialized);
 
-        ssize_t actually_written = error_wrapper(::send, ec, handle, reinterpret_cast<const char*>(input), length_bytes, IO_FLAGS);
+        ssize_t actually_written =
+            error_wrapper(::send, ec, handle, reinterpret_cast<const char*>(input), length_bytes, IO_FLAGS);
         if (actually_written < 0) {
             return 0;
         }
@@ -202,27 +203,27 @@ namespace libwire::internal_ {
         return size_t(actually_readen);
     }
 
-    size_t socket::sendto(const void* input, size_t length_bytes, endpoint dest,
-                          std::error_code& ec) noexcept {
+    size_t socket::sendto(const void* input, size_t length_bytes, endpoint dest, std::error_code& ec) noexcept {
         assert(handle != not_initialized);
 
         sockaddr_storage sockaddr_dest = endpoint_to_sockaddr(dest);
 
-        ssize_t actually_written = error_wrapper(::sendto, ec, handle, (const char*)input, length_bytes, IO_FLAGS, (sockaddr*)&sockaddr_dest, sizeof(sockaddr_dest));
+        ssize_t actually_written = error_wrapper(::sendto, ec, handle, (const char*)input, length_bytes, IO_FLAGS,
+                                                 (sockaddr*)&sockaddr_dest, sizeof(sockaddr_dest));
         if (actually_written < 0) {
             return 0;
         }
         return size_t(actually_written);
     }
 
-    size_t socket::recvfrom(void* output, size_t length_bytes, endpoint& source,
-                            std::error_code& ec) noexcept {
+    size_t socket::recvfrom(void* output, size_t length_bytes, endpoint& source, std::error_code& ec) noexcept {
         assert(handle != not_initialized);
 
         sockaddr_storage sockaddr_src;
         socklen_t sockaddr_len = sizeof(sockaddr_src);
 
-        ssize_t actually_readen = error_wrapper(::recvfrom, ec, handle, reinterpret_cast<char*>(output), length_bytes, IO_FLAGS, (sockaddr*)&sockaddr_src, &sockaddr_len);
+        ssize_t actually_readen = error_wrapper(::recvfrom, ec, handle, reinterpret_cast<char*>(output), length_bytes,
+                                                IO_FLAGS, (sockaddr*)&sockaddr_src, &sockaddr_len);
         // FIXME: Needs to be improved for non-blocking I/O.
         if (actually_readen == 0 && length_bytes != 0) {
             // We wanted more than zero bytes but got zero, looks like EOF.

@@ -279,7 +279,8 @@ namespace libwire::udp {
     extern template std::vector<uint8_t> socket::read(size_t, std::error_code&, endpoint* source);
     extern template std::string socket::read(size_t, std::error_code&, endpoint* source);
 
-    extern template std::vector<uint8_t>& socket::read(size_t, std::vector<uint8_t>&, std::error_code&, endpoint* source);
+    extern template std::vector<uint8_t>& socket::read(size_t, std::vector<uint8_t>&, std::error_code&,
+                                                       endpoint* source);
     extern template std::string& socket::read(size_t, std::string&, std::error_code&, endpoint*);
 
     template<typename Buffer>
@@ -329,4 +330,4 @@ namespace libwire::udp {
     extern template size_t socket::write(const std::vector<uint8_t>&, const endpoint&);
     extern template size_t socket::write(const std::string&, const endpoint&);
 #endif // ifdef __cpp_exceptions
-} // namespace libwire::tcp
+} // namespace libwire::udp

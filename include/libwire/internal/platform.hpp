@@ -27,13 +27,13 @@
  */
 
 #if defined(__unix__)
-#   define LIBWIRE_POSIX
+#    define LIBWIRE_POSIX
 #endif
 
 #if defined(__linux__)
-#   define LIBWIRE_LINUX
+#    define LIBWIRE_LINUX
 #endif
 
 #if defined(_WIN32) || defined(WIN32) || defined(__WIN32) || defined(WINNT)
-#   define LIBWIRE_WINDOWS
+#    define LIBWIRE_WINDOWS
 #endif

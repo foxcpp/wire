@@ -22,8 +22,8 @@
 
 #pragma once
 
-#include "../../../../../../../../usr/include/c++/8.1.0/system_error"
-#include "../../../../../../../../usr/include/c++/8.1.0/string"
+#include <system_error>
+#include <string>
 #include "libwire/error.hpp"
 
 /**

@@ -43,15 +43,15 @@ namespace libwire::internal_ {
     sockaddr_storage endpoint_to_sockaddr(const endpoint& in) {
         sockaddr_storage res;
         res.ss_family = AF_UNSPEC;
-        if (in.address.version == ip::v4) {
+        if (in.addr.version == ip::v4) {
             res.ss_family = AF_INET;
-            ((sockaddr_in*) (&res))->sin_addr = *((in_addr*) in.address.parts.data());
-            ((sockaddr_in*) (&res))->sin_port = host_to_network(in.port);
+            ((sockaddr_in*)(&res))->sin_addr = *((in_addr*)in.addr.parts.data());
+            ((sockaddr_in*)(&res))->sin_port = host_to_network(in.port);
         }
-        if (in.address.version == ip::v6) {
+        if (in.addr.version == ip::v6) {
             res.ss_family = AF_INET6;
-            ((sockaddr_in6*) (&res))->sin6_addr = *((in6_addr*) in.address.parts.data());
-            ((sockaddr_in6*) (&res))->sin6_port = host_to_network(in.port);
+            ((sockaddr_in6*)(&res))->sin6_addr = *((in6_addr*)in.addr.parts.data());
+            ((sockaddr_in6*)(&res))->sin6_port = host_to_network(in.port);
         }
         return res;
     }

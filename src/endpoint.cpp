@@ -43,7 +43,8 @@ namespace libwire {
         return uint16_t(res);
     }
 
-    endpoint::endpoint(const struct address& addr, uint16_t port) : address(addr), port(port) {}
+    endpoint::endpoint(const struct address& addr, uint16_t port) : addr(addr), port(port) {
+    }
 
     endpoint::endpoint(const std::string_view& str) noexcept(!LIBWIRE_EXCEPTIONS_ENABLED_BOOL) {
         // Smallest valid input: "[::]:1"
@@ -54,7 +55,7 @@ namespace libwire {
         if (str[0] == '[') {
             // Look for ], parse everything in middle as a IPv6 address and after as a port.
             size_t bracket = str.find(']', 1);
-            address = libwire::address(std::string(str.substr(1, bracket - 1)), ip::v6);
+            addr = libwire::address(std::string(str.substr(1, bracket - 1)), ip::v6);
             port = parse_port(str.substr(bracket + 2));
             if (port == 0) {
                 goto fail;
@@ -65,7 +66,7 @@ namespace libwire {
             if (colon == std::string::npos) {
                 goto fail;
             }
-            address = libwire::address(std::string(str.substr(0, colon)), ip::v4);
+            addr = libwire::address(std::string(str.substr(0, colon)), ip::v4);
             port = parse_port(str.substr(colon + 1));
             if (port == 0) {
                 goto fail;
@@ -76,7 +77,7 @@ namespace libwire {
 
         // Yes, we use goto because it's better than copy-pasting following code N times.
         return;
-        fail:
+    fail:
         *this = invalid;
 #ifdef __cpp_exceptions
         throw std::invalid_argument("invalid endpoint string");
@@ -84,35 +85,34 @@ namespace libwire {
     }
 
     bool endpoint::is_invalid() const noexcept {
-        return address.is_invalid() || port == 0;
+        return addr.is_invalid() || port == 0;
     }
 
     std::string endpoint::to_string() const noexcept {
         assert(!is_invalid());
         // Code here may look strange but this is because we try
         // hard to reduce count of result string reallocations.
-        if (address.version == ip::v4) {
-            std::string res = address.to_string();
+        std::string res;
+        if (addr.version == ip::v4) {
+            res = addr.to_string();
             res.push_back(':');
             res += std::to_string(port);
-            return res;
         } else {
-            std::string res;
             res.reserve(45 + 2 + 5); // Max length of IPv6 address + [] and port.
             res.push_back('[');
-            res += address.to_string();
+            res += addr.to_string();
             res.push_back(']');
             res.push_back(':');
             res += std::to_string(port);
-            return res;
         }
+        return res;
     }
 
     bool endpoint::operator==(const endpoint& rhs) const noexcept {
-        return address == rhs.address && port == rhs.port;
+        return addr == rhs.addr && port == rhs.port;
     }
 
     bool endpoint::operator!=(const endpoint& rhs) const noexcept {
-        return address != rhs.address || port != rhs.port;
+        return addr != rhs.addr || port != rhs.port;
     }
 } // namespace libwire

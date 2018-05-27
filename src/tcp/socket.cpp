@@ -57,7 +57,7 @@ namespace libwire::tcp {
     }
 
     void socket::connect(endpoint target, std::error_code& ec) noexcept {
-        implementation = internal_::socket(target.address.version, transport::tcp, ec);
+        implementation = internal_::socket(target.addr.version, transport::tcp, ec);
         if (ec) return;
         implementation.connect(target, ec);
         open = !ec;

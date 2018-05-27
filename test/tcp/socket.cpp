@@ -65,8 +65,8 @@ TEST_P(TcpSocketPair, Connect) {
 
 TEST_P(TcpSocketPair, EndpointsConsistency) {
     ASSERT_EQ(client.remote_endpoint(), endpoint(GetParam(), 7777));
-    ASSERT_EQ(client.local_endpoint().address, GetParam());
-    ASSERT_EQ(server.local_endpoint().address, GetParam());
+    ASSERT_EQ(client.local_endpoint().addr, GetParam());
+    ASSERT_EQ(server.local_endpoint().addr, GetParam());
     ASSERT_EQ(client.remote_endpoint(), server.local_endpoint());
     ASSERT_EQ(server.remote_endpoint(), client.local_endpoint());
 }

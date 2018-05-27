@@ -120,10 +120,11 @@ install(FILES
 
 find_program(clangtidy_path NAMES clang-tidy)
 if(clangtidy_path)
+    set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
     add_custom_target(tidy
         COMMAND "${clangtidy_path}" -p "${PROJECT_BINARY_DIR}" ${LIBWIRE_ALL_SOURCES}
         COMMENT "Running clang-tidy tool"
-        WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/src"
+        WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/"
         SOURCES ${PROJECT_SOURCE_DIR}/.clang-tidy
         )
 endif()

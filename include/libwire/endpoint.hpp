@@ -27,7 +27,7 @@
 
 namespace libwire {
     struct endpoint {
-        address address;
+        address addr;
         uint16_t port;
 
         endpoint(const struct address& addr, uint16_t port);

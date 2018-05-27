@@ -69,8 +69,7 @@ std::error_condition libwire::internal_::dns_errors::default_error_condition(int
     return std::error_condition(error::unknown, error::system_category());
 }
 
-bool libwire::internal_::dns_errors::equivalent(int code, const std::error_condition& condition) const
-    noexcept {
+bool libwire::internal_::dns_errors::equivalent(int code, const std::error_condition& condition) const noexcept {
     if (code == 0) {
         return condition.value() == error::success;
     }

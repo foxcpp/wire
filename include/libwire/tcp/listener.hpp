@@ -74,8 +74,7 @@ namespace libwire::tcp {
             listen(target, ec, backlog);
         }
 
-        inline listener(endpoint target,
-                        unsigned backlog = internal_::socket::max_pending_connections) {
+        inline listener(endpoint target, unsigned backlog = internal_::socket::max_pending_connections) {
             listen(target, backlog);
         }
 

@@ -28,7 +28,7 @@ using namespace libwire;
 TEST(IPv4Endpoint, FromString) {
     // Basic test.
     endpoint ep("127.0.0.1:25565");
-    ASSERT_EQ(ep.address, address(127, 0, 0, 1));
+    ASSERT_EQ(ep.addr, address(127, 0, 0, 1));
     ASSERT_EQ(ep.port, 25565);
 
     ASSERT_THROW(endpoint("127.0.0.1:"), std::invalid_argument);
@@ -41,7 +41,7 @@ TEST(IPv4Endpoint, FromString) {
 
 TEST(IPv6Endpoint, FromString) {
     endpoint ep("[::1]:25565");
-    ASSERT_EQ(ep.address, ipv6::loopback);
+    ASSERT_EQ(ep.addr, ipv6::loopback);
     ASSERT_EQ(ep.port, 25565);
 
     ASSERT_THROW(endpoint("[]:25565"), std::invalid_argument);

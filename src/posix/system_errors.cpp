@@ -87,8 +87,7 @@ std::error_condition libwire::internal_::system_errors::default_error_condition(
 #undef MAP_CODE
 }
 
-bool libwire::internal_::system_errors::equivalent(int code, const std::error_condition& condition) const
-    noexcept {
+bool libwire::internal_::system_errors::equivalent(int code, const std::error_condition& condition) const noexcept {
 #define MAP_CODE(errno_code, condition_code) \
     if (code == (errno_code)) return condition.value() == (condition_code)
 #define MAP_CODE_3(errno_code, condition_code, generic_code) \
