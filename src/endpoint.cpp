@@ -23,6 +23,7 @@
 #include "libwire/endpoint.hpp"
 #include <cassert>
 #include <cmath>
+#include <cctype>
 
 namespace libwire {
     const endpoint endpoint::invalid = {{0, 0, 0, 0}, 0};

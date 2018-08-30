@@ -179,7 +179,7 @@ namespace libwire::internal_ {
     size_t socket::write(const void* input, size_t length_bytes, std::error_code& ec) noexcept {
         assert(handle != not_initialized);
 
-        ssize_t actually_written =
+        int64_t actually_written =
             error_wrapper(::send, ec, handle, reinterpret_cast<const char*>(input), length_bytes, IO_FLAGS);
         if (actually_written < 0) {
             return 0;
@@ -190,7 +190,7 @@ namespace libwire::internal_ {
     size_t socket::read(void* output, size_t length_bytes, std::error_code& ec) noexcept {
         assert(handle != not_initialized);
 
-        ssize_t actually_readen = ::recv(handle, reinterpret_cast<char*>(output), length_bytes, IO_FLAGS);
+        int64_t actually_readen = ::recv(handle, reinterpret_cast<char*>(output), length_bytes, IO_FLAGS);
         // FIXME: Needs to be improved for non-blocking I/O.
         if (actually_readen == 0 && length_bytes != 0) {
             // We wanted more than zero bytes but got zero, looks like EOF.
@@ -208,7 +208,7 @@ namespace libwire::internal_ {
 
         sockaddr_storage sockaddr_dest = endpoint_to_sockaddr(dest);
 
-        ssize_t actually_written = error_wrapper(::sendto, ec, handle, (const char*)input, length_bytes, IO_FLAGS,
+        int64_t actually_written = error_wrapper(::sendto, ec, handle, (const char*)input, length_bytes, IO_FLAGS,
                                                  (sockaddr*)&sockaddr_dest, sizeof(sockaddr_dest));
         if (actually_written < 0) {
             return 0;
@@ -222,7 +222,7 @@ namespace libwire::internal_ {
         sockaddr_storage sockaddr_src;
         socklen_t sockaddr_len = sizeof(sockaddr_src);
 
-        ssize_t actually_readen = error_wrapper(::recvfrom, ec, handle, reinterpret_cast<char*>(output), length_bytes,
+        int64_t actually_readen = error_wrapper(::recvfrom, ec, handle, reinterpret_cast<char*>(output), length_bytes,
                                                 IO_FLAGS, (sockaddr*)&sockaddr_src, &sockaddr_len);
         // FIXME: Needs to be improved for non-blocking I/O.
         if (actually_readen == 0 && length_bytes != 0) {
