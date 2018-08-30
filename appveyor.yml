@@ -1,0 +1,48 @@
+branches:
+    except:
+    - gh-pages
+
+image: Visual Studio 2017
+platform: x86
+
+environment:
+  mingw_dir: C:\mingw-w64\x86_64-7.3.0-posix-seh-rt_v5-rev0\mingw64
+
+clone_script:
+- git clone -q --recursive --branch=%APPVEYOR_REPO_BRANCH% https://github.com/%APPVEYOR_REPO_NAME%.git %APPVEYOR_BUILD_FOLDER%
+- cd %APPVEYOR_BUILD_FOLDER%
+- git checkout -qf %APPVEYOR_REPO_COMMIT%
+
+before_build:
+- set PATH=%mingw_dir%\bin;%PATH%
+- ps: Get-Command sh.exe -All | Remove-Item
+- g++ --version
+- mingw32-make --version
+- cmake --version
+
+build_script:
+- mkdir build
+- cd build
+- if "%APPVEYOR_REPO_TAG%"=="true" (set BUILD_TYPE=Release) else (set BUILD_TYPE=Debug)
+- if "%APPVEYOR_REPO_TAG%"=="true" set CXXFLAGS="-flto -O3"
+- cmake .. -G "MinGW Makefiles" -DLIBWIRE_TESTS=ON -DCMAKE_INSTALL_PREFIX=C:\wire -DCMAKE_BUILD_TYPE=%BUILD_TYPE% -DCMAKE_CXX_FLAGS=%CXXFLAGS%
+- cmake --build . --use-stderr -- -j4
+
+test_script:
+- cmake --build . --target check
+
+after_test:
+- if "%APPVEYOR_REPO_TAG%"=="true" set DISTR
+- if defined distr cmake --build . --target install
+- if defined distr 7z a -r libwire-win32-mingw.zip C:\wire
+- if defined distr appveyor PushArtifact libwire-win32-mingw.zip
+
+deploy:
+  provider: GitHub
+  auth_token:
+    secure: HNlgkgxnBjDQD7wwc/ldpZVx75r61JMFKQlHpWC4unMZ1B48P+oixxXMW6QN1Uqm
+  artifact: /.*\.zip/
+  on:
+      appveyor_repo_tag: true
+
+
