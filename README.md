@@ -1,7 +1,8 @@
 libwire
 =========
 
-[![Travis CI](https://img.shields.io/travis/foxcpp/wire.svg?style=flat-square)](https://travis-ci.org/foxcpp/wire)
+[![Travis CI](https://img.shields.io/travis/foxcpp/wire.svg?style=flat-square&logo=Linux)](https://travis-ci.org/foxcpp/wire)
+[![AppVeyor CI](https://img.shields.io/travis/foxcpp/wire.svg?style=flat-square&logo=Windows)](https://ci.appveyor.com/project/foxcpp/wire)
 [![CodeCov](https://img.shields.io/codecov/c/github/foxcpp/wire.svg?style=flat-square)](https://codecov.io/gh/foxcpp/wire)
 [![Latest Release](https://img.shields.io/github/release/foxcpp/wire.svg?style=flat-square)](https://github.com/foxcpp/wire/releases/latest)
 [![Issues](https://img.shields.io/github/issues-raw/foxcpp/wire.svg?style=flat-square)](https://github.com/foxcpp/wire/issues)
@@ -23,6 +24,7 @@ on top system TCP & UDP implementation.
 
 #### Requirements
 * C++17 compatible compiler
+  **MSVC is not supported currently due to cryptic errors. If you know how to fix them - please, send PR.**
 * _(Optional)_ Google Test for tests (included as submodule)
 * _(Optional)_ Doxygen for API documentation generation
 
@@ -36,6 +38,9 @@ $ cmake --build .
 
 **Note 1** By default libwire will be built as a static library, if you want
 a shared library then you should add `-DBUILD_SHARED_LIBS=ON` flag.
+**Note 2** It's recommended to enable LTO in your compiler to allow
+cross-object inlining and stuff.
+
 
 ### Usage
 
