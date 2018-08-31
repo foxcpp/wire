@@ -24,7 +24,9 @@ on top system TCP & UDP implementation.
 
 #### Requirements
 * C++17 compatible compiler
+
   **MSVC is not supported currently due to cryptic errors. If you know how to fix them - please, send PR.**
+
 * _(Optional)_ Google Test for tests (included as submodule)
 * _(Optional)_ Doxygen for API documentation generation
 
@@ -38,6 +40,7 @@ $ cmake --build .
 
 **Note 1** By default libwire will be built as a static library, if you want
 a shared library then you should add `-DBUILD_SHARED_LIBS=ON` flag.
+
 **Note 2** It's recommended to enable LTO in your compiler to allow
 cross-object inlining and stuff.
 
@@ -64,16 +67,17 @@ target_link_library(your-executable libwire)
 
 Let's write a simple TCP server that echoes back `\n`-terminated strings.
 
-First, include TCP listener header:
+First, include TCP listener header and another one for `ipv4::any`:
 ```cpp
 #include <libwire/tcp/listener.hpp>
+#include <libwire/address.hpp>
 ```
 
 Then... It's very short so it doesn't needs any commentary:
 ```cpp
 using namespace libwire;
 
-tcp::listener listener{ipv4::any, 7};
+tcp::listener listener({ipv4::any, 7});
 
 while (true) {
     auto sock = listener.accept();
