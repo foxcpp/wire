@@ -52,14 +52,14 @@ cross-object inlining and stuff.
 If you use CMake and clone libwire as a submodule, you can just link it this way:
 ```cmake
 add_subdirectory(wire/)
-target_link_library(your-exectuable libwire)
+target_link_libraries(your-exectuable libwire)
 ```
 It will use CMake magic to configure include path and other stuff.
 
 Alternatively, you can access system-installed version using `find_package`.
 ```cmake
 find_package(libwire REQUIRED)
-target_link_library(your-executable libwire)
+target_link_libraries(your-executable libwire)
 ```
 
 
