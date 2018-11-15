@@ -3,7 +3,7 @@ libwire
 
 ### Project is not developed
 
-**I'm not using C++ anymore and have zero interest in libwire development. All current code in libwire is working as it should, so you can use it if you really want but using https://github.com/irisjyf/evpp if you need something production-ready.**
+**I'm not using C++ anymore and have zero interest in libwire development. All current code in libwire is working as it should, so you can use it if you really want but consider using https://github.com/irisjyf/evpp if you need something production-ready.**
 
 
 [![Travis CI](https://img.shields.io/travis/foxcpp/wire.svg?style=flat-square&logo=Linux)](https://travis-ci.org/foxcpp/wire)
