@@ -1,0 +1,6 @@
+var searchData=
+[
+  ['listen',['listen',['../classlibwire_1_1tcp_1_1listener.html#a4e8e98cf863cd5d0bdfef8862b04b92e',1,'libwire::tcp::listener::listen()'],['../classlibwire_1_1udp_1_1socket.html#a87efdf04d3ef17e51d583317fe254581',1,'libwire::udp::socket::listen()']]],
+  ['listener',['listener',['../classlibwire_1_1tcp_1_1listener.html#a155e107bf81fc961de6697e9411bb635',1,'libwire::tcp::listener::listener() noexcept=default'],['../classlibwire_1_1tcp_1_1listener.html#a505015b3c69e1458662a71ae3ac9eae8',1,'libwire::tcp::listener::listener(const listener &amp;)=delete'],['../classlibwire_1_1tcp_1_1listener.html#a7b991538661265ea25ded732ad7c0411',1,'libwire::tcp::listener::listener(listener &amp;&amp;) noexcept=default'],['../classlibwire_1_1tcp_1_1listener.html#aa517b68e52119a1ed7b6debfc928dfbc',1,'libwire::tcp::listener::listener(endpoint target, std::error_code &amp;ec, unsigned backlog=internal_::socket::max_pending_connections) noexcept'],['../classlibwire_1_1tcp_1_1listener.html#afe91a2c67d3a07e80cc1bddb6dfa7eda',1,'libwire::tcp::listener::listener(endpoint target, unsigned backlog=internal_::socket::max_pending_connections)']]],
+  ['local_5fendpoint',['local_endpoint',['../classlibwire_1_1tcp_1_1socket.html#aa8843794b50ad284d97e9c93441dde5d',1,'libwire::tcp::socket']]]
+];
